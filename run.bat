@@ -1,0 +1,1 @@
+dotnet watch --project InfoEducatie.Main run

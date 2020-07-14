@@ -1,0 +1,28 @@
+# Comment omnidb service if you use other [GUI] client.
+version: '3.1'
+
+services:
+  db:
+    image: postgres:13
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: parola01
+      POSTGRES_USER: root
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+  omnidb:
+    image: taivokasper/omnidb
+    container_name: omnidb
+    restart: always
+    ports:
+      - 8085:8080
+      - 25482:25482
+    volumes:
+      - omnidb-config:/etc/omnidb
+
+volumes:
+  postgres-data:
+  omnidb-config:    

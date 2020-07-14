@@ -1,0 +1,3 @@
+[submodule "MCMS"]
+	path = MCMS
+	url = ssh://git@git.ligaac.ro:5022/upt/mcms.git
