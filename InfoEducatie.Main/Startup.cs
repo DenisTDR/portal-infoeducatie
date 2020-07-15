@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using InfoEducatie.Main.Data;
 using MCMS.Base.Helpers;
 using MCMS.Builder;
 using MCMS.Common;
+using MCMS.Emailing;
 using MCMS.Files;
 using MCMS.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Builder;
@@ -21,6 +22,7 @@ namespace InfoEducatie.Main
         {
             _mApp = new MAppBuilder(currentEnvironment)
                 .AddSpecifications<MCommonSpecifications>()
+                .AddSpecifications<MEmailingSpecifications>()
                 .AddSpecifications<MFilesSpecifications>()
                 .AddSpecifications<InfoEducatieSpecifications>()
                 .WithPostgres<ApplicationDbContext>()

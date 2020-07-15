@@ -2,7 +2,7 @@
 version: '3.1'
 
 services:
-  db:
+  pdb:
     image: postgres:13
     container_name: postgres
     restart: always
@@ -13,6 +13,9 @@ services:
       - postgres-data:/var/lib/postgresql/data
     ports:
       - 5432:5432
+    networks:
+      postgres-net:
+
   omnidb:
     image: taivokasper/omnidb
     container_name: omnidb
@@ -22,7 +25,15 @@ services:
       - 25482:25482
     volumes:
       - omnidb-config:/etc/omnidb
+    networks:
+      postgres-net:
 
 volumes:
   postgres-data:
-  omnidb-config:    
+  omnidb-config:
+
+
+networks:
+  postgres-net:
+    external:
+      name: postgres-net
