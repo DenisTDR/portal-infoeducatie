@@ -2,9 +2,11 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RootNamespace>InfoEducatie.Main</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\InfoEducatie.Contest\InfoEducatie.Contest.csproj" />
       <ProjectReference Include="..\MCMS\MCMS.Base\MCMS.Base.csproj" />
       <ProjectReference Include="..\MCMS\MCMS.Common\MCMS.Common.csproj" />
       <ProjectReference Include="..\MCMS\MCMS.Emailing\MCMS.Emailing.csproj" />

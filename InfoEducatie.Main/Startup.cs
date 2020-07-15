@@ -1,4 +1,5 @@
 using System;
+using InfoEducatie.Contest;
 using InfoEducatie.Main.Data;
 using MCMS.Base.Helpers;
 using MCMS.Builder;
@@ -25,6 +26,7 @@ namespace InfoEducatie.Main
                 .AddSpecifications<MEmailingSpecifications>()
                 .AddSpecifications<MFilesSpecifications>()
                 .AddSpecifications<InfoEducatieSpecifications>()
+                .AddSpecifications<InfoEducatieContestSpecifications>()
                 .WithPostgres<ApplicationDbContext>()
                 .WithSwagger(new SwaggerConfigOptions
                 {
