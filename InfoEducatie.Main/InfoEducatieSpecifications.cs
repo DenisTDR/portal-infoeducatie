@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using InfoEducatie.Main.Dashboard;
 using InfoEducatie.Main.Data;
+using InfoEducatie.Main.Seminars;
 using MCMS.Admin.Users;
 using MCMS.Base.Builder;
 using MCMS.Builder;
@@ -55,6 +56,14 @@ namespace InfoEducatie.Main
                     }.WithIconClasses("fas fa-tools").RequiresRoles("Admin")
                 }
             });
+            config.Items.Add(new MenuSection
+            {
+                Name = "Content",
+                Items = new List<IMenuItem>
+                {
+                    new MenuLink("Seminars", typeof(SeminarsController), nameof(SeminarsController.Index))
+                }
+            }.RequiresRoles("Admin", "Moderator"));
         }
     }
 }
