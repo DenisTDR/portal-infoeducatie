@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using InfoEducatie.Main.Dashboard;
 using InfoEducatie.Main.Data;
+using InfoEducatie.Main.Pages;
 using InfoEducatie.Main.Seminars;
 using MCMS.Admin.Users;
 using MCMS.Base.Builder;
@@ -53,7 +54,9 @@ namespace InfoEducatie.Main
                                 Items = new List<IMenuItem>
                                 {
                                     new MenuLink("Seminarii", typeof(SeminarsAdminController),
-                                        nameof(SeminarsAdminController.Index))
+                                        nameof(SeminarsAdminController.Index)),
+                                    new MenuLink("Pagini", typeof(PagesAdminController),
+                                        nameof(PagesAdminController.Index))
                                 }
                             }.WithIconClasses("fas fa-file-contract").RequiresRoles("Admin", "Moderator"),
                             new MenuLink("Utilizatori", typeof(AdminUsersController),
