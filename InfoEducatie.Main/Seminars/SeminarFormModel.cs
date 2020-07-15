@@ -1,15 +1,28 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using MCMS.Base.Data.FormModels;
+using MCMS.Base.SwaggerFormly.Formly;
 using MCMS.Base.SwaggerFormly.Formly.Fields;
 
 namespace InfoEducatie.Main.Seminars
 {
     public class SeminarFormModel : IFormModel
     {
-        public string Name { get; set; }
-        public string Speaker { get; set; }
-        [DataType(DataType.MultilineText)] public string ShortDescription { get; set; }
-        [FormlyCkEditor] public string Description { get; set; }
-        public string Link { get; set; }
+        [Required] public string Name { get; set; }
+        [Required] public string Speaker { get; set; }
+
+        [Required]
+        [DataType(DataType.DateTime)]
+        public DateTime When { get; set; }
+
+        [Required]
+        [DataType(DataType.MultilineText)]
+        public string ShortDescription { get; set; }
+
+        [Required] [FormlyCkEditor] public string Description { get; set; }
+        [Required] public string Link { get; set; }
+
+        [FormlyFieldDefaultValue(true)] public bool Published { get; set; }
+        [Required] public string Slug { get; set; }
     }
 }

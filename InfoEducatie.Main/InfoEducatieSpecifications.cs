@@ -46,6 +46,16 @@ namespace InfoEducatie.Main
                         {
                             new MenuLink("Panou Administrare", typeof(AdminDashboardController),
                                 nameof(AdminDashboardController.Index)).WithIconClasses("fas fa-tools"),
+                            new MenuSection
+                            {
+                                Name = "Conținut",
+                                IsCollapsed = true,
+                                Items = new List<IMenuItem>
+                                {
+                                    new MenuLink("Seminarii", typeof(SeminarsAdminController),
+                                        nameof(SeminarsAdminController.Index))
+                                }
+                            }.WithIconClasses("fas fa-file-contract").RequiresRoles("Admin", "Moderator"),
                             new MenuLink("Utilizatori", typeof(AdminUsersController),
                                 nameof(AdminUsersController.Index)).WithIconClasses("fas fa-users"),
                             new MenuLink("Texte / Traduceri", typeof(TranslationsController),
@@ -56,14 +66,8 @@ namespace InfoEducatie.Main
                     }.WithIconClasses("fas fa-tools").RequiresRoles("Admin")
                 }
             });
-            config.Items.Add(new MenuSection
-            {
-                Name = "Content",
-                Items = new List<IMenuItem>
-                {
-                    new MenuLink("Seminars", typeof(SeminarsController), nameof(SeminarsController.Index))
-                }
-            }.RequiresRoles("Admin", "Moderator"));
+            config.Items.Add(new MenuLink("Seminarii", typeof(SeminarsController),
+                nameof(SeminarsController.Index)));
         }
     }
 }

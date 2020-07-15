@@ -37,7 +37,13 @@ namespace InfoEducatie.Main.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
+                    b.Property<bool>("Published")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("ShortDescription")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Slug")
                         .HasColumnType("text");
 
                     b.Property<string>("Speaker")
@@ -46,7 +52,15 @@ namespace InfoEducatie.Main.Data.Migrations
                     b.Property<DateTime>("Updated")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<DateTime>("When")
+                        .HasColumnType("timestamp without time zone");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("Published");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
 
                     b.ToTable("Seminars");
                 });
@@ -232,7 +246,8 @@ namespace InfoEducatie.Main.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Slug");
+                    b.HasIndex("Slug")
+                        .IsUnique();
 
                     b.ToTable("Translation");
                 });
