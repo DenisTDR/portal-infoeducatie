@@ -10,5 +10,9 @@ namespace InfoEducatie.Contest.Categories
         public string Slug { get; set; }
         public int Order { get; set; }
         public bool Published { get; set; }
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

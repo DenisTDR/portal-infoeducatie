@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using InfoEducatie.Contest.Categories;
+using InfoEducatie.Contest.Judging.JudgingCriteria;
 using MCMS.Admin.Users;
 using MCMS.Base.Builder;
 using MCMS.Controllers;
@@ -24,7 +25,9 @@ namespace InfoEducatie.Contest
                 Items = new List<IMenuItem>
                 {
                     new MenuLink("Categorii", typeof(CategoriesAdminController),
-                        nameof(CategoriesAdminController.Index)) //.WithIconClasses("fas fa-tools"),
+                        nameof(CategoriesAdminController.Index)),
+                    new MenuLink("Criterii Jurizare", typeof(JudgingCriteriaAdminController),
+                        nameof(JudgingCriteriaAdminController.Index))
                 }
             }.RequiresRoles("Moderator"));
         }
