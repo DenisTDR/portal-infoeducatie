@@ -1,7 +1,9 @@
 {
   "roles": [
     "Admin",
-    "Moderator"
+    "Moderator",
+    "Jury",
+    "Participant"
   ],
   "languages": [
     {
