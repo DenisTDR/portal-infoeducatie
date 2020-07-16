@@ -1,7 +1,9 @@
 using System.ComponentModel;
 using InfoEducatie.Contest.Categories;
+using MCMS.Base.Attributes;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Display.ModelDisplay.Attributes;
+using Newtonsoft.Json;
 
 namespace InfoEducatie.Contest.Judging.JudgingCriteria
 {
@@ -13,9 +15,8 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
         public int Points { get; set; }
         public int Order { get; set; }
 
-        [DetailsField(Hidden = true)]
-        [DisplayName("Category")] public string CategoryName => Category.Name;
-        [TableColumn(Hidden = true)] public CategoryViewModel Category { get; set; }
+        [JsonConverter(typeof(ToStringJsonConverter))]
+        public CategoryViewModel Category { get; set; }
 
         public override string ToString()
         {

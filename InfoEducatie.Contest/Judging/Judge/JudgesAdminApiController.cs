@@ -9,27 +9,30 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace InfoEducatie.Contest.Participants.Project
+namespace InfoEducatie.Contest.Judging.Judge
 {
-    public class
-        ProjectsAdminApiController : GenericAdminApiController<ProjectEntity, ProjectFormModel, ProjectViewModel>
+    public class JudgesAdminApiController : GenericAdminApiController<JudgeEntity, JudgeFormModel, JudgeViewModel>
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);
-            Repo.ChainQueryable(q => q.Include(p => p.Category));
+            Repo.ChainQueryable(q => q
+                .Include(j => j.Category)
+                .Include(j => j.User)
+            );
         }
 
-        protected override Task PatchBeforeSaveNew(ProjectEntity e)
+        protected override Task PatchBeforeSaveNew(JudgeEntity e)
         {
             ServiceProvider.GetService<IRepository<CategoryEntity>>().Attach(e.Category);
             return base.PatchBeforeSaveNew(e);
         }
 
-        public override Task<ActionResult<List<ProjectViewModel>>> IndexLight()
+        public override async Task<ActionResult<List<JudgeViewModel>>> IndexLight()
         {
-            Repo.ChainQueryable(q => q.Select(e => new ProjectEntity {Id = e.Id, Title = e.Title}));
-            return base.Index();
+            var all = await Repo.GetAll();
+            var allVm = all.Select(e => new JudgeViewModel {FullName = e.FullName, Id = e.Id});
+            return Ok(allVm);
         }
     }
 }

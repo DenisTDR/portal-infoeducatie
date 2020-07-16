@@ -1,7 +1,9 @@
 using System.ComponentModel;
 using InfoEducatie.Contest.Participants.Project;
+using MCMS.Base.Attributes;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Display.ModelDisplay.Attributes;
+using Newtonsoft.Json;
 
 namespace InfoEducatie.Contest.Participants.Participant
 {
@@ -21,8 +23,9 @@ namespace InfoEducatie.Contest.Participants.Participant
         public string SchoolCounty { get; set; }
         public string SchoolCountry { get; set; }
         public string MentoringTeacher { get; set; }
+
+        [JsonConverter(typeof(ToStringJsonConverter))]
         public ProjectViewModel Project { get; set; }
-        public string ProjectName => Project?.Title ?? "invalid";
 
         public override string ToString()
         {
