@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
+using InfoEducatie.Contest.Participants.Participant;
+using InfoEducatie.Contest.Participants.Project;
 using MCMS.Admin.Users;
 using MCMS.Base.Builder;
 using MCMS.Controllers;
@@ -20,14 +22,26 @@ namespace InfoEducatie.Contest
         {
             config.Items.Add(new MenuSection
             {
-                Name = "Concurs",
+                Name = "Contest",
                 IsCollapsed = true,
                 Items = new List<IMenuItem>
                 {
-                    new MenuLink("Categorii", typeof(CategoriesAdminController),
+                    new MenuLink("Categories", typeof(CategoriesAdminController),
                         nameof(CategoriesAdminController.Index)),
-                    new MenuLink("Criterii Jurizare", typeof(JudgingCriteriaAdminController),
+                    new MenuLink("Judging criteria", typeof(JudgingCriteriaAdminController),
                         nameof(JudgingCriteriaAdminController.Index))
+                }
+            }.RequiresRoles("Moderator"));
+            config.Items.Add(new MenuSection
+            {
+                Name = "Participants",
+                IsCollapsed = true,
+                Items = new List<IMenuItem>
+                {
+                    new MenuLink("Participants", typeof(ParticipantsAdminController),
+                        nameof(ParticipantsAdminController.Index)),
+                    new MenuLink("Projects", typeof(ProjectsAdminController),
+                        nameof(ProjectsAdminController.Index))
                 }
             }.RequiresRoles("Moderator"));
         }
