@@ -5,6 +5,7 @@ using InfoEducatie.Contest.Categories;
 using MCMS.Base.Auth;
 using MCMS.Controllers.Api;
 using MCMS.Data;
+using MCMS.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -37,7 +38,7 @@ namespace InfoEducatie.Contest.Judging.Judge
             return Ok(allVm);
         }
 
-        public override async Task<ActionResult<JudgeFormModel>> Create(JudgeFormModel fm)
+        public override async Task<ActionResult<ModelResponse<JudgeFormModel>>> Create(JudgeFormModel fm)
         {
             var user = await ServiceProvider.GetService<IRepository<User>>()
                 .GetOne(u => u.NormalizedEmail == fm.Email.ToUpper());
@@ -65,7 +66,7 @@ namespace InfoEducatie.Contest.Judging.Judge
             };
             e = await Repo.Add(e);
             var vm = MapF(e);
-            return Ok(vm);
+            return OkModel(vm);
         }
     }
 }

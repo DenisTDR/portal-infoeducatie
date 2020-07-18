@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using InfoEducatie.Main.Dashboard;
 using InfoEducatie.Main.Data;
+using InfoEducatie.Main.InfoEducatieAdmin;
 using InfoEducatie.Main.Pages;
 using InfoEducatie.Main.Seminars;
 using MCMS.Admin.Users;
@@ -26,6 +27,9 @@ namespace InfoEducatie.Main
                 c.SiteName = "InfoEducație";
                 c.SiteCopyright = "Copyright &copy; TDR 2020";
             });
+
+            services.AddScoped<ImportFormParamsService>();
+            services.AddScoped<ImportService>();
         }
 
         private void ConfigureMenu(MenuConfig config)
@@ -45,8 +49,8 @@ namespace InfoEducatie.Main
                         IsCollapsed = true,
                         Items = new List<IMenuItem>
                         {
-                            new MenuLink("Panou Administrare", typeof(AdminDashboardController),
-                                nameof(AdminDashboardController.Index)).WithIconClasses("fas fa-tools"),
+                            new MenuLink("Panou Administrare", typeof(InfoEducatieAdminController),
+                                nameof(InfoEducatieAdminController.Index)).WithIconClasses("fas fa-tools"),
                             new MenuSection
                             {
                                 Name = "Conținut",
