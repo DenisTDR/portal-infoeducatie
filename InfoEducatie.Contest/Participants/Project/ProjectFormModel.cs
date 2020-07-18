@@ -8,7 +8,7 @@ namespace InfoEducatie.Contest.Participants.Project
     public class ProjectFormModel : IFormModel
     {
         [FormlySelect(typeof(CategoriesAdminApiController))]
-        [Required]
+        // [Required]
         public CategoryViewModel Category { get; set; }
 
         [Required] public string Title { get; set; }

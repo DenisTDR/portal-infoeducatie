@@ -9,8 +9,29 @@ namespace InfoEducatie.Contest.Participants.Participant
     public class ParticipantEntity : Entity
     {
         public User User { get; set; }
-        [NotMapped] public string FirstName => User?.FirstName;
-        [NotMapped] public string LastName => User?.LastName;
+
+        [NotMapped]
+        public string FirstName
+        {
+            get => User?.FirstName;
+            set
+            {
+                if (User != null)
+                    User.FirstName = value;
+            }
+        }
+
+        [NotMapped]
+        public string LastName
+        {
+            get => User?.LastName;
+            set
+            {
+                if (User != null)
+                    User.LastName = value;
+            }
+        }
+
         public string PhoneNumber { get; set; }
         public int Grade { get; set; }
         public string City { get; set; }
@@ -21,6 +42,7 @@ namespace InfoEducatie.Contest.Participants.Participant
         public string SchoolCounty { get; set; }
         public string SchoolCountry { get; set; }
         public string MentoringTeacher { get; set; }
+        public string OldPlatformId { get; set; }
         public ProjectEntity Project { get; set; }
 
         public override string ToString()

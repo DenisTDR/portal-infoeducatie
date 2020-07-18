@@ -23,6 +23,7 @@ namespace InfoEducatie.Contest.Participants.Participant
         public string SchoolCounty { get; set; }
         public string SchoolCountry { get; set; }
         public string MentoringTeacher { get; set; }
+        public string OldPlatformId { get; set; }
 
         [JsonConverter(typeof(ToStringJsonConverter))]
         public ProjectViewModel Project { get; set; }

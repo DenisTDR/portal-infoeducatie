@@ -26,11 +26,14 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 await using var fs = new FileStream(file.PhysicalFullPath, FileMode.Open);
                 using var sr = new StreamReader(fs, Encoding.UTF8);
                 str = await sr.ReadToEndAsync();
+                await filesRepo.Delete(file);
             }
 
-            Console.WriteLine("importing from " + str.Length + " length csv string.");
+            // Console.WriteLine("importing from " + str.Length + " length csv string.");
             var importResult = await ServiceProvider.GetService<ImportService>()
                 .ImportParticipantsCsv(str, model.FixEncoding);
+            
+            
             return Ok(importResult);
         }
     }
