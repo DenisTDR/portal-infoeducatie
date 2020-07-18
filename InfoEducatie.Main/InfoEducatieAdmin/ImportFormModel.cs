@@ -14,17 +14,20 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         public ImportSourceType Type { get; set; }
 
         [FormlyFile(typeof(FilesAdminApiController), nameof(FilesAdminApiController.Upload), "import-participants",
-            "import-participants", Private = true)]
+            "import-participants", Private = true, Accept = new[] {"csv"})]
         [Required]
         [FormlyFieldProp("hideExpression", "model.type !== 'file'")]
+        [Display(Description = "Allowed extensions: .csv")]
         public FileFormModel File { get; set; }
 
         [DataType(DataType.MultilineText)]
         [FormlyFieldProp("hideExpression", "model.type !== 'csv'")]
         [Required]
         public string Csv { get; set; }
-        
-        [FormlyFieldProp("description", "Read file as UTF8, convert string to 1252 (encoding) bytes, convert those bytes to UTF8 again. ")]
+
+        [Display(Name = "Fix Encoding",
+            Description =
+                "Read file as UTF8 string, convert this string to 1252 (encoding) bytes, convert those bytes to UTF8 string again.")]
         [FormlyFieldDefaultValue(true)]
         public bool FixEncoding { get; set; }
     }
