@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Views" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\MCMS\MCMS.Base\MCMS.Base.csproj" />
       <ProjectReference Include="..\MCMS\MCMS\MCMS.csproj" />
     </ItemGroup>

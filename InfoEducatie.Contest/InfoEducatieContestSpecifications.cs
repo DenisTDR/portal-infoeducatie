@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Judging.Judge;
+using InfoEducatie.Contest.Judging.Judging;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
 using InfoEducatie.Contest.Participants.Participant;
@@ -28,8 +29,8 @@ namespace InfoEducatie.Contest
                 IsCollapsed = true,
                 Items = new List<IMenuItem>
                 {
-                    new MenuLink("Categories", typeof(CategoriesAdminController),
-                        nameof(CategoriesAdminController.Index)),
+                    new MenuLink("Judging", typeof(JudgingController),
+                        nameof(JudgingController.Index)).WithIconClasses("fas fa-gavel"),
                     new MenuLink("Judges", typeof(JudgesAdminController),
                         nameof(JudgesAdminController.Index)),
                     new MenuLink("Judging criteria", typeof(JudgingCriteriaAdminController),
@@ -40,14 +41,16 @@ namespace InfoEducatie.Contest
             }.RequiresRoles("Moderator"));
             config.Items.Add(new MenuSection
             {
-                Name = "Participants",
+                Name = "Contest",
                 IsCollapsed = true,
                 Items = new List<IMenuItem>
                 {
                     new MenuLink("Participants", typeof(ParticipantsAdminController),
                         nameof(ParticipantsAdminController.Index)),
                     new MenuLink("Projects", typeof(ProjectsAdminController),
-                        nameof(ProjectsAdminController.Index))
+                        nameof(ProjectsAdminController.Index)),
+                    new MenuLink("Categories", typeof(CategoriesAdminController),
+                        nameof(CategoriesAdminController.Index)),
                 }
             }.RequiresRoles("Moderator"));
         }
