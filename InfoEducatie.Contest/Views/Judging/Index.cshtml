@@ -17,7 +17,7 @@
     </div>
     <div class="row">
         <div class="col-12">
-            <div class="alert alert-info d-inline-block mt-2">Punctajele se salvează automat după ce un input își pierde focusul. O notitficare de feedback va apărea în partea dreaptă.</div>
+            <div class="alert alert-info d-inline-block mt-2">Punctajul dintr-un field se salvează automat după ce acesta își pierde focusul.</div>
         </div>
     </div>
 </div>
@@ -46,9 +46,10 @@
                 <td data-content="@Html.Raw(criterion.Description)" data-toggle="popover" class="crit-td">@criterion.MaxPoints</td>
                 @foreach (var project in Model.Projects)
                 {
-                    <td data-project-id="@project.Id" data-criterion-id="@criterion.Id" class="for-input">
-                        <input type="number" class="points-input" min="0" max="@criterion.MaxPoints"
-                               value="@(Model.InitialPoints.FirstOrDefault(p => p.Project.Id == project.Id && p.Criterion.Id == criterion.Id)?.Points.ToString() ?? "")"/>
+                    var initial = Model.InitialPoints.FirstOrDefault(p => p.Project.Id == project.Id && p.Criterion.Id == criterion.Id)?.Points.ToString() ?? "";
+                    <td data-project-id="@project.Id" data-criterion-id="@criterion.Id" class="input-cell">
+                        <input type="number" min="0" max="@criterion.MaxPoints" data-value="@initial"
+                               value="@initial"/>
                     </td>
                 }
             </tr>
@@ -73,10 +74,10 @@
 
 @using (Html.BeginMStyles())
 {
-    <link rel="stylesheet" href="~/judging/judging.css"/>
+    <link rel="stylesheet" href="~/judging/judging.css" asp-append-version="true"/>
 }
 
 @using (Html.BeginMPageScripts())
 {
-    <script src="~/judging/judging.js" asp-append-version="true"></script>
+    <script src="~/judging/judging.js" defer asp-append-version="true"></script>
 }

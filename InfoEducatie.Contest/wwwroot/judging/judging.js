@@ -25,21 +25,16 @@ var height = $(".judging-table-wrapper").height() - 110 + "px";
 $(".judging-table-wrapper .dataTables_scrollBody").css({height: height, 'max-height': height})
 judgingTable.fnDraw();
 
-$('.judging-table .points-input').blur(function () {
+$('.judging-table .input-cell input').blur(function () {
     var cell = $(this).closest('td');
-    var oldValue = cell.data('value');
     var _this = $(this);
+    var oldValue = _this.data('value');
+
     var value = parseInt(_this.val());
     var max = parseInt(this.max);
     var min = parseInt(this.min);
     window.ceva = _this;
     if (value && value !== oldValue) {
-        // if (value.toString() !== _this.val().toString()) {
-        //     alert('Invalid value.');
-        //     return;
-        // }
-        // console.log(value);
-        // console.log(min);
         window.ceva = this;
         if (value > max) {
             alert('The value should be between ' + min + ' and ' + max + '. Will set ' + max + '.');
@@ -49,14 +44,19 @@ $('.judging-table .points-input').blur(function () {
             alert('The value should be between ' + min + ' and ' + max + '. Will set ' + min + '.');
             _this.val(value = min);
         }
-        cell.data('value', value)
-        setPoints(cell.data('criterionId'), cell.data('projectId'), value);
+        _this.data('value', value)
+        _this.val(value);
+        setPoints(cell, cell.data('criterionId'), cell.data('projectId'), value);
     }
 });
 
-function setPoints(criterionId, projectId, points) {
-    console.log(projectId + ' for ' + criterionId + '  update to ' + points);
+function setPoints(cell, criterionId, projectId, points) {
+    // console.log(projectId + ' for ' + criterionId + '  update to ' + points);
     var data = {criterionId: criterionId, projectId: projectId, points: points}
+    var spinnerEl = $("<div class='saving-icon'><i class='fa fa-cog fa-spin fa-2x fa-fw '></i></div>");
+    cell.append(spinnerEl);
+    spinnerEl.hide();
+    spinnerEl.fadeIn();
     $.ajax({
         type: "POST",
         url: "/Judging/SetPoints",
@@ -64,12 +64,20 @@ function setPoints(criterionId, projectId, points) {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (data) {
-            console.log(data);
+            hideLoadingSpinner(spinnerEl);
+            // console.log(data);
             $(".project-total-points[data-project-id=" + projectId + "]").html(data);
         },
         failure: function (errMsg) {
+            hideLoadingSpinner(spinnerEl);
             alert('error');
             alert(errMsg);
         }
+    });
+}
+
+function hideLoadingSpinner(spinnerEl) {
+    spinnerEl.fadeOut(function () {
+        spinnerEl.detach();
     });
 }

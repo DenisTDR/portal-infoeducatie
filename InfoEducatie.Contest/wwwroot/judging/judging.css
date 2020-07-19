@@ -1,22 +1,37 @@
 .judging-table th {
     font-size: 15px;
 }
-.judging-table td.for-input {
+
+.judging-table td.input-cell {
     /*.judging-table th {*/
     padding: 0 !important;
     vertical-align: center;
 }
-.for-input {
+
+.input-cell {
     position: relative;
 }
-.for-input > input {
+
+.input-cell > input {
     position: absolute;
     width: 100%;
     height: 100%;
+    top: 0;
+    left: 0;
 }
+
+.input-cell .saving-icon {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: .5;
+}
+
 .crit-td {
     cursor: help;
 }
+
 .judging-table-wrapper {
     overflow: hidden;
 }
