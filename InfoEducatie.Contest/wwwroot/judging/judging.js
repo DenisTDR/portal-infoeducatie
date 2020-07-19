@@ -1,29 +1,35 @@
 var judgingTable = $(".judging-table");
-judgingTable = judgingTable.dataTable({
-    paging: false,
-    fixedHeader: true,
-    scrollX: true,
-    scrollY: '400px',
-    fixedColumns: {leftColumns: 2},
-    columnDefs: [
-        // { width: 'auto', targets: 0 },
-        {width: 20, targets: 1},
-        {width: 150, targets: '_all'},
-    ],
-    // autoWidth: false,
-    sort: false,
-    colReorder: true,
-    filter: false,
-    bInfo: false
-});
-$('.judging-table [data-toggle="popover"]').popover({
-    html: true,
-    trigger: 'hover',
-    boundary: 'window',
-})
-var height = $(".judging-table-wrapper").height() - 110 + "px";
-$(".judging-table-wrapper .dataTables_scrollBody").css({height: height, 'max-height': height})
-judgingTable.fnDraw();
+initializeTable();
+
+function initializeTable() {
+    judgingTable = judgingTable.dataTable({
+        paging: false,
+        scrollX: true,
+        scrollY: '400px',
+        fixedHeader: {
+            header: true,
+        },
+        fixedColumns: {leftColumns: 2},
+        columnDefs: [
+            // { width: 'auto', targets: 0 },
+            {width: 20, targets: 1},
+            {width: 150, targets: '_all'},
+        ],
+        // autoWidth: false,
+        sort: false,
+        colReorder: true,
+        filter: false,
+        bInfo: false
+    });
+    $('.judging-table-wrapper [data-toggle="popover"]').popover({
+        html: true,
+        trigger: 'hover',
+        boundary: 'window',
+    })
+    var height = $(".judging-table-wrapper").height() - 160 + "px";
+    $(".judging-table-wrapper .dataTables_scrollBody").css({height: height, 'max-height': height})
+    judgingTable.fnDraw();
+}
 
 $('.judging-table .input-cell input').blur(function () {
     var cell = $(this).closest('td');

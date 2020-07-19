@@ -54,6 +54,8 @@
                 }
             </tr>
         }
+        </tbody>
+        <tfoot>
         <tr>
             <td>
                 Total
@@ -63,12 +65,14 @@
             </td>
             @foreach (var project in Model.Projects)
             {
-                <td data-project-id="@project.Id" class="project-total-points">
-                    @Model.InitialPoints.Where(p => p.Project.Id == project.Id).Sum(jc => jc.Points)
+                <td>
+                    <div data-project-id="@project.Id" class="project-total-points" data-content="@Html.Raw(project.Title)" data-toggle="popover">
+                        @Model.InitialPoints.Where(p => p.Project.Id == project.Id).Sum(jc => jc.Points)
+                    </div>
                 </td>
             }
         </tr>
-        </tbody>
+        </tfoot>
     </table>
 </div>
 
