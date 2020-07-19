@@ -28,6 +28,16 @@
     opacity: .5;
 }
 
+.input-cell input[type=number]:not(:focus):not(:hover)::-webkit-outer-spin-button,
+.input-cell input[type=number]:not(:focus):not(:hover)::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.input-cell input[type=number]:not(:focus):not(:hover) {
+    -moz-appearance:textfield;
+}
+
 .crit-td {
     cursor: help;
 }
