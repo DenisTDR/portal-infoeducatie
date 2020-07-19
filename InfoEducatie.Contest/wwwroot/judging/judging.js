@@ -21,7 +21,8 @@ function initializeTable() {
         filter: false,
         bInfo: false
     });
-    $('.judging-table-wrapper [data-toggle="popover"]').popover({
+    $('body').popover({
+        selector: '.judging-table-wrapper [data-toggle="popover"]',
         html: true,
         trigger: 'hover',
         boundary: 'window',
