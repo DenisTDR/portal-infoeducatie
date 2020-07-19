@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using MCMS.Controllers.Ui;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace InfoEducatie.Contest.Judging.Judge
 {
     [DisplayName("Judges")]
+    [Authorize(Roles = "Moderator")]
     public class JudgesAdminController : GenericModalAdminUiController<JudgeEntity, JudgeFormModel, JudgeViewModel,
         JudgesAdminApiController>
     {

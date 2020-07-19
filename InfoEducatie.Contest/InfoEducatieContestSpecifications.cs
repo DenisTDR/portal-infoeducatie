@@ -30,15 +30,15 @@ namespace InfoEducatie.Contest
                 Items = new List<IMenuItem>
                 {
                     new MenuLink("Judging", typeof(JudgingController),
-                        nameof(JudgingController.Index)).WithIconClasses("fas fa-gavel"),
+                        nameof(JudgingController.Index)).WithIconClasses("fas fa-gavel").RequiresRoles("Jury"),
                     new MenuLink("Judges", typeof(JudgesAdminController),
-                        nameof(JudgesAdminController.Index)),
+                        nameof(JudgesAdminController.Index)).RequiresRoles("Moderator"),
                     new MenuLink("Judging criteria", typeof(JudgingCriteriaAdminController),
-                        nameof(JudgingCriteriaAdminController.Index)),
+                        nameof(JudgingCriteriaAdminController.Index)).RequiresRoles("Moderator"),
                     new MenuLink("Judging criteria points", typeof(ProjectJudgingCriterionPointsAdminController),
-                        nameof(ProjectJudgingCriterionPointsAdminController.Index)),
+                        nameof(ProjectJudgingCriterionPointsAdminController.Index)).RequiresRoles("Admin"),
                 }
-            }.RequiresRoles("Moderator"));
+            }.RequiresRoles("Moderator", "Jury"));
             config.Items.Add(new MenuSection
             {
                 Name = "Contest",

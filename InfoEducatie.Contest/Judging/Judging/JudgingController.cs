@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace InfoEducatie.Contest.Judging.Judging
 {
@@ -91,6 +90,7 @@ namespace InfoEducatie.Contest.Judging.Judging
                 .SumAsync(p => p.Points);
             return Ok(projectPoints);
         }
+
 
         private async Task<JudgeEntity> GetJudgeProfileOrThrow()
         {

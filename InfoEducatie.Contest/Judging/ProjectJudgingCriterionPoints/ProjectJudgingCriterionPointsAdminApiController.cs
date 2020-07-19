@@ -4,12 +4,14 @@ using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Participants.Project;
 using MCMS.Controllers.Api;
 using MCMS.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints
 {
+    [Authorize(Roles = "Admin")]
     public class ProjectJudgingCriterionPointsAdminApiController : GenericAdminApiController<
         ProjectJudgingCriterionPointsEntity, ProjectJudgingCriterionPointsFormModel,
         ProjectJudgingCriterionPointsViewModel>

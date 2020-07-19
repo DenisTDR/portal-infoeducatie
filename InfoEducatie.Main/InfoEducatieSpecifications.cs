@@ -50,7 +50,8 @@ namespace InfoEducatie.Main
                         Items = new List<IMenuItem>
                         {
                             new MenuLink("Panou Administrare", typeof(InfoEducatieAdminController),
-                                nameof(InfoEducatieAdminController.Index)).WithIconClasses("fas fa-tools"),
+                                    nameof(InfoEducatieAdminController.Index)).WithIconClasses("fas fa-tools")
+                                .RequiresRoles("Admin"),
                             new MenuSection
                             {
                                 Name = "Conținut",
@@ -62,15 +63,17 @@ namespace InfoEducatie.Main
                                     new MenuLink("Pagini", typeof(PagesAdminController),
                                         nameof(PagesAdminController.Index))
                                 }
-                            }.WithIconClasses("fas fa-file-contract").RequiresRoles("Admin", "Moderator"),
+                            }.WithIconClasses("fas fa-file-contract").RequiresRoles("Moderator"),
                             new MenuLink("Utilizatori", typeof(AdminUsersController),
-                                nameof(AdminUsersController.Index)).WithIconClasses("fas fa-users"),
+                                    nameof(AdminUsersController.Index)).WithIconClasses("fas fa-users")
+                                .RequiresRoles("Moderator"),
                             new MenuLink("Texte / Traduceri", typeof(TranslationsController),
-                                nameof(TranslationsController.Index)).WithIconClasses("fas fa-globe"),
+                                    nameof(TranslationsController.Index)).WithIconClasses("fas fa-globe")
+                                .RequiresRoles("Admin"),
                             new MenuLink("Fișiere", typeof(FilesController), nameof(FilesController.Index))
-                                .WithIconClasses("fas fa-copy"),
+                                .WithIconClasses("fas fa-copy").RequiresRoles("Admin"),
                         }
-                    }.WithIconClasses("fas fa-tools").RequiresRoles("Admin")
+                    }.WithIconClasses("fas fa-tools").RequiresRoles("Admin", "Moderator")
                 }
             });
             config.Items.Add(new MenuLink("Seminarii", typeof(SeminarsController),

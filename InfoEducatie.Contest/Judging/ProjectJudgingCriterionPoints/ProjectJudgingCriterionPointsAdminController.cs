@@ -1,11 +1,13 @@
 using System.ComponentModel;
 using MCMS.Controllers.Ui;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 
 namespace InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints
 {
     [DisplayName("Project Judging Criterion Points")]
+    [Authorize(Roles = "Admin")]
     public class ProjectJudgingCriterionPointsAdminController : GenericModalAdminUiController<
         ProjectJudgingCriterionPointsEntity, ProjectJudgingCriterionPointsFormModel,
         ProjectJudgingCriterionPointsViewModel, ProjectJudgingCriterionPointsAdminApiController>

@@ -18,8 +18,7 @@ namespace InfoEducatie.Main.Pages
             base.OnActionExecuting(context);
             Repo.ChainQueryable(q => q.Where(s => s.Published));
         }
-
-
+        
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> Details([FromRoute] string id)

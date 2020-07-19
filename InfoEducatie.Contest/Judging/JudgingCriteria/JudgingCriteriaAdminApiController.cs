@@ -5,6 +5,7 @@ using InfoEducatie.Contest.Categories;
 using MCMS.Base.Exceptions;
 using MCMS.Controllers.Api;
 using MCMS.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace InfoEducatie.Contest.Judging.JudgingCriteria
 {
+    [Authorize(Roles = "Moderator")]
     public class JudgingCriteriaAdminApiController : GenericAdminApiController<JudgingCriterionEntity,
         JudgingCriterionFormModel, JudgingCriterionViewModel>
     {

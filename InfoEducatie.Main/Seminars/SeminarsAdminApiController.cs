@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace InfoEducatie.Main.Seminars
 {
-    [Authorize(Roles = "Moderator, Admin")]
+    [Authorize(Roles = "Moderator")]
     public class
         SeminarsAdminApiController : GenericAdminApiController<SeminarEntity, SeminarFormModel, SeminarViewModel>
     {
