@@ -6,7 +6,6 @@
     ViewBag.HideFooter = true;
     ViewBag.MainContainerClasses = "p-0 flex-grow-1 d-flex flex-column";
 }
-@* <h1 class="mt-4">Jurizare?</h1> *@
 <div class="container-fluid">
     <div class="row">
         <div class="mt-2"></div>
@@ -14,112 +13,70 @@
         <span class="pl-2">Category: <b>@Model.Category.Name</b> | </span>
         <span class="pl-2">Projects: <b>@Model.Projects.Count</b> | </span>
         <span class="pl-2">Judging criteria: <b>@Model.JudgingCriteria.Count</b></span>
+        <span class="pl-2">Initial set points: <b>@Model.InitialPoints.Count</b></span>
     </div>
     <div class="row">
         <div class="col-12">
-            <div class="alert alert-info d-inline-block mt-2">Punctajele se salvează automat după ce un input își pierde focusul. O notitficare va apărea în partea dreaptă.</div>
+            <div class="alert alert-info d-inline-block mt-2">Punctajele se salvează automat după ce un input își pierde focusul. O notitficare de feedback va apărea în partea dreaptă.</div>
         </div>
     </div>
 </div>
-@* <div class="row table-wrapper flex-grow-1"> *@
-@* <div class="col-12 p-0"> *@
 <div class="judging-table-wrapper flex-grow-1">
-    @* <div class="container-fluid"> *@
-        <table class="table table-striped table-bordered judging-table">
-            <thead>
+    <table class="table table-striped table-bordered judging-table">
+        <thead>
+        <tr>
+            <th>Criteria</th>
+            <th>Max Points</th>
+            @foreach (var project in Model.Projects)
+            {
+                <th>
+                    @project.Title
+                    <a href="https://community.infoeducatie.ro/t/xyz/@project.OldPlatformId" target="_blank">
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </th>
+            }
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var criterion in Model.JudgingCriteria)
+        {
             <tr>
-                @* <th></th> *@
-                <th>Criteria</th>
-                <th>Max Points</th>
+                <td data-content="@Html.Raw(criterion.Description)" data-toggle="popover" class="crit-td">@criterion.Name</td>
+                <td data-content="@Html.Raw(criterion.Description)" data-toggle="popover" class="crit-td">@criterion.MaxPoints</td>
                 @foreach (var project in Model.Projects)
                 {
-                    <th>
-                        @project.Title
-                        <a href="https://community.infoeducatie.ro/t/xyz/@project.OldPlatformId" target="_blank"><i class="fas fa-external-link-alt"></i></a>
-                    </th>
+                    <td data-project-id="@project.Id" data-criterion-id="@criterion.Id" class="for-input">
+                        <input type="number" class="points-input" min="0" max="@criterion.MaxPoints"
+                               value="@(Model.InitialPoints.FirstOrDefault(p => p.Project.Id == project.Id && p.Criterion.Id == criterion.Id)?.Points.ToString() ?? "")"/>
+                    </td>
                 }
             </tr>
-            </thead>
-            <tbody>
-            @foreach (var criterion in Model.JudgingCriteria)
+        }
+        <tr>
+            <td>
+                Total
+            </td>
+            <td>
+                @Model.JudgingCriteria.Sum(jc => jc.MaxPoints)
+            </td>
+            @foreach (var project in Model.Projects)
             {
-                <tr>
-                    <td data-content="@Html.Raw(criterion.Description)" data-toggle="popover" class="crit-td">@criterion.Name</td>
-                    <td data-content="@Html.Raw(criterion.Description)" data-toggle="popover" class="crit-td">@criterion.Points</td>
-                    @foreach (var project in Model.Projects)
-                    {
-                        <td data-projectId="@project.Id" data-criterionId="@criterion.Id" class="for-input">
-                            <input type="text" class="points-input"/>
-                        </td>
-                    }
-                </tr>
+                <td data-project-id="@project.Id" class="project-total-points">
+                    @Model.InitialPoints.Where(p => p.Project.Id == project.Id).Sum(jc => jc.Points)
+                </td>
             }
-            </tbody>
-        </table>
-    @* </div> *@
+        </tr>
+        </tbody>
+    </table>
 </div>
-@* </div> *@
 
 @using (Html.BeginMStyles())
 {
-    <style>
-        .judging-table th {
-            font-size: 15px;
-        }
-        .judging-table td.for-input {
-         /*.judging-table th {*/
-           padding: 0 !important;
-           vertical-align: center;
-         }
-          .for-input {
-            position: relative;
-          }
-         .for-input > input {
-            position: absolute;
-             width: 100%;
-             height: 100%;
-         }
-         .crit-td {
-            cursor: help;
-         }
-         .judging-table-wrapper {
-            overflow: hidden;
-         }
-    </style>
+    <link rel="stylesheet" href="~/judging/judging.css"/>
 }
 
 @using (Html.BeginMPageScripts())
 {
-    <script>
-    var judgingTable = $(".judging-table");
-    judgingTable = judgingTable.dataTable({
-        paging: false,    
-        fixedHeader: true,
-        scrollX: true,
-        scrollY: '400px',
-        fixedColumns: { leftColumns: 2 },
-        columnDefs: [
-            // { width: 'auto', targets: 0 },
-            { width: 20, targets: 1 },
-            { width: 150, targets: '_all' },
-        ],
-        // autoWidth: false,
-        sort: false,
-        colReorder: true,
-        filter: false,
-        bInfo: false
-    });
-    $('.judging-table [data-toggle="popover"]').popover({
-        html: true,
-        trigger: 'hover',
-        boundary: 'window',
-    })
-    
-    $('.judging-table .points-input').blur(function() {
-        console.log('st blured');
-    });
-      var height = $(".judging-table-wrapper").height() - 110 + "px";
-      $(".judging-table-wrapper .dataTables_scrollBody").css({height: height, 'max-height': height})
-      judgingTable.fnDraw();
-    </script>
+    <script src="~/judging/judging.js" asp-append-version="true"></script>
 }

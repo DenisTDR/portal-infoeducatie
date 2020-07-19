@@ -10,7 +10,7 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public int Points { get; set; }
+        public int MaxPoints { get; set; }
         public int Order { get; set; }
         [Required]
         public CategoryEntity Category { get; set; }

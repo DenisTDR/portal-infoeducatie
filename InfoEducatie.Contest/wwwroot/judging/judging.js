@@ -1,0 +1,75 @@
+var judgingTable = $(".judging-table");
+judgingTable = judgingTable.dataTable({
+    paging: false,
+    fixedHeader: true,
+    scrollX: true,
+    scrollY: '400px',
+    fixedColumns: {leftColumns: 2},
+    columnDefs: [
+        // { width: 'auto', targets: 0 },
+        {width: 20, targets: 1},
+        {width: 150, targets: '_all'},
+    ],
+    // autoWidth: false,
+    sort: false,
+    colReorder: true,
+    filter: false,
+    bInfo: false
+});
+$('.judging-table [data-toggle="popover"]').popover({
+    html: true,
+    trigger: 'hover',
+    boundary: 'window',
+})
+var height = $(".judging-table-wrapper").height() - 110 + "px";
+$(".judging-table-wrapper .dataTables_scrollBody").css({height: height, 'max-height': height})
+judgingTable.fnDraw();
+
+$('.judging-table .points-input').blur(function () {
+    var cell = $(this).closest('td');
+    var oldValue = cell.data('value');
+    var _this = $(this);
+    var value = parseInt(_this.val());
+    var max = parseInt(this.max);
+    var min = parseInt(this.min);
+    window.ceva = _this;
+    if (value && value !== oldValue) {
+        // if (value.toString() !== _this.val().toString()) {
+        //     alert('Invalid value.');
+        //     return;
+        // }
+        // console.log(value);
+        // console.log(min);
+        window.ceva = this;
+        if (value > max) {
+            alert('The value should be between ' + min + ' and ' + max + '. Will set ' + max + '.');
+            _this.val(value = max);
+        }
+        if (value < min) {
+            alert('The value should be between ' + min + ' and ' + max + '. Will set ' + min + '.');
+            _this.val(value = min);
+        }
+        cell.data('value', value)
+        setPoints(cell.data('criterionId'), cell.data('projectId'), value);
+    }
+});
+
+function setPoints(criterionId, projectId, points) {
+    console.log(projectId + ' for ' + criterionId + '  update to ' + points);
+    var data = {criterionId: criterionId, projectId: projectId, points: points}
+    $.ajax({
+        type: "POST",
+        url: "/Judging/SetPoints",
+        data: JSON.stringify(data),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (data) {
+            console.log(data);
+            $(".project-total-points[data-project-id=" + projectId + "]").html(data);
+        },
+        failure: function (errMsg) {
+            alert('error');
+            alert(errMsg);
+        }
+    });
+}

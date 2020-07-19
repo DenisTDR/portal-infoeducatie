@@ -11,7 +11,7 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
 
         [Required] [FormlyCkEditor] public string Description { get; set; }
 
-        [Required] public int Points { get; set; }
+        [Required] public int MaxPoints { get; set; }
 
         [FormlySelect(typeof(CategoriesAdminApiController))]
         [Required]
