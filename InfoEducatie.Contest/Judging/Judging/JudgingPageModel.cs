@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Judging.Judge;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
+using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
 using InfoEducatie.Contest.Participants.Project;
 
 namespace InfoEducatie.Contest.Judging.Judging
@@ -13,5 +14,6 @@ namespace InfoEducatie.Contest.Judging.Judging
 
         public List<ProjectViewModel> Projects { get; set; }
         public List<JudgingCriterionViewModel> JudgingCriteria { get; set; }
+        public List<ProjectJudgingCriterionPointsViewModel> InitialPoints { get; set; }
     }
 }

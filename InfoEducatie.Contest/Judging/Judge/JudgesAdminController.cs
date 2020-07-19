@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using MCMS.Controllers.Ui;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +17,12 @@ namespace InfoEducatie.Contest.Judging.Judge
                 .Include(j => j.Category)
                 .Include(j => j.User)
             );
+        }
+
+        public override IActionResult Create()
+        {
+            FormParamsService.SetSchemaName(nameof(JudgeCreateNewFormModel));
+            return base.Create();
         }
     }
 }

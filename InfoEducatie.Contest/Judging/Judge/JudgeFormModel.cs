@@ -12,9 +12,5 @@ namespace InfoEducatie.Contest.Judging.Judge
         [FormlySelect(typeof(CategoriesAdminApiController))]
         public CategoryViewModel Category { get; set; }
 
-        [Required]
-        [FormlyFieldProp("description", "Existing account email address.", true)]
-        [DataType(DataType.EmailAddress)]
-        public string Email { get; set; }
     }
 }

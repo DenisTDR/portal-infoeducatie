@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Categories;
+using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
 using MCMS.Controllers.Api;
 using MCMS.Data;
@@ -38,7 +40,16 @@ namespace InfoEducatie.Contest.Judging.Judge
             return Ok(allVm);
         }
 
-        public override async Task<ActionResult<ModelResponse<JudgeFormModel>>> Create(JudgeFormModel fm)
+        [NonAction]
+        public override Task<ActionResult<ModelResponse<JudgeFormModel>>> Create(JudgeFormModel fm)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        [HttpPost]
+        [ModelValidation]
+        public async Task<ActionResult<ModelResponse<JudgeFormModel>>> Create([FromBody] JudgeCreateNewFormModel fm)
         {
             var user = await ServiceProvider.GetService<IRepository<User>>()
                 .GetOne(u => u.NormalizedEmail == fm.Email.ToUpper());

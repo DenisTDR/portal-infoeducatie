@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Globalization;
@@ -5,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CsvHelper;
+using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Participants.Participant;
 using InfoEducatie.Contest.Participants.Project;
 using MCMS.Base.Auth;
@@ -21,18 +23,29 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
     {
         private readonly IRepository<ProjectEntity> _projectsRepo;
         private readonly IRepository<ParticipantEntity> _participantsRepo;
+        private readonly IRepository<CategoryEntity> _catsRepo;
         private readonly UserManager<User> _userManager;
         private readonly BaseDbContext _dbContext;
+        private List<ProjectEntity> _projectsCache;
+        private List<ParticipantEntity> _participantsCache;
 
         public ImportService(IRepository<ProjectEntity> projectsRepo, IRepository<ParticipantEntity> participantsRepo,
-            UserManager<User> userManager, BaseDbContext dbContext)
+            UserManager<User> userManager, BaseDbContext dbContext, IRepository<CategoryEntity> catsRepo)
         {
             _projectsRepo = projectsRepo;
             _participantsRepo = participantsRepo;
             _userManager = userManager;
             _dbContext = dbContext;
+            _catsRepo = catsRepo;
             _projectsRepo.ChainQueryable(q => q.Include(p => p.Category));
             _participantsRepo.ChainQueryable(q => q.Include(p => p.Project));
+        }
+
+        private async Task PrepareCache()
+        {
+            // _projectsRepo.SkipSaving = _participantsRepo.SkipSaving = true;
+            _projectsCache = await _projectsRepo.GetAll();
+            _participantsCache = await _participantsRepo.GetAll();
         }
 
         public async Task<ImportResultModel> ImportParticipantsCsv(string str, bool fixFuckedEncoding)
@@ -42,32 +55,48 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 str = FuckedEncodingHelper.FixFuckedEncoding(str);
             }
 
+            await PrepareCache();
             using var strReader = new StringReader(str);
             using var csvReader = new CsvReader(strReader, CultureInfo.InvariantCulture);
             var result = new ImportResultModel();
-
+            var cats = await _catsRepo.GetAll();
             while (await csvReader.ReadAsync())
             {
                 result.Rows++;
                 ExpandoObject recordEo = csvReader.GetRecord<dynamic>();
                 var recordDict = recordEo.ToDictionary(kvp => kvp.Key, kvp => kvp.Value?.ToString());
-                result.Add(await ImportRow(recordDict));
+                result.Add(await ImportRow(recordDict, cats));
+            }
+
+            if (result.Added > 0 || result.Updated > 0)
+            {
+                await _dbContext.SaveChangesAsync();
             }
 
             return result;
         }
 
-        private async Task<ImportResultModel> ImportRow(IDictionary<string, string> recordRow)
+        private async Task<ImportResultModel> ImportRow(IDictionary<string, string> recordRow,
+            List<CategoryEntity> cats)
         {
             var result = new ImportResultModel();
-
             var project = ProjectFrom(recordRow);
+            project.Category = cats[new Random().Next(0, cats.Count)];
+
+            if (string.IsNullOrEmpty(project.OldPlatformId?.Trim()))
+            {
+                result.ErrorCount++;
+                result.Errors.Add("Participant without project at Id=" + recordRow["Id"]);
+                return result;
+            }
+
             var participant = ParticipantFrom(recordRow);
 
-            var existingProject = await _projectsRepo.GetOne(p => p.OldPlatformId == project.OldPlatformId);
+            var existingProject = GetProjectCaching(project.OldPlatformId);
             if (existingProject == null)
             {
-                existingProject = await _projectsRepo.Add(project);
+                // existingProject = await _projectsRepo.Add(project);
+                existingProject = await AddProject(project);
                 result.Added++;
             }
             else
@@ -81,7 +110,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 }
             }
 
-            var existingParticipant = await _participantsRepo.GetOne(p => p.OldPlatformId == participant.OldPlatformId);
+            // var existingParticipant = await _participantsRepo.GetOne(p => p.OldPlatformId == participant.OldPlatformId);
+            var existingParticipant = GetParticipantCaching(participant.OldPlatformId);
             if (existingParticipant == null)
             {
                 participant.Project = existingProject;
@@ -100,7 +130,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                                              string.Join(", ", roleAddResult.Errors.Select(e => e.Description)));
                 }
 
-                existingParticipant = await _participantsRepo.Add(participant);
+                // existingParticipant = await _participantsRepo.Add(participant);
+                existingParticipant = await AddParticipant(participant);
                 result.Added++;
             }
             else
@@ -116,7 +147,6 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 {
                     patchDiff.ApplyTo(existingParticipant);
                     result.Updated++;
-                    await _dbContext.SaveChangesAsync();
                 }
             }
 
@@ -164,9 +194,31 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             return participant;
         }
 
+        private async Task<ProjectEntity> AddProject(ProjectEntity project)
+        {
+            _projectsCache.Add(project);
+            return await _projectsRepo.Add(project);
+        }
+
+        private async Task<ParticipantEntity> AddParticipant(ParticipantEntity participant)
+        {
+            _participantsCache.Add(participant);
+            return await _participantsRepo.Add(participant);
+        }
+
+        private ProjectEntity GetProjectCaching(string oldPlatformId)
+        {
+            return _projectsCache.FirstOrDefault(p => p.OldPlatformId == oldPlatformId);
+        }
+
+        private ParticipantEntity GetParticipantCaching(string oldPlatformId)
+        {
+            return _participantsCache.FirstOrDefault(p => p.OldPlatformId == oldPlatformId);
+        }
+
         private void SanitizePatchDocument<T>(JsonPatchDocument<T> doc) where T : class
         {
-            var forbiddenProps = new[] {"/Id", "/Created", "/Updated", "/User"};
+            var forbiddenProps = new[] {"/Id", "/Created", "/Updated", "/User", "/Category"};
             foreach (var op in doc.Operations.ToList())
             {
                 if (forbiddenProps.Any(fprop => op.path.StartsWith(fprop)))
