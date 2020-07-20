@@ -8,6 +8,7 @@ COPY ./MCMS/MCMS.Common/MCMS.Common.csproj /app/src/MCMS/MCMS.Common/MCMS.Common
 COPY ./MCMS/MCMS.Files/MCMS.Files.csproj /app/src/MCMS/MCMS.Files/MCMS.Files.csproj
 COPY ./MCMS/MCMS.Emailing/MCMS.Emailing.csproj /app/src/MCMS/MCMS.Emailing/MCMS.Emailing.csproj
 COPY ./InfoEducatie.Main/InfoEducatie.Main.csproj /app/src/InfoEducatie.Main/InfoEducatie.Main.csproj
+COPY ./InfoEducatie.Contest/InfoEducatie.Contest.csproj /app/src/InfoEducatie.Contest/InfoEducatie.Contest.csproj
 
 WORKDIR /app/src/
 
