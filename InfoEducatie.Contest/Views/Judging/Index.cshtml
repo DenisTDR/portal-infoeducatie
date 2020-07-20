@@ -1,3 +1,4 @@
+@using InfoEducatie.Contest.Judging.JudgingCriteria
 @using MCMS.Base.Extensions
 @model InfoEducatie.Contest.Judging.Judging.JudgingPageModel
 
@@ -8,75 +9,99 @@
 }
 <div class="container-fluid">
     <div class="row">
-        <div class="mt-2"></div>
-        <span class="judging-top-stat">Judge name: <b>@Model.Judge.FullName</b></span>
-        <span class="judging-top-stat">Category: <b>@Model.Category.Name</b></span>
-        <span class="judging-top-stat">Projects: <b>@Model.Projects.Count</b></span>
-        <span class="judging-top-stat">Judging criteria: <b>@Model.JudgingCriteria.Count</b></span>
-        <span class="judging-top-stat">Judging type: <b>@Model.Type</b></span>
-        @* <span class="pl-2">Initial set points: <b>@Model.InitialPoints.Count</b></span> *@
-    </div>
-    <div class="row">
         <div class="col-12">
-            <div class="alert alert-info d-inline-block mt-2">Punctajul dintr-un field se salvează automat după ce acesta își pierde focusul.</div>
+            <div class="mt-2"></div>
+            <span class="judging-top-stat">Judge name: <b>@Model.Judge.FullName</b></span>
+            <span class="judging-top-stat">Category: <b>@Model.Category.Name</b></span>
+            <span class="judging-top-stat">Projects: <b>@Model.Projects.Count</b></span>
+            <span class="judging-top-stat">Judging criteria: <b>@Model.JudgingCriteria.Count</b></span>
+            <span class="judging-top-stat">Judging type: <b>@Model.Type</b></span>
         </div>
     </div>
+    @if (Model.Projects.Count != 0)
+    {
+        <div class="alert alert-info d-inline-block mt-2">Punctajul dintr-un field se salvează automat după ce acesta își pierde focusul.</div>
+    }
 </div>
-<div class="judging-table-wrapper flex-grow-1">
-    <table class="table table-striped table-bordered judging-table">
-        <thead>
-        <tr>
-            <th>Criteria</th>
-            <th>Max Points</th>
-            @foreach (var project in Model.Projects)
-            {
-                <th>
-                    @project.Title
-                    <a href="https://community.infoeducatie.ro/t/xyz/@project.OldPlatformId" target="_blank">
-                        <i class="fas fa-external-link-alt"></i>
-                    </a>
-                </th>
-            }
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var criterion in Model.JudgingCriteria)
-        {
+@if (Model.Projects.Count != 0)
+{
+    <div class="judging-table-wrapper flex-grow-1">
+        <table class="table table-striped table-bordered judging-table">
+            <thead>
             <tr>
-                <td data-content="@Html.Raw(criterion.Description)" data-toggle="popover" class="crit-td">@criterion.Name</td>
-                <td data-content="@Html.Raw(criterion.Description)" data-toggle="popover" class="crit-td">@criterion.MaxPoints</td>
+                <th>Criteria</th>
+                <th>Max Points</th>
                 @foreach (var project in Model.Projects)
                 {
-                    var initial = Model.InitialPoints.FirstOrDefault(p => p.Project.Id == project.Id && p.Criterion.Id == criterion.Id)?.Points.ToString() ?? "";
-                    <td data-project-id="@project.Id" data-criterion-id="@criterion.Id" class="input-cell">
-                        <input type="number" min="0" max="@criterion.MaxPoints" data-value="@initial"
-                               value="@initial"/>
+                    <th>
+                        @project.Title
+                        @if (!string.IsNullOrEmpty(project.OldPlatformId))
+                        {
+                            <a href="https://community.infoeducatie.ro/t/xyz/@project.OldPlatformId" target="_blank">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        }
+                    </th>
+                }
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var criterion in Model.JudgingCriteria)
+            {
+                <tr>
+                    <td data-content="@Html.Raw(criterion.Description)" data-toggle="popover" class="crit-td">@criterion.Name</td>
+                    <td data-content="@Html.Raw(criterion.Description)" data-toggle="popover" class="crit-td">@criterion.MaxPoints</td>
+                    @foreach (var project in Model.Projects)
+                    {
+                        var initial = Model.InitialPoints.FirstOrDefault(p => p.Project.Id == project.Id && p.Criterion.Id == criterion.Id)?.Points.ToString() ?? "";
+                        <td data-project-id="@project.Id" data-criterion-id="@criterion.Id" class="input-cell">
+                            <input type="number" min="0" max="@criterion.MaxPoints" data-value="@initial"
+                                   value="@initial"/>
+                        </td>
+                    }
+                </tr>
+            }
+            </tbody>
+            <tfoot>
+            <tr>
+                <td>
+                    Total
+                </td>
+                <td>
+                    @Model.JudgingCriteria.Sum(jc => jc.MaxPoints)
+                </td>
+                @foreach (var project in Model.Projects)
+                {
+                    <td>
+                        <div data-project-id="@project.Id" class="project-total-points" data-content="@Html.Raw(project.Title)" data-toggle="popover">
+                            @Model.InitialPoints.Where(p => p.Project.Id == project.Id).Sum(jc => jc.Points)
+                        </div>
                     </td>
                 }
             </tr>
-        }
-        </tbody>
-        <tfoot>
-        <tr>
-            <td>
-                Total
-            </td>
-            <td>
-                @Model.JudgingCriteria.Sum(jc => jc.MaxPoints)
-            </td>
-            @foreach (var project in Model.Projects)
-            {
-                <td>
-                    <div data-project-id="@project.Id" class="project-total-points" data-content="@Html.Raw(project.Title)" data-toggle="popover">
-                        @Model.InitialPoints.Where(p => p.Project.Id == project.Id).Sum(jc => jc.Points)
-                    </div>
-                </td>
-            }
-        </tr>
-        </tfoot>
-    </table>
-</div>
-
+            </tfoot>
+        </table>
+    </div>
+}
+@if (Model.Projects.Count == 0)
+{
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-danger d-inline-block mt-5">
+                    @if (Model.Type == JudgingType.Open)
+                    {
+                        <span>Nu există proiecte înscrise la proba <b>Open</b> la categoria <b>@Model.Category.Name</b>.</span>
+                    }
+                    else
+                    {
+                        <span>Nu există proiecte înscrise la categoria <b>@Model.Category.Name</b>.</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
 @using (Html.BeginMStyles())
 {
     <link rel="stylesheet" href="~/judging/assets/judging.css" asp-append-version="true"/>
@@ -84,5 +109,8 @@
 
 @using (Html.BeginMPageScripts())
 {
-    <script src="~/judging/assets/judging.js" defer asp-append-version="true"></script>
+    <script src="~/judging/assets/judging.js" asp-append-version="true"></script>
+    <script>
+        initializeJudgingTable();
+    </script>
 }

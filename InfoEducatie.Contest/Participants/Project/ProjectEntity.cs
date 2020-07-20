@@ -15,6 +15,7 @@ namespace InfoEducatie.Contest.Participants.Project
         public string SourceUrl { get; set; }
         public string Homepage { get; set; }
         public string OldPlatformId { get; set; }
+        public bool IsInOpen { get; set; }
 
         public override string ToString()
         {

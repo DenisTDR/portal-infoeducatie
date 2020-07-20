@@ -46,13 +46,18 @@ namespace InfoEducatie.Contest.Judging.Judging
         public async Task<IActionResult> Index([FromRoute] [Optional] JudgingType type)
         {
             var model = new JudgingPageModel {Judge = await GetJudgeProfileOrThrow(), Type = type};
-
             model.Category = model.Judge.Category;
+
+            if (type == JudgingType.Open)
+            {
+                ProjectsRepo.ChainQueryable(q => q.Where(p => p.IsInOpen));
+            }
+
             model.Projects =
                 Mapper.Map<List<ProjectViewModel>>(await ProjectsRepo.GetAll(p => p.Category == model.Category));
+
             model.JudgingCriteria = Mapper.Map<List<JudgingCriterionViewModel>>(
                 await JudgingCriteriaRepo.GetAll(p => p.Category == model.Category && p.Type == type));
-
             model.InitialPoints = Mapper.Map<List<ProjectJudgingCriterionPointsViewModel>>(
                 await PointsRepo.GetAll(p => p.Judge == model.Judge && p.Criterion.Type == type));
 

@@ -48,7 +48,7 @@ namespace InfoEducatie.Contest.Judging.Results
 
         private async Task<CategoryResultsModel> BuildResultsForCategory(CategoryEntity category)
         {
-            var results = new CategoryResultsModel {CategoryName = category.Name};
+            var results = new CategoryResultsModel {CategoryName = category.Name, CategorySlug = category.Slug};
 
             var projects = await GetProjectsPointsTypeForCategory(category.Id, JudgingType.Project);
             var openProjects = await GetProjectsPointsTypeForCategory(category.Id, JudgingType.Open);

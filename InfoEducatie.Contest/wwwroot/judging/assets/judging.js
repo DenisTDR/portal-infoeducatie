@@ -1,7 +1,7 @@
 var judgingTable = $(".judging-table");
-initializeTable();
 
-function initializeTable() {
+
+function initializeJudgingTable() {
     judgingTable = judgingTable.dataTable({
         paging: false,
         scrollX: true,
@@ -30,35 +30,38 @@ function initializeTable() {
     var height = $(".judging-table-wrapper").height() - 160 + "px";
     $(".judging-table-wrapper .dataTables_scrollBody").css({height: height, 'max-height': height})
     judgingTable.fnDraw();
+    
+    initializeJudgingInputFields();
 }
 
-$('.judging-table .input-cell input').blur(function () {
-    var cell = $(this).closest('td');
-    var _this = $(this);
-    var oldValue = _this.data('value');
+function initializeJudgingInputFields(){
+    $('.judging-table .input-cell input').blur(function () {
+        var cell = $(this).closest('td');
+        var _this = $(this);
+        var oldValue = _this.data('value');
 
-    var value = parseInt(_this.val());
-    var max = parseInt(this.max);
-    var min = parseInt(this.min);
-    window.ceva = _this;
-    if (value && value !== oldValue) {
-        window.ceva = this;
-        if (value > max) {
-            alert('The value should be between ' + min + ' and ' + max + '. Will set ' + max + '.');
-            _this.val(value = max);
+        var value = parseInt(_this.val());
+        var max = parseInt(this.max);
+        var min = parseInt(this.min);
+        window.ceva = _this;
+        if (value && value !== oldValue) {
+            window.ceva = this;
+            if (value > max) {
+                alert('The value should be between ' + min + ' and ' + max + '. Will set ' + max + '.');
+                _this.val(value = max);
+            }
+            if (value < min) {
+                alert('The value should be between ' + min + ' and ' + max + '. Will set ' + min + '.');
+                _this.val(value = min);
+            }
+            _this.data('value', value)
+            _this.val(value);
+            setPointsFor(cell, cell.data('criterionId'), cell.data('projectId'), value);
         }
-        if (value < min) {
-            alert('The value should be between ' + min + ' and ' + max + '. Will set ' + min + '.');
-            _this.val(value = min);
-        }
-        _this.data('value', value)
-        _this.val(value);
-        setPoints(cell, cell.data('criterionId'), cell.data('projectId'), value);
-    }
-});
+    });
+}
 
-function setPoints(cell, criterionId, projectId, points) {
-    // console.log(projectId + ' for ' + criterionId + '  update to ' + points);
+function setPointsFor(cell, criterionId, projectId, points) {
     var data = {criterionId: criterionId, projectId: projectId, points: points}
     var spinnerEl = $("<div class='saving-icon'><i class='fa fa-cog fa-spin fa-2x fa-fw '></i></div>");
     cell.append(spinnerEl);
@@ -72,7 +75,6 @@ function setPoints(cell, criterionId, projectId, points) {
         dataType: "json",
         success: function (data) {
             hideLoadingSpinner(spinnerEl);
-            // console.log(data);
             $(".project-total-points[data-project-id=" + projectId + "]").html(data);
         },
         failure: function (errMsg) {
