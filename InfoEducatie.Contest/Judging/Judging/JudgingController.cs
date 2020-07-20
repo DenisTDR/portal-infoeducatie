@@ -53,6 +53,8 @@ namespace InfoEducatie.Contest.Judging.Judging
                 ProjectsRepo.ChainQueryable(q => q.Where(p => p.IsInOpen));
             }
 
+            ProjectsRepo.ChainQueryable(q => q.OrderBy(p => p.Title));
+
             model.Projects =
                 Mapper.Map<List<ProjectViewModel>>(await ProjectsRepo.GetAll(p => p.Category == model.Category));
 

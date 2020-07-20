@@ -48,13 +48,22 @@ namespace InfoEducatie.Contest.Judging.Results
 
         private async Task<CategoryResultsModel> BuildResultsForCategory(CategoryEntity category)
         {
-            var results = new CategoryResultsModel {CategoryName = category.Name, CategorySlug = category.Slug};
+            var results = new CategoryResultsModel
+            {
+                CategoryName = category.Name,
+                CategorySlug = category.Slug,
+                ProjectJudgeCount =
+                    await JudgesRepo.Queryable.CountAsync(j =>
+                        j.Category == category && j.AvailableFor != JudgingType.Open),
+                OpenJudgeCount = await JudgesRepo.Queryable.CountAsync(j =>
+                    j.Category == category && j.AvailableFor != JudgingType.Project)
+            };
 
             var projects = await GetProjectsPointsTypeForCategory(category.Id, JudgingType.Project);
             var openProjects = await GetProjectsPointsTypeForCategory(category.Id, JudgingType.Open);
             foreach (var proj in projects)
             {
-                proj.OpenPoints = openProjects.FirstOrDefault(op => op.ProjectId == proj.ProjectId)?.ProjectPoints ?? 0;
+                proj.TotalOpenPoints = openProjects.FirstOrDefault(op => op.ProjectId == proj.ProjectId)?.TotalProjectPoints ?? 0;
             }
 
             results.Projects = projects.OrderByDescending(p => p.TotalPoints).ToList();
@@ -74,7 +83,7 @@ namespace InfoEducatie.Contest.Judging.Results
                 into grouped
                 select new ProjectResultsModel
                 {
-                    ProjectPoints = grouped.Sum(p => p.Points),
+                    TotalProjectPoints = grouped.Sum(p => p.Points),
                     ProjectId = grouped.Key.Id,
                     ProjectTitle = grouped.Key.Title
                 }

@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using InfoEducatie.Contest.Categories;
+using InfoEducatie.Contest.Judging.JudgingCriteria;
 using MCMS.Base.Auth;
 using MCMS.Base.Data.Entities;
 
@@ -12,6 +13,7 @@ namespace InfoEducatie.Contest.Judging.Judge
         public User User { get; set; }
         [Required] public CategoryEntity Category { get; set; }
         [NotMapped] public string FullName => User?.FullName ?? "invalid";
+        public JudgingType AvailableFor { get; set; }
 
         public override string ToString()
         {

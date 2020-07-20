@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using InfoEducatie.Contest.Categories;
+using InfoEducatie.Contest.Judging.JudgingCriteria;
 using MCMS.Base.Data.FormModels;
+using MCMS.Base.SwaggerFormly.Formly;
 using MCMS.Base.SwaggerFormly.Formly.Fields;
 
 namespace InfoEducatie.Contest.Judging.Judge
@@ -11,5 +13,7 @@ namespace InfoEducatie.Contest.Judging.Judge
         [FormlySelect(typeof(CategoriesAdminApiController))]
         public CategoryViewModel Category { get; set; }
 
+        [FormlyFieldDefaultValue(JudgingType.Both)]
+        public JudgingType AvailableFor { get; set; }
     }
 }

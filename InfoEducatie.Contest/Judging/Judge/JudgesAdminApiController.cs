@@ -35,10 +35,17 @@ namespace InfoEducatie.Contest.Judging.Judge
             return base.PatchBeforeSaveNew(e);
         }
 
+        public override async Task<ActionResult<List<JudgeViewModel>>> Index()
+        {
+            var all = await Repo.GetAll();
+            var allVm = Map(all).OrderBy(j => j.FullName);
+            return Ok(allVm);
+        }
+
         public override async Task<ActionResult<List<JudgeViewModel>>> IndexLight()
         {
             var all = await Repo.GetAll();
-            var allVm = all.Select(e => new JudgeViewModel {FullName = e.FullName, Id = e.Id});
+            var allVm = all.Select(e => new JudgeViewModel {FullName = e.FullName, Id = e.Id}).OrderBy(j => j.FullName);
             return Ok(allVm);
         }
 
