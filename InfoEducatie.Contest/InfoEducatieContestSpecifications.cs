@@ -7,9 +7,7 @@ using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
 using InfoEducatie.Contest.Judging.Results;
 using InfoEducatie.Contest.Participants.Participant;
 using InfoEducatie.Contest.Participants.Project;
-using MCMS.Admin.Users;
 using MCMS.Base.Builder;
-using MCMS.Controllers;
 using MCMS.Display.Menu;
 using Microsoft.Extensions.DependencyInjection;
 

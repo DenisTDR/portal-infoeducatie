@@ -2,7 +2,6 @@ using System.ComponentModel;
 using InfoEducatie.Contest.Categories;
 using MCMS.Base.Attributes;
 using MCMS.Base.Data.ViewModels;
-using MCMS.Base.Display.ModelDisplay.Attributes;
 using Newtonsoft.Json;
 
 namespace InfoEducatie.Contest.Judging.Judge

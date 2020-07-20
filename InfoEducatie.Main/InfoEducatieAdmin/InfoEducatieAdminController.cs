@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Participants.Participant;
 using InfoEducatie.Contest.Participants.Project;
