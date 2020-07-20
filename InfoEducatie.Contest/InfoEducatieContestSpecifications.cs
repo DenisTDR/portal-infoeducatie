@@ -4,6 +4,7 @@ using InfoEducatie.Contest.Judging.Judge;
 using InfoEducatie.Contest.Judging.Judging;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
+using InfoEducatie.Contest.Judging.Results;
 using InfoEducatie.Contest.Participants.Participant;
 using InfoEducatie.Contest.Participants.Project;
 using MCMS.Admin.Users;
@@ -37,6 +38,9 @@ namespace InfoEducatie.Contest
                         nameof(JudgingCriteriaAdminController.Index)).RequiresRoles("Moderator"),
                     new MenuLink("Judging criteria points", typeof(ProjectJudgingCriterionPointsAdminController),
                         nameof(ProjectJudgingCriterionPointsAdminController.Index)).RequiresRoles("Admin"),
+                    new MenuLink("Results", typeof(ResultsController),
+                            nameof(ResultsController.Index)).WithIconClasses("fas fa-list-ol")
+                        .RequiresRoles("Jury", "Moderator"),
                 }
             }.RequiresRoles("Moderator", "Jury"));
             config.Items.Add(new MenuSection

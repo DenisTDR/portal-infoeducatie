@@ -1,7 +1,42 @@
-@model object
+@model List<InfoEducatie.Contest.Judging.Results.CategoryResultsModel>
 
 @{
     ViewBag.Title = "Results";
 }
 
 <h2 class="mt-3">@ViewBag.Title</h2>
+
+<div class="row">
+    @foreach (var category in Model)
+    {
+        <div class="col-4">
+            <h4>@category.CategoryName</h4>
+            <table>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Project</th>
+                    <th>Punctaj</th>
+                    <th>Open</th>
+                    <th>Total</th>
+                </tr>
+                </thead>
+                <tbody>
+                @{
+                    var i = 0;
+                }
+                @foreach (var project in category.Projects)
+                {
+                    <tr>
+                        <td>@(++i)</td>
+                        <td>@project.ProjectTitle</td>
+                        <td>@project.ProjectPoints</td>
+                        <td>@project.OpenPoints</td>
+                        <td>@project.TotalPoints</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

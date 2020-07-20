@@ -12,8 +12,8 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
         public string Description { get; set; }
         public int MaxPoints { get; set; }
         public int Order { get; set; }
-        [Required]
-        public CategoryEntity Category { get; set; }
+        [Required] public CategoryEntity Category { get; set; }
+        public CriterionType Type { get; set; }
 
         public override string ToString()
         {

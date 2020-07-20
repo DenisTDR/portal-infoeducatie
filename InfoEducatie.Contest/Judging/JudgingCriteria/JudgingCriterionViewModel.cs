@@ -11,12 +11,17 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
     public class JudgingCriterionViewModel : ViewModel
     {
         public string Name { get; set; }
-        public string Description { get; set; }
+        [TableColumn(Hidden = true)] public string Description { get; set; }
         public int MaxPoints { get; set; }
+
+        [DetailsField(Hidden = true)]
+        [TableColumn(Hidden = true)]
         public int Order { get; set; }
 
         [JsonConverter(typeof(ToStringJsonConverter))]
         public CategoryViewModel Category { get; set; }
+
+        public CriterionType Type { get; set; }
 
         public override string ToString()
         {

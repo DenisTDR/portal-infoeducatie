@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using InfoEducatie.Contest.Categories;
 using MCMS.Base.Data.FormModels;
-using MCMS.Base.SwaggerFormly.Formly;
 using MCMS.Base.SwaggerFormly.Formly.Fields;
 
 namespace InfoEducatie.Contest.Judging.Judge
