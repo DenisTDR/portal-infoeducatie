@@ -34,9 +34,9 @@
                     <tr>
                         <td>@(++i)</td>
                         <td>@project.ProjectTitle</td>
-                        <td>@project.GetProjectPoints(category.ProjectJudgeCount)</td>
-                        <td>@project.GetOpenPoints(category.OpenJudgeCount)</td>
-                        <td>@project.GetFinalPoints(category.ProjectJudgeCount, category.OpenJudgeCount)</td>
+                        <td>@project.GetProjectPoints(category.ProjectJudgeCount).ToString("0.00")</td>
+                        <td>@project.GetOpenPoints(category.OpenJudgeCount).ToString("0.00")</td>
+                        <td>@project.GetFinalPoints(category.ProjectJudgeCount, category.OpenJudgeCount).ToString("0.00")</td>
                     </tr>
                 }
                 </tbody>
