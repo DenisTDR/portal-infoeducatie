@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Judging.Judge;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
@@ -40,19 +42,19 @@ namespace InfoEducatie.Contest.Judging.Judging
                 .Include(p => p.Criterion));
         }
 
-        [Route("/[controller]")]
-        public async Task<IActionResult> Index()
+        [Route("/[controller]/{type?}")]
+        public async Task<IActionResult> Index([FromRoute] [Optional] JudgingType type)
         {
-            var model = new JudgingPageModel {Judge = await GetJudgeProfileOrThrow()};
+            var model = new JudgingPageModel {Judge = await GetJudgeProfileOrThrow(), Type = type};
 
             model.Category = model.Judge.Category;
             model.Projects =
                 Mapper.Map<List<ProjectViewModel>>(await ProjectsRepo.GetAll(p => p.Category == model.Category));
             model.JudgingCriteria = Mapper.Map<List<JudgingCriterionViewModel>>(
-                await JudgingCriteriaRepo.GetAll(p => p.Category == model.Category));
+                await JudgingCriteriaRepo.GetAll(p => p.Category == model.Category && p.Type == type));
 
             model.InitialPoints = Mapper.Map<List<ProjectJudgingCriterionPointsViewModel>>(
-                await PointsRepo.GetAll(p => p.Judge == model.Judge));
+                await PointsRepo.GetAll(p => p.Judge == model.Judge && p.Criterion.Type == type));
 
             return View(model);
         }

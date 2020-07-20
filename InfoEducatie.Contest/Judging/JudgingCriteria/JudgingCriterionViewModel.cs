@@ -21,7 +21,7 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
         [JsonConverter(typeof(ToStringJsonConverter))]
         public CategoryViewModel Category { get; set; }
 
-        public CriterionType Type { get; set; }
+        public JudgingType Type { get; set; }
 
         public override string ToString()
         {

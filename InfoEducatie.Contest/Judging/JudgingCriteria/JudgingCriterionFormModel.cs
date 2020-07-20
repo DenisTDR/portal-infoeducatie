@@ -18,7 +18,7 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
         [Required]
         public CategoryViewModel Category { get; set; }
 
-        [FormlyFieldDefaultValue(CriterionType.Project)]
-        public CriterionType Type { get; set; }
+        [FormlyFieldDefaultValue(JudgingType.Project)]
+        public JudgingType Type { get; set; }
     }
 }

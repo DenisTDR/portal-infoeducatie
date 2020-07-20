@@ -15,5 +15,7 @@ namespace InfoEducatie.Contest.Judging.Judging
         public List<ProjectViewModel> Projects { get; set; }
         public List<JudgingCriterionViewModel> JudgingCriteria { get; set; }
         public List<ProjectJudgingCriterionPointsViewModel> InitialPoints { get; set; }
+        
+        public JudgingType Type { get; set; }
     }
 }

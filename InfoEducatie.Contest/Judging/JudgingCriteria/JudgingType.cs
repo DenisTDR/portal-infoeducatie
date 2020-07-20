@@ -1,6 +1,6 @@
 namespace InfoEducatie.Contest.Judging.JudgingCriteria
 {
-    public enum CriterionType
+    public enum JudgingType
     {
         Project,
         Open

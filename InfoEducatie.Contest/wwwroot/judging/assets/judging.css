@@ -45,3 +45,10 @@
 .judging-table-wrapper {
     overflow: hidden;
 }
+
+.judging-top-stat {
+    padding: 0 5px;
+}
+.judging-top-stat:not(:last-child) {
+    border-right: 2px solid gray;
+}

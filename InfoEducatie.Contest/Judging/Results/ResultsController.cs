@@ -50,8 +50,8 @@ namespace InfoEducatie.Contest.Judging.Results
         {
             var results = new CategoryResultsModel {CategoryName = category.Name};
 
-            var projects = await GetProjectsPointsTypeForCategory(category.Id, CriterionType.Project);
-            var openProjects = await GetProjectsPointsTypeForCategory(category.Id, CriterionType.Open);
+            var projects = await GetProjectsPointsTypeForCategory(category.Id, JudgingType.Project);
+            var openProjects = await GetProjectsPointsTypeForCategory(category.Id, JudgingType.Open);
             foreach (var proj in projects)
             {
                 proj.OpenPoints = openProjects.FirstOrDefault(op => op.ProjectId == proj.ProjectId)?.ProjectPoints ?? 0;
@@ -63,7 +63,7 @@ namespace InfoEducatie.Contest.Judging.Results
         }
 
         private async Task<List<ProjectResultsModel>> GetProjectsPointsTypeForCategory(string categoryId,
-            CriterionType type)
+            JudgingType type)
         {
             return await (
                 from project in ProjectsRepo.DbSet.Where(p => p.Category.Id == categoryId)

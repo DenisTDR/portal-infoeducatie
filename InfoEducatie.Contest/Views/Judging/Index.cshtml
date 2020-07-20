@@ -9,10 +9,11 @@
 <div class="container-fluid">
     <div class="row">
         <div class="mt-2"></div>
-        <span>Judge name: <b>@Model.Judge.FullName</b> | </span>
-        <span class="pl-2">Category: <b>@Model.Category.Name</b> | </span>
-        <span class="pl-2">Projects: <b>@Model.Projects.Count</b> | </span>
-        <span class="pl-2">Judging criteria: <b>@Model.JudgingCriteria.Count</b></span>
+        <span class="judging-top-stat">Judge name: <b>@Model.Judge.FullName</b></span>
+        <span class="judging-top-stat">Category: <b>@Model.Category.Name</b></span>
+        <span class="judging-top-stat">Projects: <b>@Model.Projects.Count</b></span>
+        <span class="judging-top-stat">Judging criteria: <b>@Model.JudgingCriteria.Count</b></span>
+        <span class="judging-top-stat">Judging type: <b>@Model.Type</b></span>
         @* <span class="pl-2">Initial set points: <b>@Model.InitialPoints.Count</b></span> *@
     </div>
     <div class="row">
@@ -78,10 +79,10 @@
 
 @using (Html.BeginMStyles())
 {
-    <link rel="stylesheet" href="~/judging/judging.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/judging/assets/judging.css" asp-append-version="true"/>
 }
 
 @using (Html.BeginMPageScripts())
 {
-    <script src="~/judging/judging.js" defer asp-append-version="true"></script>
+    <script src="~/judging/assets/judging.js" defer asp-append-version="true"></script>
 }
