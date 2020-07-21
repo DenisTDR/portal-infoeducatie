@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints
 {
     [DisplayName("Project Judging Criterion Points")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "God")]
     public class ProjectJudgingCriterionPointsAdminController : GenericModalAdminUiController<
         ProjectJudgingCriterionPointsEntity, ProjectJudgingCriterionPointsFormModel,
         ProjectJudgingCriterionPointsViewModel, ProjectJudgingCriterionPointsAdminApiController>

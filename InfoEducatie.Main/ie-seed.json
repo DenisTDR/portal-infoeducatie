@@ -3,7 +3,8 @@
     "Admin",
     "Moderator",
     "Jury",
-    "Participant"
+    "Participant",
+    "God"
   ],
   "languages": [
     {

@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "God")]
     public class ProjectJudgingCriterionPointsAdminApiController : GenericAdminApiController<
         ProjectJudgingCriterionPointsEntity, ProjectJudgingCriterionPointsFormModel,
         ProjectJudgingCriterionPointsViewModel>

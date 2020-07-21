@@ -35,7 +35,7 @@ namespace InfoEducatie.Contest
                     new MenuLink("Judging criteria", typeof(JudgingCriteriaAdminController),
                         nameof(JudgingCriteriaAdminController.Index)).RequiresRoles("Moderator"),
                     new MenuLink("Judging criteria points", typeof(ProjectJudgingCriterionPointsAdminController),
-                        nameof(ProjectJudgingCriterionPointsAdminController.Index)).RequiresRoles("Admin"),
+                        nameof(ProjectJudgingCriterionPointsAdminController.Index)).RequiresRoles("God"),
                     new MenuLink("Results", typeof(ResultsController),
                             nameof(ResultsController.Index)).WithIconClasses("fas fa-list-ol")
                         .RequiresRoles("Jury", "Moderator"),
