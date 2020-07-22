@@ -22,6 +22,7 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
         [FormlySelect(typeof(JudgingCriteriaSectionsAdminApiController),
             nameof(JudgingCriteriaSectionsAdminApiController.IndexLight))]
         [Required]
+        [DisablePatchSubProperties]
         public JudgingCriteriaSectionViewModel Section { get; set; }
 
         [FormlyFieldDefaultValue(JudgingType.Project)]

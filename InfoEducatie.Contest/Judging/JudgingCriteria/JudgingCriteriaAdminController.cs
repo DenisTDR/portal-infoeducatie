@@ -14,7 +14,9 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);
-            Repo.ChainQueryable(q => q.Include(jc => jc.Category));
+            Repo.ChainQueryable(q => q
+                .Include(jc => jc.Category)
+                .Include(jc => jc.Section));
         }
     }
 }

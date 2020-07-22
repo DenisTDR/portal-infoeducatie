@@ -23,7 +23,7 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection
                 return Name;
             }
 
-            return Category.Name + ": " + Name;
+            return $"+{Category.Name}+: {Name}";
         }
     }
 }
