@@ -151,14 +151,21 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 var existingParticipant = GetParticipantCaching(participant.OldPlatformId);
                 if (existingParticipant == null)
                 {
-                    await AddUserAsync(participant.User);
-                    await AddParticipant(participant);
+                    if (!debug)
+                    {
+                        await AddUserAsync(participant.User);
+                        await AddParticipant(participant);
+                    }
+
                     participantsResult.Added++;
                     foreach (var projectId in projectIds)
                     {
                         var project = GetProjectCaching(projectId);
-                        await AddProjectParticipant(new ProjectParticipantEntity
-                            {Participant = participant, Project = project});
+                        if (!debug)
+                        {
+                            await AddProjectParticipant(new ProjectParticipantEntity
+                                {Participant = participant, Project = project});
+                        }
                     }
                 }
                 else
