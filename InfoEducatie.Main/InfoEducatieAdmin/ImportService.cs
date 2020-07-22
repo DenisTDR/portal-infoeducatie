@@ -189,35 +189,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             var response = JsonConvert.DeserializeObject<List<OldPlatformApiResponseModel>>(responseStr);
             return response;
         }
-
-        public async Task<ImportResultModel> ImportParticipantsCsv(string str, bool fixFuckedEncoding)
-        {
-            if (fixFuckedEncoding)
-            {
-                str = FuckedEncodingHelper.FixFuckedEncoding(str);
-            }
-
-            await PrepareCache();
-            using var strReader = new StringReader(str);
-            using var csvReader = new CsvReader(strReader, CultureInfo.InvariantCulture);
-            var result = new ImportResultModel();
-            var cats = await _catsRepo.GetAll();
-            while (await csvReader.ReadAsync())
-            {
-                result.Rows++;
-                ExpandoObject recordEo = csvReader.GetRecord<dynamic>();
-                var recordDict = recordEo.ToDictionary(kvp => kvp.Key, kvp => kvp.Value?.ToString());
-                result.Add(await ImportRow(recordDict, cats));
-            }
-
-            if (result.Added > 0 || result.Updated > 0)
-            {
-                await _dbContext.SaveChangesAsync();
-            }
-
-            return result;
-        }
-
+        
         private async Task<User> AddUserAsync(User user)
         {
             var userAddResult = await _userManager.CreateAsync(user);
@@ -236,83 +208,6 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             }
 
             return user;
-        }
-
-        private async Task<ImportResultModel> ImportRow(IDictionary<string, string> recordRow,
-            List<CategoryEntity> cats)
-        {
-            var result = new ImportResultModel();
-            // var project = ProjectFrom(recordRow);
-            // project.Category = cats[new Random().Next(0, cats.Count)];
-            //
-            // if (string.IsNullOrEmpty(project.OldPlatformId?.Trim()))
-            // {
-            //     result.ErrorCount++;
-            //     result.Errors.Add("Participant without project at Id=" + recordRow["Id"]);
-            //     return result;
-            // }
-            //
-            // var participant = ParticipantFrom(recordRow);
-            //
-            // var existingProject = GetProjectCaching(project.OldPlatformId);
-            // if (existingProject == null)
-            // {
-            //     // existingProject = await _projectsRepo.Add(project);
-            //     existingProject = await AddProject(project);
-            //     result.Added++;
-            // }
-            // else
-            // {
-            //     var patchDiff = JsonPatchUtils.CreatePatch(existingProject, project);
-            //     SanitizePatchDocument(patchDiff);
-            //     if (!patchDiff.IsEmpty())
-            //     {
-            //         patchDiff.ApplyTo(existingProject);
-            //         result.Updated++;
-            //     }
-            // }
-            //
-            // // var existingParticipant = await _participantsRepo.GetOne(p => p.OldPlatformId == participant.OldPlatformId);
-            // var existingParticipant = GetParticipantCaching(participant.OldPlatformId);
-            // if (existingParticipant == null)
-            // {
-            //     // participant.Project = existingProject;
-            //     var userAddResult = await _userManager.CreateAsync(participant.User);
-            //     if (!userAddResult.Succeeded)
-            //     {
-            //         throw new KnownException("Couldn't create user for: " + participant.User.Email + " because " +
-            //                                  string.Join(", ", userAddResult.Errors.Select(e => e.Description)));
-            //     }
-            //
-            //     var roleAddResult = await _userManager.AddToRoleAsync(participant.User, "Participant");
-            //     if (!roleAddResult.Succeeded)
-            //     {
-            //         throw new KnownException("Couldn't add user in participant role: " + participant.User.Email +
-            //                                  " because " +
-            //                                  string.Join(", ", roleAddResult.Errors.Select(e => e.Description)));
-            //     }
-            //
-            //     // existingParticipant = await _participantsRepo.Add(participant);
-            //     existingParticipant = await AddParticipant(participant);
-            //     result.Added++;
-            // }
-            // else
-            // {
-            //     // if (participant.Project != existingProject)
-            //     // {
-            //     // participant.Project = existingProject;
-            //     // }
-            //
-            //     var patchDiff = JsonPatchUtils.CreatePatch(existingParticipant, participant);
-            //     SanitizePatchDocument(patchDiff);
-            //     if (!patchDiff.IsEmpty())
-            //     {
-            //         patchDiff.ApplyTo(existingParticipant);
-            //         result.Updated++;
-            //     }
-            // }
-
-            return result;
         }
 
         private ProjectEntity ProjectFrom(IDictionary<string, string> record, OldPlatformApiResponseModel opApiModel,
