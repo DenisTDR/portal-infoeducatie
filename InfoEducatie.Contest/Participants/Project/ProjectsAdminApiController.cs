@@ -17,7 +17,9 @@ namespace InfoEducatie.Contest.Participants.Project
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);
-            Repo.ChainQueryable(q => q.Include(p => p.Category));
+            Repo.ChainQueryable(q => q
+                .Include(p => p.Category)
+                .Include(p => p.ProjectParticipants).ThenInclude(pp => pp.Participant).ThenInclude(p => p.User));
         }
 
         protected override Task PatchBeforeSaveNew(ProjectEntity e)

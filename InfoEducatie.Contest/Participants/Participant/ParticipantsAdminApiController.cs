@@ -1,10 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using InfoEducatie.Contest.Participants.Project;
 using MCMS.Controllers.Api;
-using MCMS.Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace InfoEducatie.Contest.Participants.Participant
 {
@@ -15,15 +15,20 @@ namespace InfoEducatie.Contest.Participants.Participant
         {
             base.OnActionExecuting(context);
             Repo.ChainQueryable(q => q
-                .Include(p => p.Project)
                 .Include(p => p.User)
+                .Include(p => p.ProjectParticipants).ThenInclude(pp => pp.Project)
             );
         }
 
-        protected override Task PatchBeforeSaveNew(ParticipantEntity e)
+        public override async Task<ActionResult<List<ParticipantViewModel>>> IndexLight()
         {
-            ServiceProvider.GetService<IRepository<ProjectEntity>>().Attach(e.Project);
-            return base.PatchBeforeSaveNew(e);
+            Repo.ChainQueryable(q => q
+                .Include(p => p.User)
+                .Select(e => new ParticipantEntity
+                    {Id = e.Id, User = e.User}));
+            var all = await Repo.GetAll();
+            var allVm = Mapper.Map<List<ParticipantViewModel>>(all);
+            return Ok(allVm);
         }
     }
 }

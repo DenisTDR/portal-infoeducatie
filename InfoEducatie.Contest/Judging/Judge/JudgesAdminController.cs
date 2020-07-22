@@ -23,7 +23,7 @@ namespace InfoEducatie.Contest.Judging.Judge
 
         public override IActionResult Create()
         {
-            FormParamsService.SetSchemaName(nameof(JudgeCreateNewFormModel));
+            FormParamsService.SchemaName = nameof(JudgeCreateNewFormModel);
             return base.Create();
         }
     }

@@ -3,15 +3,17 @@ using System;
 using InfoEducatie.Main.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace InfoEducatie.Main.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200721153809_participant_project")]
+    partial class participant_project
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -190,6 +192,9 @@ namespace InfoEducatie.Main.Data.Migrations
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("text");
 
+                    b.Property<string>("ProjectId")
+                        .HasColumnType("text");
+
                     b.Property<string>("School")
                         .HasColumnType("text");
 
@@ -210,6 +215,8 @@ namespace InfoEducatie.Main.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProjectId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Participants");
@@ -228,9 +235,6 @@ namespace InfoEducatie.Main.Data.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DiscourseUrl")
                         .HasColumnType("text");
 
                     b.Property<string>("Homepage")
@@ -771,6 +775,10 @@ namespace InfoEducatie.Main.Data.Migrations
 
             modelBuilder.Entity("InfoEducatie.Contest.Participants.Participant.ParticipantEntity", b =>
                 {
+                    b.HasOne("InfoEducatie.Contest.Participants.Project.ProjectEntity", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId");
+
                     b.HasOne("MCMS.Base.Auth.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");

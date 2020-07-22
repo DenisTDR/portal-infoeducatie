@@ -10,17 +10,19 @@ namespace InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints
 {
     public class ProjectJudgingCriterionPointsFormModel : IFormModel
     {
-        [FormlySelect(typeof(JudgesAdminApiController), "IndexLight", labelProp: "fullName")]
+        [FormlySelect(typeof(JudgesAdminApiController), nameof(JudgesAdminApiController.IndexLight),
+            labelProp: "fullName")]
         [Required]
         [DisablePatchSubProperties]
         public JudgeViewModel Judge { get; set; }
 
-        [FormlySelect(typeof(JudgingCriteriaAdminApiController), "IndexLight")]
+        [FormlySelect(typeof(JudgingCriteriaAdminApiController), nameof(JudgingCriteriaAdminApiController.IndexLight))]
         [Required]
         [DisablePatchSubProperties]
         public JudgingCriterionViewModel Criterion { get; set; }
 
-        [FormlySelect(typeof(ProjectsAdminApiController), "IndexLight", labelProp: "title")]
+        [FormlySelect(typeof(ProjectsAdminApiController), nameof(ProjectsAdminApiController.IndexLight),
+            labelProp: "title")]
         [Required]
         [DisablePatchSubProperties]
         public ProjectViewModel Project { get; set; }

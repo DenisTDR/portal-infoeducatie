@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using InfoEducatie.Contest.Categories;
+using InfoEducatie.Contest.Participants.Participant;
 using MCMS.Base.Attributes;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Display.ModelDisplay.Attributes;
@@ -22,7 +25,18 @@ namespace InfoEducatie.Contest.Participants.Project
         [TableColumn] public string SourceUrl { get; set; }
         public string Homepage { get; set; }
         public string OldPlatformId { get; set; }
+        public string DiscourseUrl { get; set; }
         [TableColumn] public bool IsInOpen { get; set; }
+
+        [DetailsField(Hidden = true)]
+        [JsonIgnore]
+        public List<ParticipantViewModel> Participants { get; set; }
+
+        [TableColumn]
+        [DisplayName("Participants")]
+        public string ProjectsNames => Participants?.Count is { } nr && nr > 0
+            ? string.Join(", ", Participants.Select(p => p.FullName))
+            : "--";
 
         public override string ToString()
         {

@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using InfoEducatie.Contest.Participants.Project;
 using MCMS.Base.Attributes;
 using MCMS.Base.Data.ViewModels;
@@ -25,8 +27,15 @@ namespace InfoEducatie.Contest.Participants.Participant
         public string MentoringTeacher { get; set; }
         public string OldPlatformId { get; set; }
 
-        [JsonConverter(typeof(ToStringJsonConverter))]
-        public ProjectViewModel Project { get; set; }
+        [DetailsField(Hidden = true)]
+        [JsonIgnore]
+        public List<ProjectViewModel> Projects { get; set; }
+
+        [TableColumn]
+        [DisplayName("Projects")]
+        public string ProjectsNames => Projects?.Count is { } nr && nr > 0
+            ? string.Join(", ", Projects.Select(p => p.Title))
+            : "--";
 
         public override string ToString()
         {

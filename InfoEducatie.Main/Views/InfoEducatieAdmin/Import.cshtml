@@ -1,13 +1,17 @@
 @using InfoEducatie.Main.InfoEducatieAdmin
 @using MCMS.Base.Extensions
+@using MCMS.Base.Helpers
 @using MCMS.Base.Repositories
+@using MCMS.SwaggerFormly.FormParamsHelpers
 @inject ITranslationsRepository TransRepo
 
-@inject ImportFormParamsService ImportFormParamsService;
+@* @inject ImportFormParamsService ImportFormParamsService; *@
 @{
     ViewBag.Title = "Import";
 
-    var formParams = ImportFormParamsService.ForCreate();
+    var formParamsService = new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(InfoEducatieAdminApiController)), nameof(ImportFormModel)) {SubmitActionName = nameof(InfoEducatieAdminApiController.Import)};
+
+    var formParams = formParamsService.ForCreate();
     formParams.Options = new {hideSubmitButton = true};
     var returnUrl = Context.Request.Query.ContainsKey("returnUrl") ? (string) Context.Request.Query["returnUrl"] : null;
 }
@@ -19,13 +23,18 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-12">
+        <div class="col-12 col-sm-10 col-md-8">
             @* <div class="col-12"> *@
             @await Html.BlindPartialAsync("Formly/FormlyForm", formParams)
         </div>
     </div>
     <div class="row">
-        <div class="col-12 justify-content-between d-flex">
+        <div class="col-12">
+            <pre class="results-container"></pre>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-10 col-md-8 justify-content-between d-flex">
             <button type="button" class="btn btn-secondary" onclick="callback@(formParams.FormInstanceId)()">@await TransRepo.GetValueOrSlug("cancel")</button>
             <button type="button" class="btn btn-primary" id="@formParams.FormInstanceId-submit-button">Import</button>
         </div>
@@ -36,8 +45,8 @@
 {
     <script>
        function callback@(formParams.FormInstanceId)(sender, params) {
-           var responseStr = JSON.stringify(params);
-           alert('Done!\n'+responseStr);
+           console.log(params);
+           $(".results-container").html(JSON.stringify(params, null, "  "))
            // var returnUrl = '@returnUrl';
            // if(returnUrl) {
            //     window.location.href = returnUrl;

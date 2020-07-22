@@ -7,6 +7,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         public int Rows { get; set; }
         public int Added { get; set; }
         public int Updated { get; set; }
+        public int NotTouched { get; set; }
         public int ErrorCount { get; set; }
         public List<string> Errors { get; } = new List<string>();
 

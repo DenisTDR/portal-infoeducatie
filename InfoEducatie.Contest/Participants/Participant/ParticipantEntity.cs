@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using InfoEducatie.Contest.Participants.Project;
+using InfoEducatie.Contest.Participants.ProjectParticipant;
 using MCMS.Base.Auth;
 using MCMS.Base.Data.Entities;
 
@@ -43,7 +46,10 @@ namespace InfoEducatie.Contest.Participants.Participant
         public string SchoolCountry { get; set; }
         public string MentoringTeacher { get; set; }
         public string OldPlatformId { get; set; }
-        public ProjectEntity Project { get; set; }
+
+        public List<ProjectParticipantEntity> ProjectParticipants { get; set; }
+
+        public List<ProjectEntity> Projects => ProjectParticipants?.Select(p => p.Project).ToList();
 
         public override string ToString()
         {

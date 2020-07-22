@@ -13,7 +13,7 @@ namespace InfoEducatie.Contest.Participants.Participant
         public override Task<IActionResult> Details(string id)
         {
             Repo.ChainQueryable(q => q
-                .Include(p => p.Project)
+                // .Include(p => p.Project)
                 .Include(p => p.User)
             );
             return base.Details(id);

@@ -37,7 +37,7 @@
                         @project.Title
                         @if (!string.IsNullOrEmpty(project.OldPlatformId))
                         {
-                            <a href="https://community.infoeducatie.ro/t/xyz/@project.OldPlatformId" target="_blank">
+                            <a href="@project.DiscourseUrl" target="_blank">
                                 <i class="fas fa-external-link-alt"></i>
                             </a>
                         }

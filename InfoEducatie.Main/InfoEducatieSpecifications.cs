@@ -23,11 +23,10 @@ namespace InfoEducatie.Main
             services.AddOptions<MenuConfig>().Configure(ConfigureMenu);
             services.AddOptions<SiteConfig>().Configure(c =>
             {
-                c.SiteName = "InfoEducație";
+                c.SiteName = "Portal InfoEducație";
                 c.SiteCopyright = "Copyright &copy; TDR 2020";
             });
 
-            services.AddScoped<ImportFormParamsService>();
             services.AddScoped<ImportService>();
         }
 
