@@ -11,7 +11,7 @@ function initializeJudgingTable() {
         },
         fixedColumns: {leftColumns: 2},
         columnDefs: [
-            // { width: 'auto', targets: 0 },
+            {width: 250, targets: 0},
             {width: 20, targets: 1},
             {width: 150, targets: '_all'},
         ],
@@ -30,21 +30,26 @@ function initializeJudgingTable() {
     var height = $(".judging-table-wrapper").height() - 160 + "px";
     $(".judging-table-wrapper .dataTables_scrollBody").css({height: height, 'max-height': height})
     judgingTable.fnDraw();
-    
+
     initializeJudgingInputFields();
 }
 
-function initializeJudgingInputFields(){
+function initializeJudgingInputFields() {
     $('.judging-table .input-cell input').blur(function () {
         var cell = $(this).closest('td');
         var _this = $(this);
         var oldValue = _this.data('value');
 
         var value = parseInt(_this.val());
+
+        if (!_this.val() || isNaN(value)) {
+            return;
+        }
+
         var max = parseInt(this.max);
         var min = parseInt(this.min);
         window.ceva = _this;
-        if (value && value !== oldValue) {
+        if (value !== oldValue) {
             window.ceva = this;
             if (value > max) {
                 alert('The value should be between ' + min + ' and ' + max + '. Will set ' + max + '.');
@@ -75,13 +80,35 @@ function setPointsFor(cell, criterionId, projectId, points) {
         dataType: "json",
         success: function (data) {
             hideLoadingSpinner(spinnerEl);
-            $(".project-total-points[data-project-id=" + projectId + "]").html(data);
+            updateContentWithEffect($(".project-total-points[data-project-id=" + projectId + "]"), data.total);
+            // $(".project-total-points[data-project-id=" + projectId + "]").html(data.total);
+            // console.log(data.sections);
+            if (data.sections && data.sections.length) {
+                for (var i = 0; i < data.sections.length; i++) {
+                    var section = data.sections[i];
+                    // console.log(section)
+                    updateContentWithEffect($(".project-section-points[data-project-id=" + projectId + "][data-section-id=" + section.id + "]>div"), section.points);
+                    // $(".project-section-points[data-project-id=" + projectId + "][data-section-id=" + section.id + "]").html(section.points);
+                }
+            }
         },
         failure: function (errMsg) {
             hideLoadingSpinner(spinnerEl);
             alert('error');
             alert(errMsg);
         }
+    });
+}
+
+function updateContentWithEffect(element, newValue) {
+    var oldValue = element.html().trim();
+    if (oldValue === newValue.toString()) {
+        return;
+    }
+    window.tdr = element;
+    element.slideUp(500, function () {
+        element.html(newValue);
+        element.slideDown(500);
     });
 }
 

@@ -13,5 +13,6 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection
 
         public string Name { get; set; }
         [FormlyCkEditor] public string Description { get; set; }
+        public JudgingType Type { get; set; }
     }
 }

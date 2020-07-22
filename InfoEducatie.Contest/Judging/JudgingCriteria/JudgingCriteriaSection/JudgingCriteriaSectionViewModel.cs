@@ -1,8 +1,11 @@
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using InfoEducatie.Contest.Categories;
 using MCMS.Base.Attributes;
 using MCMS.Base.Data.ViewModels;
+using MCMS.Base.Display.ModelDisplay.Attributes;
 using Newtonsoft.Json;
 
 namespace InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection
@@ -13,8 +16,20 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection
         [JsonConverter(typeof(ToStringJsonConverter))]
         public CategoryViewModel Category { get; set; }
 
+        public JudgingType Type { get; set; }
+
         public string Name { get; set; }
-        public string Description { get; set; }
+        [TableColumn(Hidden = true)] public string Description { get; set; }
+
+        [TableColumn(Hidden = true)]
+        [DetailsField(Hidden = true)]
+        [JsonIgnore]
+        public List<JudgingCriterionViewModel> Criteria { get; set; }
+
+        [JsonIgnore]
+        [TableColumn(Hidden = true)]
+        [DetailsField(Hidden = true)]
+        public int MaxPoints => Criteria.Sum(c => c.MaxPoints);
 
         public override string ToString()
         {
@@ -23,7 +38,7 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection
                 return Name;
             }
 
-            return $"+{Category.Name}+: {Name}";
+            return $"{Category.Name}: {Name}";
         }
     }
 }

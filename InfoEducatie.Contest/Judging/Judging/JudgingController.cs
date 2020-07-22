@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Judging.Judge;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
+using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
 using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
 using InfoEducatie.Contest.Participants.Project;
 using MCMS.Base.Attributes;
@@ -32,14 +33,20 @@ namespace InfoEducatie.Contest.Judging.Judging
         protected IRepository<JudgingCriterionEntity> JudgingCriteriaRepo =>
             ServiceProvider.GetService<IRepository<JudgingCriterionEntity>>();
 
+        protected IRepository<JudgingCriteriaSectionEntity> SectionsRepo =>
+            ServiceProvider.GetService<IRepository<JudgingCriteriaSectionEntity>>();
+
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);
             JudgesRepo.ChainQueryable(q => q.Include(j => j.Category).Include(j => j.User));
-            JudgingCriteriaRepo.ChainQueryable(q => q.OrderBy(c => c.Name));
+            // JudgingCriteriaRepo.ChainQueryable(q => q.OrderBy(c => c.Name));
             PointsRepo.ChainQueryable(q => q
                 .Include(p => p.Project)
                 .Include(p => p.Criterion));
+            SectionsRepo.ChainQueryable(q => q
+                .Include(s => s.Criteria)
+                .OrderBy(s => s.Name));
         }
 
         [Route("/[controller]/{type?}")]
@@ -61,6 +68,15 @@ namespace InfoEducatie.Contest.Judging.Judging
             model.JudgingCriteria = Mapper.Map<List<JudgingCriterionViewModel>>(
                 await JudgingCriteriaRepo.GetAll(p =>
                     p.Category == model.Category && p.Type == type));
+
+            var sections = await SectionsRepo.GetAll(s => s.Category == model.Category && s.Type == type);
+            foreach (var section in sections)
+            {
+                section.Criteria = section.Criteria.OrderBy(c => c.Name).ToList();
+            }
+
+            model.JudgingSections = Mapper.Map<List<JudgingCriteriaSectionViewModel>>(sections);
+
             model.InitialPoints = Mapper.Map<List<ProjectJudgingCriterionPointsViewModel>>(
                 await PointsRepo.GetAll(p =>
                     p.Judge == model.Judge && p.Criterion.Type == type));
@@ -98,7 +114,18 @@ namespace InfoEducatie.Contest.Judging.Judging
 
             var projectPoints = await PointsRepo.DbSet.Where(p => p.Judge == judge && p.Project.Id == model.ProjectId)
                 .SumAsync(p => p.Points);
-            return Ok(projectPoints);
+
+            var sectionsPoints = await PointsRepo.DbSet
+                .Where(p => p.Judge == judge && p.Project.Id == model.ProjectId)
+                .GroupBy(p => p.Criterion.Section.Id)
+                .Select(g => new {Id = g.Key, Points = g.Sum(p => p.Points)}).ToListAsync();
+
+            var dict = new Dictionary<string, object>
+            {
+                ["total"] = projectPoints.ToString(),
+                ["sections"] = sectionsPoints,
+            };
+            return Ok(dict);
         }
 
 

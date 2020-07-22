@@ -18,7 +18,10 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection
         {
             base.OnActionExecuting(context);
             Repo.ChainQueryable(q => q
-                .Include(p => p.Category));
+                .Include(p => p.Category)
+                .OrderBy(jc => jc.Category.Name)
+                .ThenBy(jc => jc.Type).ThenBy(jc => jc.Name)
+            );
         }
 
         protected override Task PatchBeforeSaveNew(JudgingCriteriaSectionEntity e)

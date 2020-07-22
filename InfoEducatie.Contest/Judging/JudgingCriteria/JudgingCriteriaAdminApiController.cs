@@ -24,6 +24,8 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
             Repo.ChainQueryable(q => q
                 .Include(jc => jc.Category)
                 .Include(jc => jc.Section)
+                .OrderBy(jc => jc.Category.Name).ThenBy(jc => jc.Section.Type).ThenBy(jc => jc.Section.Name)
+                .ThenBy(jc => jc.Name)
             );
         }
 

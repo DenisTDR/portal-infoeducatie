@@ -1,0 +1,20 @@
+@using MCMS.Base.Helpers
+@using Newtonsoft.Json
+@model System.Collections.Generic.List<string>
+
+@{
+    ViewBag.Title = "Check criteria integrity";
+}
+<partial name="_Menu"/>
+
+<h2 class="mt-4">@ViewBag.Title</h2>
+
+@if (Model.Count == 0)
+{
+    <div class="alert alert-success">Valid!</div>
+}
+else
+{
+    <div class="alert alert-danger">Invalid!</div>
+    <pre>@JsonConvert.SerializeObject(Model, Utils.DefaultJsonSerializerSettings(true))</pre>
+}

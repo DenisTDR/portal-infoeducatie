@@ -52,3 +52,7 @@
 .judging-top-stat:not(:last-child) {
     border-right: 2px solid gray;
 }
+
+.section-title-row td{
+    background: #B7B7B7;
+}

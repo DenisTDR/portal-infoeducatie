@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using InfoEducatie.Contest.Categories;
@@ -11,6 +12,9 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection
         [Required] public CategoryEntity Category { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public JudgingType Type { get; set; }
+        
+        public List<JudgingCriterionEntity> Criteria { get; set; }
 
         public override string ToString()
         {
