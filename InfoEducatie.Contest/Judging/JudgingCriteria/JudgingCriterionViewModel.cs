@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using InfoEducatie.Contest.Categories;
+using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
 using MCMS.Base.Attributes;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Display.ModelDisplay.Attributes;
@@ -20,6 +21,9 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
 
         [JsonConverter(typeof(ToStringJsonConverter))]
         public CategoryViewModel Category { get; set; }
+
+        [JsonConverter(typeof(ToStringJsonConverter))]
+        public JudgingCriteriaSectionViewModel Section { get; set; }
 
         public JudgingType Type { get; set; }
 

@@ -54,16 +54,18 @@ namespace InfoEducatie.Contest.Judging.Results
                 CategorySlug = category.Slug,
                 ProjectJudgeCount =
                     await JudgesRepo.Queryable.CountAsync(j =>
-                        j.Category == category && j.AvailableFor != JudgingType.Open),
+                        j.Category == category &&
+                        (j.AvailableFor == JudgeType.Project || j.AvailableFor == JudgeType.Both)),
                 OpenJudgeCount = await JudgesRepo.Queryable.CountAsync(j =>
-                    j.Category == category && j.AvailableFor != JudgingType.Project)
+                    j.Category == category && (j.AvailableFor == JudgeType.Open || j.AvailableFor == JudgeType.Both))
             };
 
             var projects = await GetProjectsPointsTypeForCategory(category.Id, JudgingType.Project);
             var openProjects = await GetProjectsPointsTypeForCategory(category.Id, JudgingType.Open);
             foreach (var proj in projects)
             {
-                proj.TotalOpenPoints = openProjects.FirstOrDefault(op => op.ProjectId == proj.ProjectId)?.TotalProjectPoints ?? 0;
+                proj.TotalOpenPoints =
+                    openProjects.FirstOrDefault(op => op.ProjectId == proj.ProjectId)?.TotalProjectPoints ?? 0;
             }
 
             results.Projects = projects.OrderByDescending(p => p.TotalPoints).ToList();
@@ -76,7 +78,8 @@ namespace InfoEducatie.Contest.Judging.Results
         {
             return await (
                 from project in ProjectsRepo.DbSet.Where(p => p.Category.Id == categoryId)
-                join points in PointsRepo.DbSet.Where(p => p.Criterion.Type == type) on project equals
+                join points in PointsRepo.DbSet.Where(p =>
+                        p.Criterion.Type == type) on project equals
                     points.Project into pointsProjects
                 from pointsProject in pointsProjects.DefaultIfEmpty()
                 group pointsProject by new {project.Id, project.Title}

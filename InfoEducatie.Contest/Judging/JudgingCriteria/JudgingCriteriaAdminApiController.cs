@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Categories;
+using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
 using MCMS.Base.Exceptions;
 using MCMS.Controllers.Api;
 using MCMS.Data;
@@ -20,17 +21,26 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);
-            Repo.ChainQueryable(q => q.Include(jc => jc.Category));
+            Repo.ChainQueryable(q => q
+                .Include(jc => jc.Category)
+                .Include(jc => jc.Section)
+            );
         }
 
         protected override Task PatchBeforeSaveNew(JudgingCriterionEntity e)
         {
             if (e.Category == null)
             {
-                throw new KnownException("Invalid category.", 400);
+                throw new KnownException("Invalid category.");
+            }
+
+            if (e.Section == null)
+            {
+                throw new KnownException("Invalid section.");
             }
 
             ServiceProvider.GetService<IRepository<CategoryEntity>>().Attach(e.Category);
+            ServiceProvider.GetService<IRepository<JudgingCriteriaSectionEntity>>().Attach(e.Section);
             return Task.CompletedTask;
         }
 

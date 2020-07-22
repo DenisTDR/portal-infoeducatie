@@ -13,7 +13,7 @@ namespace InfoEducatie.Contest.Judging.Judge
         public User User { get; set; }
         [Required] public CategoryEntity Category { get; set; }
         [NotMapped] public string FullName => User?.FullName ?? "invalid";
-        public JudgingType AvailableFor { get; set; }
+        public JudgeType AvailableFor { get; set; }
 
         public override string ToString()
         {

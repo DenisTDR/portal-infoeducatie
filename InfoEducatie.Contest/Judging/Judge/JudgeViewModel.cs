@@ -16,7 +16,7 @@ namespace InfoEducatie.Contest.Judging.Judge
         public CategoryViewModel Category { get; set; }
 
 
-        public JudgingType AvailableFor { get; set; }
+        public JudgeType AvailableFor { get; set; }
 
         public override string ToString()
         {

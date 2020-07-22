@@ -3,6 +3,7 @@ using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Judging.Judge;
 using InfoEducatie.Contest.Judging.Judging;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
+using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
 using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
 using InfoEducatie.Contest.Judging.Results;
 using InfoEducatie.Contest.Participants.Participant;
@@ -35,6 +36,8 @@ namespace InfoEducatie.Contest
                         nameof(JudgesAdminController.Index)).RequiresRoles("Moderator"),
                     new MenuLink("Judging criteria", typeof(JudgingCriteriaAdminController),
                         nameof(JudgingCriteriaAdminController.Index)).RequiresRoles("Moderator"),
+                    new MenuLink("Judging criteria sections", typeof(JudgingCriteriaSectionsAdminController),
+                        nameof(JudgingCriteriaSectionsAdminController.Index)).RequiresRoles("Moderator"),
                     new MenuLink("Judging criteria points", typeof(ProjectJudgingCriterionPointsAdminController),
                         nameof(ProjectJudgingCriterionPointsAdminController.Index)).RequiresRoles("God"),
                     new MenuLink("Results", typeof(ResultsController),

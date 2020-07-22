@@ -10,6 +10,7 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
         {
             base.Configure(builder);
             builder.HasOne(jc => jc.Category).WithMany().OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(jc => jc.Section).WithMany().OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

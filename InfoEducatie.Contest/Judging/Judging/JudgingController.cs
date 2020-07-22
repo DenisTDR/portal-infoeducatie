@@ -59,9 +59,11 @@ namespace InfoEducatie.Contest.Judging.Judging
                 Mapper.Map<List<ProjectViewModel>>(await ProjectsRepo.GetAll(p => p.Category == model.Category));
 
             model.JudgingCriteria = Mapper.Map<List<JudgingCriterionViewModel>>(
-                await JudgingCriteriaRepo.GetAll(p => p.Category == model.Category && p.Type == type));
+                await JudgingCriteriaRepo.GetAll(p =>
+                    p.Category == model.Category && p.Type == type));
             model.InitialPoints = Mapper.Map<List<ProjectJudgingCriterionPointsViewModel>>(
-                await PointsRepo.GetAll(p => p.Judge == model.Judge && p.Criterion.Type == type));
+                await PointsRepo.GetAll(p =>
+                    p.Judge == model.Judge && p.Criterion.Type == type));
 
             return View(model);
         }

@@ -13,7 +13,7 @@ namespace InfoEducatie.Contest.Judging.Judge
         [FormlySelect(typeof(CategoriesAdminApiController))]
         public CategoryViewModel Category { get; set; }
 
-        [FormlyFieldDefaultValue(JudgingType.Both)]
-        public JudgingType AvailableFor { get; set; }
+        [FormlyFieldDefaultValue(JudgeType.Both)]
+        public JudgeType AvailableFor { get; set; }
     }
 }
