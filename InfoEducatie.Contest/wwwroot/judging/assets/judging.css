@@ -38,6 +38,10 @@
     opacity: 1;
 }
 
+.judging-table-wrapper div.dataTables_scrollBody {
+    background-color: transparent !important;
+}
+
 .input-cell {
     position: relative;
 }
