@@ -12,6 +12,28 @@
     padding: .5rem;
 }
 
+.judging-table .project-title {
+    max-height: 3em;
+    overflow: hidden;
+}
+
+.judging-table .project-title-cell > div {
+    position: relative;
+}
+
+.judging-table .project-title-cell > div .open-discourse-link {
+    position: absolute;
+    top: -.5rem;
+    right: -.5rem;
+    opacity: .3;
+    font-size: 1.2em;
+    transition: opacity .5s;
+}
+
+.judging-table .project-title-cell .open-discourse-link:hover {
+    opacity: 1;
+}
+
 .input-cell {
     position: relative;
 }

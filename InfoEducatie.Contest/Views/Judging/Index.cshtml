@@ -33,14 +33,16 @@
                 <th>Max Points</th>
                 @foreach (var project in Model.Projects)
                 {
-                    <th>
-                        @project.Title
-                        @if (!string.IsNullOrEmpty(project.OldPlatformId))
-                        {
-                            <a href="@project.DiscourseUrl" target="_blank">
-                                <i class="fas fa-external-link-alt"></i>
-                            </a>
-                        }
+                    <th class="project-title-cell">
+                        <div>
+                            <div class="project-title">@project.Title</div>
+                            @if (!string.IsNullOrEmpty(project.OldPlatformId))
+                            {
+                                <a href="@project.DiscourseUrl" target="_blank" class="open-discourse-link">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            }
+                        </div>
                     </th>
                 }
             </tr>
