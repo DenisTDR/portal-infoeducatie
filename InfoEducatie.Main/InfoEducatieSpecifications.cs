@@ -35,12 +35,11 @@ namespace InfoEducatie.Main
             // var typeConfig = new BaseEntityTypeConfiguration<User>();
             config.Items.Add(new MenuSection
             {
-                Name = "Main",
+                Name = " ",
                 Index = 0,
                 Items = new List<IMenuItem>
                 {
-                    new MenuLink("Home", typeof(DashboardController)).WithIconClasses(
-                        "fas fa-tachometer-alt"),
+                    new MenuLink("Acasă", typeof(DashboardController)).WithIconClasses("fas fa-home"),
                     new MenuSection
                     {
                         Name = "Administrare",
