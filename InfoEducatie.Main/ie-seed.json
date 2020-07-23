@@ -1,10 +1,10 @@
 {
   "roles": [
     "Admin",
-    "Moderator",
+    "God",
     "Jury",
-    "Participant",
-    "God"
+    "Moderator",
+    "Participant"
   ],
   "languages": [
     {
@@ -85,6 +85,13 @@
       "items": {
         "en": "Logged in as",
         "ro": "Autentificat ca"
+      }
+    },
+    {
+      "slug": "resend_activation_email",
+      "items": {
+        "en": "Resend activation email",
+        "ro": "Retrimite email de activare"
       }
     },
     {
