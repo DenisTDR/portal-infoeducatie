@@ -50,10 +50,10 @@
             @foreach (var sect in Model.JudgingSections)
             {
                 <tr class="section-title-row">
-                    <td data-content="@Html.Raw(sect.Description)" data-toggle="popover" class="crit-td">
+                    <td data-content="@sect.Description" data-title="@sect.Name" data-toggle="popover" class="crit-td">
                         <b>@sect.Name</b>
                     </td>
-                    <td data-content="@Html.Raw(sect.Description)" data-toggle="popover" class="crit-td">
+                    <td data-content="@sect.Description" data-title="@sect.Name" data-toggle="popover" class="crit-td">
                         <b>@sect.MaxPoints</b>
                     </td>
                     @foreach (var project in Model.Projects)
@@ -66,8 +66,8 @@
                 @foreach (var criterion in sect.Criteria)
                 {
                     <tr>
-                        <td data-content="@Html.Raw(criterion.Description)" data-title="@criterion.Name" data-toggle="popover" class="crit-td">@criterion.Name</td>
-                        <td data-content="@Html.Raw(criterion.Description)" data-title="@criterion.Name" data-toggle="popover" class="crit-td">@criterion.MaxPoints</td>
+                        <td data-content="@criterion.Description" data-title="@criterion.Name" data-toggle="popover" class="crit-td">@criterion.Name</td>
+                        <td data-content="@criterion.Description" data-title="@criterion.Name" data-toggle="popover" class="crit-td">@criterion.MaxPoints</td>
                         @foreach (var project in Model.Projects)
                         {
                             var initial = Model.InitialPoints.FirstOrDefault(p => p.Project.Id == project.Id && p.Criterion.Id == criterion.Id)?.Points.ToString() ?? "";
@@ -79,22 +79,6 @@
                     </tr>
                 }
             }
-
-            @*             @foreach (var criterion in Model.JudgingCriteria) *@
-            @*             { *@
-            @*                 <tr> *@
-            @*                     <td data-content="@Html.Raw(criterion.Description)" data-toggle="popover" class="crit-td">@criterion.Name</td> *@
-            @*                     <td data-content="@Html.Raw(criterion.Description)" data-toggle="popover" class="crit-td">@criterion.MaxPoints</td> *@
-            @*                     @foreach (var project in Model.Projects) *@
-            @*                     { *@
-            @*                         var initial = Model.InitialPoints.FirstOrDefault(p => p.Project.Id == project.Id && p.Criterion.Id == criterion.Id)?.Points.ToString() ?? ""; *@
-            @*                         <td data-project-id="@project.Id" data-criterion-id="@criterion.Id" class="input-cell"> *@
-            @*                             <input type="number" min="0" max="@criterion.MaxPoints" data-value="@initial" *@
-            @*                                    value="@initial"/> *@
-            @*                         </td> *@
-            @*                     } *@
-            @*                 </tr> *@
-            @*             } *@
             </tbody>
             <tfoot>
             <tr class="font-weight-bold">
@@ -106,7 +90,7 @@
                 </td>
                 @foreach (var project in Model.Projects)
                 {
-                    <td data-content="@Html.Raw(project.Title)" data-toggle="popover">
+                    <td data-content="@project.Title" data-toggle="popover">
                         <div class="project-total-points" data-project-id="@project.Id">
                             @Model.InitialPoints.Where(p => p.Project.Id == project.Id).Sum(jc => jc.Points)
                         </div>

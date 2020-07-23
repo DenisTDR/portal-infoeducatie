@@ -35,7 +35,7 @@
 }
 
 .input-cell input[type=number]:not(:focus):not(:hover) {
-    -moz-appearance:textfield;
+    -moz-appearance: textfield;
 }
 
 .crit-td {
@@ -49,10 +49,15 @@
 .judging-top-stat {
     padding: 0 5px;
 }
+
 .judging-top-stat:not(:last-child) {
     border-right: 2px solid gray;
 }
 
-.section-title-row td{
+.section-title-row td {
     background: #B7B7B7;
+}
+
+.judging-cell-popover {
+    max-width: 500px !important;
 }
