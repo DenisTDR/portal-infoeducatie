@@ -11,7 +11,7 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
     {
         [Required] public string Name { get; set; }
 
-        [Required] [FormlyCkEditor] public string Description { get; set; }
+        [FormlyCkEditor] public string Description { get; set; }
 
         [Required] public int MaxPoints { get; set; }
 
