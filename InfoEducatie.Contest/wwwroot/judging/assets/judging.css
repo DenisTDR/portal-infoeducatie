@@ -1,11 +1,15 @@
 .judging-table th {
-    font-size: 15px;
+    /*font-size: 15px;*/
 }
 
 .judging-table td.input-cell {
     /*.judging-table th {*/
     padding: 0 !important;
     vertical-align: center;
+}
+
+.table.judging-table td, .table.judging-table th {
+    padding: .5rem;
 }
 
 .input-cell {
@@ -44,6 +48,7 @@
 
 .judging-table-wrapper {
     overflow: hidden;
+    font-size: .9em;
 }
 
 .judging-top-stat {
