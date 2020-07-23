@@ -17,6 +17,10 @@
     overflow: hidden;
 }
 
+.judging-table .project-title-cell {
+    vertical-align: top;
+}
+
 .judging-table .project-title-cell > div {
     position: relative;
 }
