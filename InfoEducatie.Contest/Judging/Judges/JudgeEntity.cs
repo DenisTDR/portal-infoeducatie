@@ -5,7 +5,7 @@ using InfoEducatie.Contest.Judging.JudgingCriteria;
 using MCMS.Base.Auth;
 using MCMS.Base.Data.Entities;
 
-namespace InfoEducatie.Contest.Judging.Judge
+namespace InfoEducatie.Contest.Judging.Judges
 {
     [Table("Judges")]
     public class JudgeEntity : Entity

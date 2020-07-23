@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using InfoEducatie.Contest.Judging.Judge;
+using InfoEducatie.Contest.Judging.Judges;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Participants.Project;
 using MCMS.Controllers.Api;

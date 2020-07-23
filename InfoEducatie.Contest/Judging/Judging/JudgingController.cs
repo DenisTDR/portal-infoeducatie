@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using InfoEducatie.Contest.Judging.Judge;
+using InfoEducatie.Contest.Judging.Judges;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
 using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;

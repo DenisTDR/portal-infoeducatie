@@ -5,7 +5,7 @@ using MCMS.Base.Data.FormModels;
 using MCMS.Base.SwaggerFormly.Formly;
 using MCMS.Base.SwaggerFormly.Formly.Fields;
 
-namespace InfoEducatie.Contest.Judging.Judge
+namespace InfoEducatie.Contest.Judging.Judges
 {
     public class JudgeFormModel : IFormModel
     {

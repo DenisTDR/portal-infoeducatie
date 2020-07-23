@@ -5,7 +5,7 @@ using MCMS.Base.Attributes;
 using MCMS.Base.Data.ViewModels;
 using Newtonsoft.Json;
 
-namespace InfoEducatie.Contest.Judging.Judge
+namespace InfoEducatie.Contest.Judging.Judges
 {
     [DisplayName("Judge")]
     public class JudgeViewModel : ViewModel

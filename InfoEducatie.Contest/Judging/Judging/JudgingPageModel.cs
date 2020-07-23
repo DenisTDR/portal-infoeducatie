@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using InfoEducatie.Contest.Categories;
-using InfoEducatie.Contest.Judging.Judge;
+using InfoEducatie.Contest.Judging.Judges;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
 using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;

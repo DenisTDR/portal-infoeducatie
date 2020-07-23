@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using MCMS.Base.SwaggerFormly.Formly;
 
-namespace InfoEducatie.Contest.Judging.Judge
+namespace InfoEducatie.Contest.Judging.Judges
 {
     public class JudgeCreateNewFormModel : JudgeFormModel
     {

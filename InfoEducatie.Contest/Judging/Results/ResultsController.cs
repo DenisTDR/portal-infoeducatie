@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Categories;
-using InfoEducatie.Contest.Judging.Judge;
+using InfoEducatie.Contest.Judging.Judges;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
 using InfoEducatie.Contest.Participants.Project;

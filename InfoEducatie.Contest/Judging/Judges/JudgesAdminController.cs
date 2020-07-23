@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 
-namespace InfoEducatie.Contest.Judging.Judge
+namespace InfoEducatie.Contest.Judging.Judges
 {
     [DisplayName("Judges")]
     [Authorize(Roles = "Moderator")]
