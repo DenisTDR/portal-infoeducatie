@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Categories;
+using MCMS.Auth;
 using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
 using MCMS.Controllers.Api;
@@ -60,11 +61,18 @@ namespace InfoEducatie.Contest.Judging.Judges
         [ModelValidation]
         public async Task<ActionResult<ModelResponse<JudgeFormModel>>> Create([FromBody] JudgeCreateNewFormModel fm)
         {
+            var userManager = ServiceProvider.GetService<UserManager<User>>();
             var user = await ServiceProvider.GetService<IRepository<User>>()
                 .GetOne(u => u.NormalizedEmail == fm.Email.ToUpper());
             if (user == null)
             {
-                return BadRequest($"There is no user with email '{fm.Email}'");
+                user = new User {UserName = fm.Email, Email = fm.Email};
+                var result = await userManager.CreateAsync(user);
+                if (!result.Succeeded)
+                {
+                    return BadRequest(result.Errors);
+                }
+                await ServiceProvider.GetService<AuthService>().SendActivationEmail(user, Url, Request.Scheme);
             }
 
             if (await Repo.Any(j => j.User == user))
@@ -72,7 +80,6 @@ namespace InfoEducatie.Contest.Judging.Judges
                 return BadRequest($"This user is already a judge.");
             }
 
-            var userManager = ServiceProvider.GetService<UserManager<User>>();
             if (!await userManager.IsInRoleAsync(user, "Jury"))
             {
                 await userManager.AddToRoleAsync(user, "Jury");
