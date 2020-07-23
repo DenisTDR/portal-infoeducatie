@@ -29,7 +29,7 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection
         [JsonIgnore]
         [TableColumn(Hidden = true)]
         [DetailsField(Hidden = true)]
-        public int MaxPoints => Criteria.Sum(c => c.MaxPoints);
+        public int MaxPoints => Criteria?.Sum(c => c.MaxPoints) ?? 0;
 
         public override string ToString()
         {
