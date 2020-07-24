@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
 using InfoEducatie.Contest.Participants.Participant;
 using InfoEducatie.Contest.Participants.Project;
+using MCMS.Auth;
+using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
 using MCMS.Controllers.Ui;
 using MCMS.Data;
@@ -79,6 +81,14 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             }
 
             return View(errors);
+        }
+
+        [ViewLayout("_ModalLayout")]
+        public async Task<IActionResult> SendActivationMails()
+        {
+            var accountsWithoutEmailSent = await ServiceProvider.GetService<IRepository<ParticipantEntity>>().Queryable
+                .CountAsync(p => !p.ActivationEmailSent);
+            return View(accountsWithoutEmailSent);
         }
     }
 }

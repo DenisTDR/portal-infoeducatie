@@ -47,9 +47,11 @@ namespace InfoEducatie.Contest.Participants.Participant
         public string MentoringTeacher { get; set; }
         public string OldPlatformId { get; set; }
 
+        public bool ActivationEmailSent { get; set; }
         public List<ProjectParticipantEntity> ProjectParticipants { get; set; }
 
         public List<ProjectEntity> Projects => ProjectParticipants?.Select(p => p.Project).ToList();
+
 
         public override string ToString()
         {

@@ -1,3 +1,5 @@
+@using InfoEducatie.Main.InfoEducatieAdmin
+@using MCMS.Display.Link
 <h1 class="mt-4">InfoEducație Admin</h1>
 <ul>
     <li>
@@ -8,5 +10,12 @@
     </li>
     <li>
         <a asp-action="CheckCriteriaIntegrity">Check Criteria integrity</a>
+    </li>
+    <li>
+        @{
+            var link = new MRichLink("Send activation emails to participants", typeof(InfoEducatieAdminController), nameof(InfoEducatieAdminController.SendActivationMails))
+                .WithModal().WithValues(null);
+        }
+        <partial name="Partials/_MRichLink" model="link"/>
     </li>
 </ul>

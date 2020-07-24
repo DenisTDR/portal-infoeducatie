@@ -26,6 +26,7 @@ namespace InfoEducatie.Contest.Participants.Participant
         public string SchoolCountry { get; set; }
         public string MentoringTeacher { get; set; }
         public string OldPlatformId { get; set; }
+        public bool ActivationEmailSent { get; set; }
 
         [DetailsField(Hidden = true)]
         [JsonIgnore]
