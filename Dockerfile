@@ -21,7 +21,7 @@ RUN dotnet publish --output "/app/bin" --configuration release
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 as runtime-env
 RUN apt-get update && apt-get install -y \
     sudo \
-    net-tools \
+#    net-tools \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app/bin
