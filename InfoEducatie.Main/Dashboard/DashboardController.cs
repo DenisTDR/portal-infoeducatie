@@ -8,10 +8,5 @@ namespace InfoEducatie.Main.Dashboard
         {
             return View();
         }
-
-        public IActionResult Admin()
-        {
-            return View();
-        }
     }
 }
