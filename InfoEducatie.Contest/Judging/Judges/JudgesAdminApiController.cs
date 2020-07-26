@@ -89,6 +89,7 @@ namespace InfoEducatie.Contest.Judging.Judges
             {
                 Category = ServiceProvider.GetService<IRepository<CategoryEntity>>()
                     .Attach(new CategoryEntity {Id = fm.Category.Id}),
+                AvailableFor = fm.AvailableFor,
                 User = user
             };
             e = await Repo.Add(e);
