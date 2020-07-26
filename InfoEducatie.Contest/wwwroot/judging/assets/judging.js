@@ -29,12 +29,28 @@ function initializeJudgingTable() {
         template: '<div class="popover judging-cell-popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>'
     })
     var height = $(".judging-table-wrapper").height() - 120 + "px";
-    console.log(height);
+    // console.log(height);
     $(".judging-table-wrapper .dataTables_scrollBody").css({height: height, 'max-height': height})
-    judgingTable.fnDraw();
+    judgingTable.api().draw();
 
     initializeJudgingInputFields();
+    initializeVerticalTabNavigation();
     initializeForcedFocusOnInput();
+}
+
+function initializeVerticalTabNavigation() {
+
+    $('.judging-table .input-cell input').keydown(function (e) {
+        if (e.keyCode !== 9) {
+            return;
+        }
+        e.preventDefault();
+        var _this = $(this);
+        var tdIndex = _this.closest("td").index();
+        var crtTr = _this.closest("tr");
+        var targetTr = e.shiftKey ? crtTr.prevAll("tr.inputs-row:first") : crtTr.nextAll("tr.inputs-row:first");
+        targetTr.children().eq(tdIndex).find("input").focus()
+    });
 }
 
 function initializeForcedFocusOnInput() {
