@@ -4,6 +4,9 @@
     ViewBag.Title = Model.Title;
 }
 
-<h2 class="mt-5">@Model.Title</h2>
+@if (Model.DisplayTitle)
+{
+    <h2 class="mt-5">@Model.Title</h2>
+}
 
-<div >@Html.Raw(Model.Body)</div>
+<div>@Html.Raw(Model.Body)</div>

@@ -17,5 +17,6 @@ namespace InfoEducatie.Main.Pages
 
         [Required] [FormlyCkEditor] public string Body { get; set; }
         [FormlyFieldDefaultValue(true)] public bool Published { get; set; }
+        [FormlyFieldDefaultValue(true)] public bool DisplayTitle { get; set; }
     }
 }

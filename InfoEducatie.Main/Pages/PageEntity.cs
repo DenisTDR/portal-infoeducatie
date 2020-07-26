@@ -18,5 +18,6 @@ namespace InfoEducatie.Main.Pages
         }
 
         public bool Published { get; set; }
+        public bool DisplayTitle { get; set; }
     }
 }

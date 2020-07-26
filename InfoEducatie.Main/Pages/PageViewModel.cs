@@ -14,6 +14,7 @@ namespace InfoEducatie.Main.Pages
 
         [DetailsField(Hidden = true)] public int Order { get; set; }
         [TableColumn(Hidden = true)] public bool Published { get; set; }
+        [TableColumn(Hidden = true)] public bool DisplayTitle { get; set; }
 
         public string Link => Published ? $"<a target='_blank' href='/Pages/{Slug}'>Link</a>" : "Not published";
 
