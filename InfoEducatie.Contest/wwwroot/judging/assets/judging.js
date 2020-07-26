@@ -34,6 +34,16 @@ function initializeJudgingTable() {
     judgingTable.fnDraw();
 
     initializeJudgingInputFields();
+    initializeForcedFocusOnInput();
+}
+
+function initializeForcedFocusOnInput() {
+    $('.judging-table .input-cell input').click(function () {
+        var _this = $(this);
+        if (!_this.is(':focus')) {
+            _this.focus();
+        }
+    });
 }
 
 function initializeJudgingInputFields() {
