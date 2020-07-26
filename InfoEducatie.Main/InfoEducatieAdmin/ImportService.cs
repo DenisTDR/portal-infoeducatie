@@ -33,6 +33,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         private readonly BaseDbContext _dbContext;
         private List<ProjectEntity> _projectsCache;
         private List<ParticipantEntity> _participantsCache;
+        private List<ProjectParticipantEntity> _projectParticipantsCache;
 
         public ImportService(IRepository<ProjectEntity> projectsRepo, IRepository<ParticipantEntity> participantsRepo,
             UserManager<User> userManager, BaseDbContext dbContext, IRepository<CategoryEntity> catsRepo,
@@ -46,13 +47,16 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             _projectParticipantsRepo = projectParticipantsRepo;
             _projectsRepo.ChainQueryable(q => q.Include(p => p.Category));
             _participantsRepo.ChainQueryable(q => q.Include(p => p.User));
+            _projectParticipantsRepo.ChainQueryable(q => q.Include(p => p.Participant)
+                .Include(p => p.Project));
         }
 
         private async Task PrepareCache()
         {
-            // _projectsRepo.SkipSaving = _participantsRepo.SkipSaving = _projectParticipantsRepo.SkipSaving = true;
+            _projectsRepo.SkipSaving = _participantsRepo.SkipSaving = _projectParticipantsRepo.SkipSaving = true;
             _projectsCache = await _projectsRepo.GetAll();
             _participantsCache = await _participantsRepo.GetAll();
+            _projectParticipantsCache = await _projectParticipantsRepo.GetAll();
         }
 
         public CsvReader CsvReaderFromFile(FileEntity file)
@@ -158,15 +162,6 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                     }
 
                     participantsResult.Added++;
-                    foreach (var projectId in projectIds)
-                    {
-                        var project = GetProjectCaching(projectId);
-                        if (!debug)
-                        {
-                            await AddProjectParticipant(new ProjectParticipantEntity
-                                {Participant = participant, Project = project});
-                        }
-                    }
                 }
                 else
                 {
@@ -182,6 +177,27 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                     else
                         participantsResult.NotTouched++;
                 }
+
+                foreach (var projectId in projectIds)
+                {
+                    var existingProjectParticipant = GetProjectParticipantCaching(projectId, participant.OldPlatformId);
+                    if (existingProjectParticipant != null)
+                    {
+                        var project = GetProjectCaching(projectId);
+                        if (project == null)
+                        {
+                            participantsResult.Errors.Add($"required project with id {projectId} not found.");
+                        }
+                        else
+                        {
+                            if (!debug)
+                            {
+                                await AddProjectParticipant(new ProjectParticipantEntity
+                                    {Participant = participant, Project = project});
+                            }
+                        }
+                    }
+                }
             }
 
 
@@ -196,7 +212,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             var response = JsonConvert.DeserializeObject<List<OldPlatformApiResponseModel>>(responseStr);
             return response;
         }
-        
+
         private async Task<User> AddUserAsync(User user)
         {
             var userAddResult = await _userManager.CreateAsync(user);
@@ -275,6 +291,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
         private async Task<ProjectParticipantEntity> AddProjectParticipant(ProjectParticipantEntity projectParticipant)
         {
+            _projectParticipantsCache.Add(projectParticipant);
             return await _projectParticipantsRepo.Add(projectParticipant);
         }
 
@@ -286,6 +303,14 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         private ParticipantEntity GetParticipantCaching(string oldPlatformId)
         {
             return _participantsCache.FirstOrDefault(p => p.OldPlatformId == oldPlatformId);
+        }
+
+        private ProjectParticipantEntity GetProjectParticipantCaching(string oldPlatformProjectId,
+            string oldPlatformParticipantId)
+        {
+            return _projectParticipantsCache.FirstOrDefault(p =>
+                p.Project.OldPlatformId == oldPlatformProjectId &&
+                p.Participant.OldPlatformId == oldPlatformParticipantId);
         }
 
         private void SanitizePatchDocument<T>(JsonPatchDocument<T> doc) where T : class
