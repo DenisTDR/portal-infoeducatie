@@ -165,6 +165,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 }
                 else
                 {
+                    participant.ActivationEmailSent = existingParticipant.ActivationEmailSent;
                     var patchDiff = JsonPatchUtils.CreatePatch(existingParticipant, participant);
                     SanitizePatchDocument(patchDiff);
                     if (!patchDiff.IsEmpty())
