@@ -43,10 +43,12 @@ namespace InfoEducatie.Contest.Judging.Judging
             // JudgingCriteriaRepo.ChainQueryable(q => q.OrderBy(c => c.Name));
             PointsRepo.ChainQueryable(q => q
                 .Include(p => p.Project)
-                .Include(p => p.Criterion));
+                .Include(p => p.Criterion)
+            );
             SectionsRepo.ChainQueryable(q => q
                 .Include(s => s.Criteria)
                 .OrderBy(s => s.Name));
+            ProjectsRepo.ChainQueryable(q => q.OrderBy(p => p.Title));
         }
 
         [Route("/[controller]/{type?}")]
@@ -55,19 +57,11 @@ namespace InfoEducatie.Contest.Judging.Judging
             var model = new JudgingPageModel {Judge = await GetJudgeProfileOrThrow(), Type = type};
             model.Category = model.Judge.Category;
 
-            if (type == JudgingType.Open)
-            {
-                ProjectsRepo.ChainQueryable(q => q.Where(p => p.IsInOpen));
-            }
+      
 
-            ProjectsRepo.ChainQueryable(q => q.OrderBy(p => p.Title));
-
-            model.Projects =
-                Mapper.Map<List<ProjectViewModel>>(await ProjectsRepo.GetAll(p => p.Category == model.Category));
-
-            model.JudgingCriteria = Mapper.Map<List<JudgingCriterionViewModel>>(
-                await JudgingCriteriaRepo.GetAll(p =>
-                    p.Category == model.Category && p.Type == type));
+            // model.JudgingCriteria = Mapper.Map<List<JudgingCriterionViewModel>>(
+                // await JudgingCriteriaRepo.GetAll(p =>
+                    // p.Category == model.Category && p.Type == type));
 
             var sections = await SectionsRepo.GetAll(s => s.Category == model.Category && s.Type == type);
             foreach (var section in sections)

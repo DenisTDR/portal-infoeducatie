@@ -14,7 +14,7 @@
             <span class="judging-top-stat">Judge name: <b>@Model.Judge.FullName</b></span>
             <span class="judging-top-stat">Category: <b>@Model.Category.Name</b></span>
             <span class="judging-top-stat">Projects: <b>@Model.Projects.Count</b></span>
-            <span class="judging-top-stat">Judging criteria: <b>@Model.JudgingCriteria.Count</b></span>
+            <span class="judging-top-stat">Judging criteria: <b>@Model.JudgingSections.Sum(s => s.Criteria.Count)</b></span>
             <span class="judging-top-stat">Judging type: <b>@Model.Type</b></span>
             <button data-target="#judging-help-alert" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample" class="btn btn-link">Toggle help</button>
         </div>
@@ -97,7 +97,7 @@
                     Total
                 </td>
                 <td>
-                    @Model.JudgingCriteria.Sum(jc => jc.MaxPoints)
+                    @Model.JudgingSections.Sum(jc => jc.MaxPoints)
                 </td>
                 @foreach (var project in Model.Projects)
                 {
