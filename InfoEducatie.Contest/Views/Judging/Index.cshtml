@@ -44,7 +44,7 @@
                 {
                     <th class="project-title-cell">
                         <div>
-                            <div class="project-title">@project.Title</div>
+                            <div class="project-title" data-e-type="project" data-e-id="@project.Id">@project.Title</div>
                             @if (!string.IsNullOrEmpty(project.OldPlatformId))
                             {
                                 <a href="@project.DiscourseUrl" target="_blank" class="open-discourse-link">
@@ -77,7 +77,7 @@
                 @foreach (var criterion in sect.Criteria)
                 {
                     <tr class="inputs-row">
-                        <td data-content="@criterion.Description" data-title="@criterion.Name" data-toggle="popover" class="crit-td">@criterion.Name</td>
+                        <td data-content="@criterion.Description" data-title="@criterion.Name" data-toggle="popover" class="crit-td" data-e-type="criterion" data-e-id="@criterion.Id">@criterion.Name</td>
                         <td data-content="@criterion.Description" data-title="@criterion.Name" data-toggle="popover" class="crit-td">@criterion.MaxPoints</td>
                         @foreach (var project in Model.Projects)
                         {

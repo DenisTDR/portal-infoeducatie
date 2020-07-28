@@ -54,12 +54,22 @@
     left: 0;
 }
 
-.input-cell .saving-icon {
+.input-cell .saving-icon,
+.input-cell .error-icon {
     position: absolute;
     right: 0;
     top: 50%;
     transform: translateY(-50%);
     opacity: .5;
+}
+
+.input-cell .error-icon {
+    color: red;
+    cursor: pointer;
+}
+.input-cell.saving-error input {
+    border: 2px solid red;
+    cursor: pointer;
 }
 
 .input-cell input[type=number]:not(:focus):not(:hover)::-webkit-outer-spin-button,
