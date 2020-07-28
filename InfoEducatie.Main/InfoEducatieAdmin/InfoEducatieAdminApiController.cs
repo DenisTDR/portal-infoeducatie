@@ -71,11 +71,12 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
             foreach (var email in emails)
             {
-                await emailSender.SendEmailAsync("no-reply@portal.infoeducatie.ro", "InfoEducație",email.Split("@")[0] + "@tdrs.ro", model.Subject, model.Message);
+                await emailSender.SendEmailAsync("no-reply@portal.infoeducatie.ro", "InfoEducație", email,
+                    model.Subject, model.Message);
             }
 
 
-            return Ok(new {message="Sent " + emails.Count + " emails!"});
+            return Ok(new {message = "Sent " + emails.Count + " emails!"});
         }
 
         [HttpPost]
