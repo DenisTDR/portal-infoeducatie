@@ -29,7 +29,6 @@ function initializeJudgingTable() {
         template: '<div class="popover judging-cell-popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>'
     })
     var height = $(".judging-table-wrapper").height() - 120 + "px";
-    // console.log(height);
     $(".judging-table-wrapper .dataTables_scrollBody").css({height: height, 'max-height': height})
     judgingTable.api().draw();
 
@@ -75,7 +74,6 @@ function initializeJudgingInputFields() {
 
         var max = parseInt(this.max);
         var min = parseInt(this.min);
-        window.ceva = _this;
         if (value !== oldValue) {
             window.ceva = this;
             if (value > max) {
@@ -110,21 +108,19 @@ function setPointsFor(cell, criterionId, projectId, points, successCallback) {
         success: function (data) {
             hideLoadingSpinner(cell);
             updateContentWithEffect($(".project-total-points[data-project-id=" + projectId + "]"), data.total);
-            // $(".project-total-points[data-project-id=" + projectId + "]").html(data.total);
-            // console.log(data.sections);
             if (data.sections && data.sections.length) {
                 for (var i = 0; i < data.sections.length; i++) {
                     var section = data.sections[i];
-                    // console.log(section)
                     updateContentWithEffect($(".project-section-points[data-project-id=" + projectId + "][data-section-id=" + section.id + "]>div"), section.points);
-                    // $(".project-section-points[data-project-id=" + projectId + "][data-section-id=" + section.id + "]").html(section.points);
                 }
             }
+            cell.removeClass('bad').addClass('good');
             successCallback();
         },
         error: function (errMsg) {
             hideLoadingSpinner(cell);
             addErrorIcon(cell);
+            cell.removeClass('good').addClass('bad');
             console.log(errMsg);
             var criterionName = $("[data-e-type=criterion][data-e-id=" + criterionId + "]").html();
             var projectName = $("[data-e-type=project][data-e-id=" + projectId + "]").html();

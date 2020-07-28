@@ -81,8 +81,8 @@
                         <td data-content="@criterion.Description" data-title="@criterion.Name" data-toggle="popover" class="crit-td">@criterion.MaxPoints</td>
                         @foreach (var project in Model.Projects)
                         {
-                            var initial = Model.InitialPoints.FirstOrDefault(p => p.Project.Id == project.Id && p.Criterion.Id == criterion.Id)?.Points.ToString() ?? "";
-                            <td data-project-id="@project.Id" data-criterion-id="@criterion.Id" class="input-cell">
+                            var initial = Model.InitialPoints.FirstOrDefault(p => p.Project.Id == project.Id && p.Criterion.Id == criterion.Id)?.Points.ToString() ?? null;
+                            <td data-project-id="@project.Id" data-criterion-id="@criterion.Id" class="input-cell @(string.IsNullOrEmpty(initial) ? "bad" : "good")">
                                 <input type="number" min="0" max="@criterion.MaxPoints" data-value="@initial"
                                        value="@initial"/>
                             </td>
