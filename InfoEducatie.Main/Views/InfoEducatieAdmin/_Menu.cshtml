@@ -6,16 +6,19 @@
         <a asp-action="Import">Import</a>
     </li>
     <li>
-        <a asp-action="DeleteParticipants">Clear participants/projets and related entities</a>
+        <a asp-action="DeleteParticipants">Clear participants/projects and related entities</a>
     </li>
     <li>
         <a asp-action="CheckCriteriaIntegrity">Check Criteria integrity</a>
     </li>
     <li>
         @{
-            var link = new MRichLink("Send activation emails to participants", typeof(InfoEducatieAdminController), nameof(InfoEducatieAdminController.SendActivationMails))
+            var link = new MRichLink("Send welcome emails to participants", typeof(InfoEducatieAdminController), nameof(InfoEducatieAdminController.SendActivationMails))
                 .WithModal().WithValues(null);
         }
         <partial name="Partials/_MRichLink" model="link"/>
+    </li>
+    <li>
+        <a asp-action="SendCustomEmailToParticipants">Send custom email to participants</a>
     </li>
 </ul>

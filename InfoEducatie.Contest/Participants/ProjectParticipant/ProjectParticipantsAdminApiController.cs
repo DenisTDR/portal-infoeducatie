@@ -3,12 +3,14 @@ using InfoEducatie.Contest.Participants.Participant;
 using InfoEducatie.Contest.Participants.Project;
 using MCMS.Controllers.Api;
 using MCMS.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InfoEducatie.Contest.Participants.ProjectParticipant
 {
+    [Authorize(Roles = "Admin")]
     public class ProjectParticipantsAdminApiController : GenericAdminApiController<ProjectParticipantEntity,
         ProjectParticipantFormModel, ProjectParticipantViewModel>
     {

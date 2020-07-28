@@ -114,7 +114,9 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 if (existingProject == null)
                 {
                     if (!debug)
-                        existingProject = await AddProject(project);
+                        project = await AddProject(project);
+                    else
+                        _projectsCache.Add(project);
 
                     projectsResult.Added++;
                 }
@@ -157,14 +159,15 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 {
                     if (!debug)
                     {
-                        await AddUserAsync(participant.User);
-                        await AddParticipant(participant);
+                        participant.User = await AddUserAsync(participant.User);
+                        participant = await AddParticipant(participant);
                     }
 
                     participantsResult.Added++;
                 }
                 else
                 {
+                    participant.ActivationEmailSent = existingParticipant.ActivationEmailSent;
                     var patchDiff = JsonPatchUtils.CreatePatch(existingParticipant, participant);
                     SanitizePatchDocument(patchDiff);
                     if (!patchDiff.IsEmpty())
@@ -176,20 +179,25 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                     }
                     else
                         participantsResult.NotTouched++;
+
+                    participant = existingParticipant;
                 }
 
                 foreach (var projectId in projectIds)
                 {
                     var existingProjectParticipant = GetProjectParticipantCaching(projectId, participant.OldPlatformId);
-                    if (existingProjectParticipant != null)
+                    if (existingProjectParticipant == null)
                     {
                         var project = GetProjectCaching(projectId);
                         if (project == null)
                         {
-                            participantsResult.Errors.Add($"required project with id {projectId} not found.");
+                            participantsResult.Errors.Add(
+                                $"required project with id {projectId} not found (for contenstant with id: " + opId +
+                                ")");
                         }
                         else
                         {
+                            participantsResult.ProjectLinkAdded++;
                             if (!debug)
                             {
                                 await AddProjectParticipant(new ProjectParticipantEntity
@@ -215,19 +223,31 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
         private async Task<User> AddUserAsync(User user)
         {
-            var userAddResult = await _userManager.CreateAsync(user);
-            if (!userAddResult.Succeeded)
+            var existing = await _userManager.FindByEmailAsync(user.Email);
+            if (existing == null)
             {
-                throw new KnownException("Couldn't create user for: " + user.Email + " because " +
-                                         string.Join(", ", userAddResult.Errors.Select(e => e.Description)));
+                var userAddResult = await _userManager.CreateAsync(user);
+                if (!userAddResult.Succeeded)
+                {
+                    throw new KnownException("Couldn't create user for: " + user.Email + " because " +
+                                             string.Join(", ", userAddResult.Errors.Select(e => e.Description)));
+                }
+            }
+            else
+            {
+                user = existing;
             }
 
-            var roleAddResult = await _userManager.AddToRoleAsync(user, "Participant");
-            if (!roleAddResult.Succeeded)
+
+            if (!await _userManager.IsInRoleAsync(user, "Participant"))
             {
-                throw new KnownException("Couldn't add user in participant role: " + user.Email +
-                                         " because " +
-                                         string.Join(", ", roleAddResult.Errors.Select(e => e.Description)));
+                var roleAddResult = await _userManager.AddToRoleAsync(user, "Participant");
+                if (!roleAddResult.Succeeded)
+                {
+                    throw new KnownException("Couldn't add user in 'Participant' role: " + user.Email +
+                                             " because " +
+                                             string.Join(", ", roleAddResult.Errors.Select(e => e.Description)));
+                }
             }
 
             return user;
@@ -315,7 +335,11 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
         private void SanitizePatchDocument<T>(JsonPatchDocument<T> doc) where T : class
         {
-            var forbiddenProps = new[] {"/Id", "/Created", "/Updated", "/User", "/Category"};
+            var forbiddenProps = new[]
+            {
+                "/Id", "/Created", "/Updated", "/User", "/Category", "/Projects", "/Participants",
+                "/ProjectParticipants", "/$id", "/$ref"
+            };
             foreach (var op in doc.Operations.ToList())
             {
                 if (forbiddenProps.Any(fprop => op.path.StartsWith(fprop)))

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace InfoEducatie.Contest.Participants.ProjectParticipant
 {
     [DisplayName("Project Participants")]
-    [Authorize(Roles = "God")]
+    [Authorize(Roles = "Admin")]
     public class ProjectParticipantsAdminController : GenericModalAdminUiController<ProjectParticipantEntity,
         ProjectParticipantFormModel, ProjectParticipantViewModel, ProjectParticipantsAdminApiController>
     {

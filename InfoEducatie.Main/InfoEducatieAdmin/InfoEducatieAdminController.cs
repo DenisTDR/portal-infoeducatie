@@ -28,6 +28,10 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         {
             return View();
         }
+        public IActionResult SendCustomEmailToParticipants()
+        {
+            return View();
+        }
 
         [HttpGet]
         public IActionResult DeleteParticipants()

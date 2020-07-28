@@ -27,6 +27,7 @@
                     <li>Punctajul dintr-un field se salvează automat după ce acesta își pierde focusul.</li>
                     <li>Puteți ajusta dimensiunea tabelului modificând zoom-ul paginii (din browser), iar apoi dați un refresh (F5) pentru a se corecta tabelul.</li>
                     <li>Puteți naviga în tabel cu Tab/Shift+Tab. (Navigarea se face pe coloană)</li>
+                    <li>Shift + Scroll pentru scroll pe orizontală (cu săgeata pe conținutul tabelului)</li>
                 </ul>
             </div>
         </div>
@@ -44,7 +45,7 @@
                 {
                     <th class="project-title-cell">
                         <div>
-                            <div class="project-title">@project.Title</div>
+                            <div class="project-title" data-e-type="project" data-e-id="@project.Id">@project.Title</div>
                             @if (!string.IsNullOrEmpty(project.OldPlatformId))
                             {
                                 <a href="@project.DiscourseUrl" target="_blank" class="open-discourse-link">
@@ -77,12 +78,12 @@
                 @foreach (var criterion in sect.Criteria)
                 {
                     <tr class="inputs-row">
-                        <td data-content="@criterion.Description" data-title="@criterion.Name" data-toggle="popover" class="crit-td">@criterion.Name</td>
+                        <td data-content="@criterion.Description" data-title="@criterion.Name" data-toggle="popover" class="crit-td" data-e-type="criterion" data-e-id="@criterion.Id">@criterion.Name</td>
                         <td data-content="@criterion.Description" data-title="@criterion.Name" data-toggle="popover" class="crit-td">@criterion.MaxPoints</td>
                         @foreach (var project in Model.Projects)
                         {
-                            var initial = Model.InitialPoints.FirstOrDefault(p => p.Project.Id == project.Id && p.Criterion.Id == criterion.Id)?.Points.ToString() ?? "";
-                            <td data-project-id="@project.Id" data-criterion-id="@criterion.Id" class="input-cell">
+                            var initial = Model.InitialPoints.FirstOrDefault(p => p.Project.Id == project.Id && p.Criterion.Id == criterion.Id)?.Points.ToString() ?? null;
+                            <td data-project-id="@project.Id" data-criterion-id="@criterion.Id" class="input-cell @(string.IsNullOrEmpty(initial) ? "bad" : "good")">
                                 <input type="number" min="0" max="@criterion.MaxPoints" data-value="@initial"
                                        value="@initial"/>
                             </td>
