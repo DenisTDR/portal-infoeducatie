@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Judging.Judges;
+using InfoEducatie.Contest.Judging.Judging;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
 using InfoEducatie.Contest.Participants.Project;
@@ -23,6 +24,7 @@ namespace InfoEducatie.Contest.Judging.Results
         protected IRepository<CategoryEntity> CatsRepo => ServiceProvider.GetService<IRepository<CategoryEntity>>();
         protected IRepository<JudgeEntity> JudgesRepo => ServiceProvider.GetService<IRepository<JudgeEntity>>();
         protected IRepository<ProjectEntity> ProjectsRepo => ServiceProvider.GetService<IRepository<ProjectEntity>>();
+        protected JudgingService JudgingService => ServiceProvider.GetRequiredService<JudgingService>();
 
         protected IRepository<ProjectJudgingCriterionPointsEntity> PointsRepo =>
             ServiceProvider.GetService<IRepository<ProjectJudgingCriterionPointsEntity>>();
@@ -44,6 +46,27 @@ namespace InfoEducatie.Contest.Judging.Results
             }
 
             return View(results);
+        }
+
+        [Route("{categoryId?}")]
+        public async Task<IActionResult> DetailedResults([FromRoute] string categoryId)
+        {
+            var cats = await GetAvailableCategories();
+            categoryId ??= (await GetJudgeProfileOrThrow()).Category.Id;
+            var model = new DetailedResultsModel {AvailableCategories = cats};
+
+            var targetCategory = cats.Count == 1 ? cats.First() : cats.First(c => c.Id == categoryId);
+
+            var judges = await JudgesRepo.GetAll(j => j.Category == targetCategory);
+
+            model.JudgingPageModels = new List<JudgingPageModel>();
+
+            foreach (var judge in judges)
+            {
+                model.JudgingPageModels.Add(await JudgingService.BuildJudgingPageModel(judge, JudgingType.Project));
+            }
+
+            return View(model);
         }
 
         private async Task<CategoryResultsModel> BuildResultsForCategory(CategoryEntity category)

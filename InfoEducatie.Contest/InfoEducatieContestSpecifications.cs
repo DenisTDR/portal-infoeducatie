@@ -20,6 +20,7 @@ namespace InfoEducatie.Contest
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions<MenuConfig>().Configure(ConfigureMenu);
+            services.AddScoped<JudgingService>();
         }
 
         private void ConfigureMenu(MenuConfig config)
