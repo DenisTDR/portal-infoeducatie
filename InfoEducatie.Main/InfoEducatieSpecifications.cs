@@ -75,7 +75,7 @@ namespace InfoEducatie.Main
             });
             config.Items.Add(new MenuLink("Seminarii", typeof(SeminarsController),
                 nameof(SeminarsController.Index)));
-            config.Items.Add(new MenuLink("Program", "/Pages/program-jurizare-utilitar-2020") {Index = 20});
+            config.Items.Add(new MenuLink("Program", "/Pages/program-2020") {Index = 20});
         }
     }
 }
