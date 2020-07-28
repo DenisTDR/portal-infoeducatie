@@ -115,6 +115,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 {
                     if (!debug)
                         existingProject = await AddProject(project);
+                    else
+                        _projectsCache.Add(project);
 
                     projectsResult.Added++;
                 }
@@ -182,15 +184,18 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 foreach (var projectId in projectIds)
                 {
                     var existingProjectParticipant = GetProjectParticipantCaching(projectId, participant.OldPlatformId);
-                    if (existingProjectParticipant != null)
+                    if (existingProjectParticipant == null)
                     {
                         var project = GetProjectCaching(projectId);
                         if (project == null)
                         {
-                            participantsResult.Errors.Add($"required project with id {projectId} not found.");
+                            participantsResult.Errors.Add(
+                                $"required project with id {projectId} not found (for contenstant with id: " + opId +
+                                ")");
                         }
                         else
                         {
+                            participantsResult.ProjectLinkAdded++;
                             if (!debug)
                             {
                                 await AddProjectParticipant(new ProjectParticipantEntity
@@ -316,7 +321,11 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
         private void SanitizePatchDocument<T>(JsonPatchDocument<T> doc) where T : class
         {
-            var forbiddenProps = new[] {"/Id", "/Created", "/Updated", "/User", "/Category"};
+            var forbiddenProps = new[]
+            {
+                "/Id", "/Created", "/Updated", "/User", "/Category", "/Projects", "/Participants",
+                "/ProjectParticipants", "/$id", "/$ref"
+            };
             foreach (var op in doc.Operations.ToList())
             {
                 if (forbiddenProps.Any(fprop => op.path.StartsWith(fprop)))
