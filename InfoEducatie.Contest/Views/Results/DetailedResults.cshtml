@@ -3,6 +3,7 @@
 
 @{
     ViewBag.Title = "Detailed results";
+    var maxAbsRatioDiff = 0.25f;
 }
 
 <h2>@ViewBag.Title</h2>
@@ -32,88 +33,152 @@
 <div class="tab-content">
     @foreach (var judgingPageModel in Model.JudgingPageModels)
     {
+        var otherPageModels = Model.JudgingPageModels.Where(jp => jp != judgingPageModel).ToList();
+
         <div class="tab-pane fade @(Model.JudgingPageModels.First() == judgingPageModel ? "show active" : "")" id="judge-panel-@judgingPageModel.Judge.Id" role="tabpanel" aria-labelledby="judge-tab-@judgingPageModel.Judge.Id">
-            <table>
-                <table class="table table-striped table-bordered judging-table">
-                    <thead>
-                    <tr>
-                        <th>Criteria</th>
-                        <th>Max Points</th>
+            <table id="judge-table-@judgingPageModel.Judge.Id" class="judge-table table table-striped table-bordered judging-table">
+                <thead>
+                <tr>
+                    <th>Criteria</th>
+                    <th>Max Points</th>
+                    @foreach (var project in judgingPageModel.Projects)
+                    {
+                        <th class="project-title-cell">
+                            <div>
+                                <div class="project-title" data-e-type="project" data-e-id="@project.Id">@project.Title</div>
+                                @if (!string.IsNullOrEmpty(project.OldPlatformId))
+                                {
+                                    <a href="@project.DiscourseUrl" target="_blank" class="open-discourse-link">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                }
+                            </div>
+                        </th>
+                    }
+                </tr>
+                </thead>
+                <tbody>
+
+                @foreach (var sect in judgingPageModel.JudgingSections)
+                {
+                    <tr class="section-title-row">
+                        <td data-content="@sect.Description" data-title="@sect.Name" data-toggle="popover" class="crit-td">
+                            <b>@sect.Name</b>
+                        </td>
+                        <td data-content="@sect.Description" data-title="@sect.Name" data-toggle="popover" class="crit-td">
+                            <b>@sect.MaxPoints</b>
+                        </td>
                         @foreach (var project in judgingPageModel.Projects)
                         {
-                            <th class="project-title-cell">
-                                <div>
-                                    <div class="project-title" data-e-type="project" data-e-id="@project.Id">@project.Title</div>
-                                    @if (!string.IsNullOrEmpty(project.OldPlatformId))
-                                    {
-                                        <a href="@project.DiscourseUrl" target="_blank" class="open-discourse-link">
-                                            <i class="fas fa-external-link-alt"></i>
-                                        </a>
-                                    }
-                                </div>
-                            </th>
+                            <td class="project-section-points" data-project-id="@project.Id" data-section-id="@sect.Id">
+                                <div>@judgingPageModel.InitialPoints.Where(p => p.Project.Id == project.Id && p.Criterion.Section.Id == sect.Id).Sum(jc => jc.Points)</div>
+                            </td>
                         }
                     </tr>
-                    </thead>
-                    <tbody>
-
-                    @foreach (var sect in judgingPageModel.JudgingSections)
+                    @foreach (var criterion in sect.Criteria)
                     {
-                        <tr class="section-title-row">
-                            <td data-content="@sect.Description" data-title="@sect.Name" data-toggle="popover" class="crit-td">
-                                <b>@sect.Name</b>
-                            </td>
-                            <td data-content="@sect.Description" data-title="@sect.Name" data-toggle="popover" class="crit-td">
-                                <b>@sect.MaxPoints</b>
-                            </td>
+                        <tr class="inputs-row">
+                            <td data-content="@criterion.Description" data-title="@criterion.Name" data-toggle="popover" class="crit-td" data-e-type="criterion" data-e-id="@criterion.Id">@criterion.Name</td>
+                            <td data-content="@criterion.Description" data-title="@criterion.Name" data-toggle="popover" class="crit-td">@criterion.MaxPoints</td>
                             @foreach (var project in judgingPageModel.Projects)
                             {
-                                <td class="project-section-points" data-project-id="@project.Id" data-section-id="@sect.Id">
-                                    <div>@judgingPageModel.InitialPoints.Where(p => p.Project.Id == project.Id && p.Criterion.Section.Id == sect.Id).Sum(jc => jc.Points)</div>
+                                var givenPoints = judgingPageModel.InitialPoints
+                                    .FirstOrDefault(p => p.Project.Id == project.Id && p.Criterion.Id == criterion.Id)?.Points;
+
+                                var otherJudgesPoints = otherPageModels.SelectMany(jp => jp.InitialPoints)
+                                    .Where(p => p.Project.Id == project.Id && p.Criterion.Id == criterion.Id)
+                                    .Sum(p => p.Points);
+                                var avgCriterionExceptThis = 1f * otherJudgesPoints / otherPageModels.Count;
+
+                                var smellsSomethingWrong = false;
+                                var str = "";
+
+                                if (givenPoints != null)
+                                {
+                                    var ratio = (float) givenPoints / avgCriterionExceptThis - 1;
+                                    smellsSomethingWrong = Math.Abs(ratio) > maxAbsRatioDiff;
+                                    str = $"(diff percent: {ratio * 100:0.##}%)";
+                                }
+
+
+
+                                <td data-project-id="@project.Id" data-criterion-id="@criterion.Id"
+                                    data-toggle="popover" data-content="avg except this judge: @avgCriterionExceptThis @str"
+                                    class="@(smellsSomethingWrong ? "st-wrong-smelled" : "")">
+                                    @givenPoints
                                 </td>
                             }
                         </tr>
-                        @foreach (var criterion in sect.Criteria)
-                        {
-                            <tr class="inputs-row">
-                                <td data-content="@criterion.Description" data-title="@criterion.Name" data-toggle="popover" class="crit-td" data-e-type="criterion" data-e-id="@criterion.Id">@criterion.Name</td>
-                                <td data-content="@criterion.Description" data-title="@criterion.Name" data-toggle="popover" class="crit-td">@criterion.MaxPoints</td>
-                                @foreach (var project in judgingPageModel.Projects)
-                                {
-                                    var initial = judgingPageModel.InitialPoints.FirstOrDefault(p => p.Project.Id == project.Id && p.Criterion.Id == criterion.Id)?.Points.ToString() ?? null;
-                                    <td data-project-id="@project.Id" data-criterion-id="@criterion.Id" class="input-cell @(string.IsNullOrEmpty(initial) ? "bad" : "good")">
-                                        @initial
-                                    </td>
-                                }
-                            </tr>
-                        }
                     }
-                    </tbody>
-                    <tfoot>
-                    <tr class="font-weight-bold">
-                        <td>
-                            Total
-                        </td>
-                        <td>
-                            @judgingPageModel.JudgingSections.Sum(jc => jc.MaxPoints)
-                        </td>
-                        @foreach (var project in judgingPageModel.Projects)
-                        {
-                            <td data-content="@project.Title" data-toggle="popover">
-                                <div class="project-total-points" data-project-id="@project.Id">
-                                    @judgingPageModel.InitialPoints.Where(p => p.Project.Id == project.Id).Sum(jc => jc.Points)
-                                </div>
-                            </td>
-                        }
-                    </tr>
-                    </tfoot>
-                </table>
-            </table>
+                }
+                </tbody>
+                <tfoot>
+                <tr class="font-weight-bold">
+                    <td>
+                        Total
+                    </td>
+                    <td>
+                        @judgingPageModel.JudgingSections.Sum(jc => jc.MaxPoints)
+                    </td>
+                    @foreach (var project in judgingPageModel.Projects)
+                    {
+                        var givenPoints = judgingPageModel.InitialPoints.Where(p => p.Project.Id == project.Id).Sum(jc => jc.Points);
+                        var otherJudgesPoints = otherPageModels.SelectMany(jp => jp.InitialPoints).Where(p => p.Project.Id == project.Id).Sum(jc => jc.Points);
+                        var avgExceptThis = 1f * otherJudgesPoints / otherPageModels.Count;
+                        
+                        
+                        var smellsSomethingWrong = false;
+                        var str = "";
 
+                        if (givenPoints != null)
+                        {
+                            var ratio = (float) givenPoints / avgExceptThis - 1;
+                            smellsSomethingWrong = Math.Abs(ratio) > maxAbsRatioDiff;
+                            str = $"(diff percent: {ratio * 100:0.##}%)";
+                        }
+                        
+                        <td data-content="avg except this judge: @avgExceptThis @str" data-toggle="popover" class="@(smellsSomethingWrong ? "st-wrong-smelled" : "")">
+                            @givenPoints
+                        </td>
+                    }
+                </tr>
+                </tfoot>
+            </table>
         </div>
     }
 </div>
 @using (Html.BeginMStyles())
 {
     <link rel="stylesheet" href="~/judging/assets/judging.css" asp-append-version="true"/>
+    <style>
+        .st-wrong-smelled {
+            background-color: #ffffbf;
+        }
+    </style>
+}
+@using (Html.BeginMPageScripts())
+{
+    @foreach (var judgePage in Model.JudgingPageModels)
+    {
+        <script>
+          $("#judge-table-@judgePage.Judge.Id").dataTable({
+                sort: false,
+                colReorder: false,
+                filter: false,
+                bInfo: false,
+                paging: false,
+                buttons:[ {text: 'Download as CSV', extend: 'csv', title: '@judgePage.Judge.FullName.Split("@")[0]'}, {text: 'Copy as TSV', extend: 'copy'}],
+                dom: "frtip<'d-flex justify-content-end'B>",
+        });
+        </script>
+    }
+    <script>
+        $('body').popover({
+            selector: '.judge-table [data-toggle="popover"][data-content][data-content!=""]',
+            html: true,
+            trigger: 'hover',
+            boundary: 'window',
+            template: '<div class="popover judging-cell-popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>'
+        });
+    </script>
 }
