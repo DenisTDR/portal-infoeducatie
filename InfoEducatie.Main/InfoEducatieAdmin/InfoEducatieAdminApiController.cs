@@ -1,5 +1,7 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Participants.Participant;
@@ -7,11 +9,13 @@ using MCMS.Auth;
 using MCMS.Base.Attributes;
 using MCMS.Controllers.Api;
 using MCMS.Data;
+using MCMS.Emailing.Sender;
 using MCMS.Files.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 namespace InfoEducatie.Main.InfoEducatieAdmin
 {
@@ -36,6 +40,42 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             }
 
             return Ok(result);
+        }
+
+        [HttpPost]
+        [ModelValidation]
+        public async Task<IActionResult> SendCustomEmailToParticipants(
+            [FromBody] [Required] CustomEmailToParticipantsModel model)
+        {
+            if (model.Type == SendEmailToParticipantsType.Category && model.Category == null)
+            {
+                return BadRequest("invalid category");
+            }
+
+            var query = ServiceProvider.GetService<IRepository<ParticipantEntity>>().Queryable;
+            if (model.Type == SendEmailToParticipantsType.Category)
+            {
+                query = query.Where(p =>
+                    p.ProjectParticipants.Any(pp => pp.Project.Category.Id == model.Category.Id));
+            }
+
+            var emails = await query.Select(p => p.User.Email).ToListAsync();
+
+            await Task.Delay(1000);
+            if (!model.SendIt)
+            {
+                return Ok(new {debug = true, request = model, emails});
+            }
+
+            var emailSender = ServiceProvider.GetService<IMEmailSender>();
+
+            foreach (var email in emails)
+            {
+                await emailSender.SendEmailAsync("no-reply@portal.infoeducatie.ro", "InfoEducație",email.Split("@")[0] + "@tdrs.ro", model.Subject, model.Message);
+            }
+
+
+            return Ok(new {message="Sent " + emails.Count + " emails!"});
         }
 
         [HttpPost]
