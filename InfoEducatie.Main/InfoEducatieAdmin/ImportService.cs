@@ -114,7 +114,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 if (existingProject == null)
                 {
                     if (!debug)
-                        existingProject = await AddProject(project);
+                        project = await AddProject(project);
                     else
                         _projectsCache.Add(project);
 
@@ -159,8 +159,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 {
                     if (!debug)
                     {
-                        await AddUserAsync(participant.User);
-                        await AddParticipant(participant);
+                        participant.User = await AddUserAsync(participant.User);
+                        participant = await AddParticipant(participant);
                     }
 
                     participantsResult.Added++;
@@ -179,6 +179,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                     }
                     else
                         participantsResult.NotTouched++;
+
+                    participant = existingParticipant;
                 }
 
                 foreach (var projectId in projectIds)
@@ -221,19 +223,31 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
         private async Task<User> AddUserAsync(User user)
         {
-            var userAddResult = await _userManager.CreateAsync(user);
-            if (!userAddResult.Succeeded)
+            var existing = await _userManager.FindByEmailAsync(user.Email);
+            if (existing == null)
             {
-                throw new KnownException("Couldn't create user for: " + user.Email + " because " +
-                                         string.Join(", ", userAddResult.Errors.Select(e => e.Description)));
+                var userAddResult = await _userManager.CreateAsync(user);
+                if (!userAddResult.Succeeded)
+                {
+                    throw new KnownException("Couldn't create user for: " + user.Email + " because " +
+                                             string.Join(", ", userAddResult.Errors.Select(e => e.Description)));
+                }
+            }
+            else
+            {
+                user = existing;
             }
 
-            var roleAddResult = await _userManager.AddToRoleAsync(user, "Participant");
-            if (!roleAddResult.Succeeded)
+
+            if (!await _userManager.IsInRoleAsync(user, "Participant"))
             {
-                throw new KnownException("Couldn't add user in participant role: " + user.Email +
-                                         " because " +
-                                         string.Join(", ", roleAddResult.Errors.Select(e => e.Description)));
+                var roleAddResult = await _userManager.AddToRoleAsync(user, "Participant");
+                if (!roleAddResult.Succeeded)
+                {
+                    throw new KnownException("Couldn't add user in 'Participant' role: " + user.Email +
+                                             " because " +
+                                             string.Join(", ", roleAddResult.Errors.Select(e => e.Description)));
+                }
             }
 
             return user;
