@@ -109,7 +109,13 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             {
                 ExpandoObject recordEo = projectsCsvReader.GetRecord<dynamic>();
                 var recordDict = recordEo.ToDictionary(kvp => kvp.Key, kvp => kvp.Value?.ToString());
-                var project = ProjectFrom(recordDict, opResponse.FirstOrDefault(p => p.Id == recordDict["Id"]), cats);
+                var opApiObj = opResponse.FirstOrDefault(p => p.Id == recordDict["Id"]);
+                if (opApiObj == null)
+                {
+                    continue;
+                }
+
+                var project = ProjectFrom(recordDict, opApiObj, cats);
                 var existingProject = GetProjectCaching(project.OldPlatformId);
                 if (existingProject == null)
                 {
