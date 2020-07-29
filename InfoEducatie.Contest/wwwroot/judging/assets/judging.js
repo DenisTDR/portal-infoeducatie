@@ -35,6 +35,7 @@ function initializeJudgingTable() {
     initializeJudgingInputFields();
     initializeVerticalTabNavigation();
     initializeForcedFocusOnInput();
+    disableMouseScrollOnInputNumberInputs();
 }
 
 function initializeVerticalTabNavigation() {
@@ -47,7 +48,7 @@ function initializeVerticalTabNavigation() {
         var tdIndex = _this.closest("td").index();
         var crtTr = _this.closest("tr");
         var targetTr = e.shiftKey ? crtTr.prevAll("tr.inputs-row:first") : crtTr.nextAll("tr.inputs-row:first");
-        targetTr.children().eq(tdIndex).find("input").focus()
+        targetTr.children().eq(tdIndex).find("input").focus();
     });
 }
 
@@ -92,6 +93,19 @@ function initializeJudgingInputFields() {
     });
     $('.judging-table').on('click', ".input-cell.saving-error", function (e) {
         $(this).closest('td').find('input').blur();
+    });
+}
+
+function disableMouseScrollOnInputNumberInputs() {
+    // code stolen from https://stackoverflow.com/a/20838527
+    var judgeTable =  $('.judging-table');
+    judgeTable.on('focus', 'input[type=number]', function (e) {
+        $(this).on('wheel.disableScroll', function (e) {
+            e.preventDefault();
+        });
+    });
+    judgeTable.on('blur', 'input[type=number]', function (e) {
+        $(this).off('wheel.disableScroll');
     });
 }
 
