@@ -12,6 +12,7 @@ namespace InfoEducatie.Contest.Judging.Judges
     public class JudgeViewModel : ViewModel
     {
         public string FullName { get; set; }
+        public bool IsVicePresident { get; set; }
         [TableColumn(Hidden = true)] public bool EmailConfirmed { get; set; }
         [TableColumn(Hidden = true)] public string Email { get; set; }
 

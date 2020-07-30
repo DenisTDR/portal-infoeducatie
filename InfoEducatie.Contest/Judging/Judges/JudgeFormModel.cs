@@ -13,6 +13,8 @@ namespace InfoEducatie.Contest.Judging.Judges
         [FormlySelect(typeof(CategoriesAdminApiController))]
         public CategoryViewModel Category { get; set; }
 
+        [FormlyFieldDefaultValue(false)] public bool IsVicePresident { get; set; }
+
         [FormlyFieldDefaultValue(JudgeType.Both)]
         public JudgeType AvailableFor { get; set; }
     }
