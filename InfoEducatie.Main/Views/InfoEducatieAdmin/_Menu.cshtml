@@ -22,3 +22,8 @@
         <a asp-action="SendCustomEmailToParticipants">Send custom email to participants</a>
     </li>
 </ul>
+@{
+    link = new MRichLink("Build Xlsx", typeof(InfoEducatieAdminController), nameof(InfoEducatieAdminController.BuildXlsxs))
+        .WithModal().WithValues(null);
+}
+<partial name="Partials/_MRichLink" model="link"/>

@@ -28,6 +28,7 @@ namespace InfoEducatie.Main
             });
 
             services.AddScoped<ImportService>();
+            services.AddScoped<FinalXlsxExportService>();
         }
 
         private void ConfigureMenu(MenuConfig config)

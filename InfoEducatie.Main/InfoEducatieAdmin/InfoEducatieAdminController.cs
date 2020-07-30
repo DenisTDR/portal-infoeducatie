@@ -32,6 +32,11 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         {
             return View();
         }
+        [ViewLayout("_ModalLayout")]
+        public IActionResult BuildXlsxs()
+        {
+            return View();
+        }
 
         [HttpGet]
         public IActionResult DeleteParticipants()

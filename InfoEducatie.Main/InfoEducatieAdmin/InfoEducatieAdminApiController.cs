@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Participants.Participant;
 using MCMS.Auth;
 using MCMS.Base.Attributes;
@@ -92,6 +93,24 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                     "InfoEducație 2020 - Important", EmailBody);
                 participantEntity.ActivationEmailSent = true;
                 await participantsRepo.SaveChanges();
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BuildFinalShitsForAllCategories()
+        {
+            var service = ServiceProvider.GetService<FinalXlsxExportService>();
+            var catsService = ServiceProvider.GetService<IRepository<CategoryEntity>>();
+            var cats = await catsService.GetAll();
+            foreach (var categoryEntity in cats)
+            {
+                var wb = await service.BuildWorkbookForCategory(categoryEntity);
+                var filePath = "/home/nm/Desktop/ie-docs/" + categoryEntity.Slug + ".xlsx";
+                Console.WriteLine("Saving to " + filePath);
+                wb.SaveAs(filePath);
+                // break;
             }
 
             return Ok();

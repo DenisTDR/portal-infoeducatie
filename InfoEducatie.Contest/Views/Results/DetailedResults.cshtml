@@ -101,7 +101,6 @@
                                 }
 
 
-
                                 <td data-project-id="@project.Id" data-criterion-id="@criterion.Id"
                                     data-toggle="popover" data-content="avg except this judge: @avgCriterionExceptThis @str"
                                     class="@(smellsSomethingWrong ? "st-wrong-smelled" : "")">
@@ -125,18 +124,11 @@
                         var givenPoints = judgingPageModel.InitialPoints.Where(p => p.Project.Id == project.Id).Sum(jc => jc.Points);
                         var otherJudgesPoints = otherPageModels.SelectMany(jp => jp.InitialPoints).Where(p => p.Project.Id == project.Id).Sum(jc => jc.Points);
                         var avgExceptThis = 1f * otherJudgesPoints / otherPageModels.Count;
-                        
-                        
-                        var smellsSomethingWrong = false;
-                        var str = "";
 
-                        if (givenPoints != null)
-                        {
-                            var ratio = (float) givenPoints / avgExceptThis - 1;
-                            smellsSomethingWrong = Math.Abs(ratio) > maxAbsRatioDiff;
-                            str = $"(diff percent: {ratio * 100:0.##}%)";
-                        }
-                        
+                        var ratio = givenPoints / avgExceptThis - 1;
+                        var smellsSomethingWrong = Math.Abs(ratio) > maxAbsRatioDiff;
+                        var str = $"(diff percent: {ratio * 100:0.##}%)";
+
                         <td data-content="avg except this judge: @avgExceptThis @str" data-toggle="popover" class="@(smellsSomethingWrong ? "st-wrong-smelled" : "")">
                             @givenPoints
                         </td>
@@ -150,11 +142,6 @@
 @using (Html.BeginMStyles())
 {
     <link rel="stylesheet" href="~/judging/assets/judging.css" asp-append-version="true"/>
-    <style>
-        .st-wrong-smelled {
-            background-color: #ffffbf;
-        }
-    </style>
 }
 @using (Html.BeginMPageScripts())
 {
