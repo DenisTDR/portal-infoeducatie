@@ -28,10 +28,18 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         {
             return View();
         }
+
         public IActionResult SendCustomEmailToParticipants()
         {
             return View();
         }
+
+        [ViewLayout("_ModalLayout")]
+        public IActionResult CloneCriteriaFromProjectToOpenForCategory()
+        {
+            return View();
+        }
+
         [ViewLayout("_ModalLayout")]
         public IActionResult BuildXlsxs()
         {

@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Categories;
+using InfoEducatie.Contest.Judging.JudgingCriteria;
+using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
 using InfoEducatie.Contest.Participants.Participant;
 using MCMS.Auth;
 using MCMS.Base.Attributes;
@@ -17,6 +19,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 namespace InfoEducatie.Main.InfoEducatieAdmin
 {
@@ -78,6 +81,59 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
 
             return Ok(new {message = "Sent " + emails.Count + " emails!"});
+        }
+
+        [HttpPost]
+        [ModelValidation]
+        public async Task<IActionResult> CloneCriteriaFromProjectToOpenForCategory(
+            [FromBody] [Required] CloneCriteriaFromProjectToOpenForCategoryFormModel model)
+        {
+            var catsRepo = ServiceProvider.GetService<IRepository<CategoryEntity>>();
+            var criteriaRepo = ServiceProvider.GetService<IRepository<JudgingCriterionEntity>>();
+            var sectionsRepo = ServiceProvider.GetService<IRepository<JudgingCriteriaSectionEntity>>();
+            sectionsRepo.ChainQueryable(q => q.Include(s => s.Criteria));
+
+            var category = await catsRepo.GetOneOrThrow(model.Category.Id);
+            var result = new {addedSections = 0, addedCriteria = 0, removedSections = 0, removedCriteria = 0};
+            var addedSections = 0;
+            var addedCriteria = 0;
+            var removedSections = 0;
+            var removedCriteria = 0;
+            if (model.RemoveExistingOpenCriteriaFirst)
+            {
+                var criteriaToDelete =
+                    await criteriaRepo.GetAll(s => s.Type == JudgingType.Open && s.Category.Id == model.Category.Id);
+                removedCriteria = criteriaToDelete.Count;
+                criteriaRepo.DbSet.RemoveRange(criteriaToDelete);
+
+                var sectionsToDelete =
+                    await sectionsRepo.GetAll(s => s.Type == JudgingType.Open && s.Category.Id == model.Category.Id);
+                removedSections = sectionsToDelete.Count;
+                sectionsRepo.DbSet.RemoveRange(sectionsToDelete);
+
+                await sectionsRepo.SaveChanges();
+            }
+
+            var sections = await sectionsRepo.Queryable
+                .Where(s => s.Type == JudgingType.Project && s.Category.Id == model.Category.Id).AsNoTracking()
+                .ToListAsync();
+            foreach (var section in sections)
+            {
+                section.Category = category;
+                section.Type = JudgingType.Open;
+                section.Id = null;
+                section.Criteria.ForEach(c =>
+                {
+                    c.Type = JudgingType.Open;
+                    c.Category = category;
+                    c.Id = null;
+                });
+                await sectionsRepo.Add(section);
+                addedSections++;
+                addedCriteria += section.Criteria.Count;
+            }
+
+            return Ok(new {addedSections, addedCriteria, removedSections, removedCriteria});
         }
 
         [HttpPost]

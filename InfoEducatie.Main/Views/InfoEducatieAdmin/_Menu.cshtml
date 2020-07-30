@@ -19,11 +19,20 @@
         <partial name="Partials/_MRichLink" model="link"/>
     </li>
     <li>
+        @{
+            link = new MRichLink("Clone Criteria From Project To Open For Category", typeof(InfoEducatieAdminController), nameof(InfoEducatieAdminController.CloneCriteriaFromProjectToOpenForCategory))
+                .WithModal().WithValues(null);
+        }
+        <partial name="Partials/_MRichLink" model="link"/>
+    </li>
+    <li>
         <a asp-action="SendCustomEmailToParticipants">Send custom email to participants</a>
     </li>
+    <li>
+        @{
+            link = new MRichLink("Build Xlsx", typeof(InfoEducatieAdminController), nameof(InfoEducatieAdminController.BuildXlsxs))
+                .WithModal().WithValues(null);
+        }
+        <partial name="Partials/_MRichLink" model="link"/>
+    </li>
 </ul>
-@{
-    link = new MRichLink("Build Xlsx", typeof(InfoEducatieAdminController), nameof(InfoEducatieAdminController.BuildXlsxs))
-        .WithModal().WithValues(null);
-}
-<partial name="Partials/_MRichLink" model="link"/>
