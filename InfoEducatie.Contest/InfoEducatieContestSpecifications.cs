@@ -11,6 +11,7 @@ using InfoEducatie.Contest.Participants.Project;
 using InfoEducatie.Contest.Participants.ProjectParticipant;
 using MCMS.Base.Builder;
 using MCMS.Display.Menu;
+using MCMS.Display.Link;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InfoEducatie.Contest
@@ -33,6 +34,8 @@ namespace InfoEducatie.Contest
                 {
                     new MenuLink("Judging", typeof(JudgingController),
                         nameof(JudgingController.Index)).WithIconClasses("fas fa-gavel").RequiresRoles("Jury"),
+                    new MenuLink("Judging Open", typeof(JudgingController), nameof(JudgingController.Index))
+                        .WithIconClasses("fas fa-gavel").RequiresRoles("Jury").WithValues(new {type = "open"}),
                     new MenuLink("Judges", typeof(JudgesAdminController),
                         nameof(JudgesAdminController.Index)).RequiresRoles("Moderator"),
                     new MenuLink("Judging criteria", typeof(JudgingCriteriaAdminController),
@@ -41,12 +44,11 @@ namespace InfoEducatie.Contest
                         nameof(JudgingCriteriaSectionsAdminController.Index)).RequiresRoles("Moderator"),
                     new MenuLink("Judging criteria points", typeof(ProjectJudgingCriterionPointsAdminController),
                         nameof(ProjectJudgingCriterionPointsAdminController.Index)).RequiresRoles("God"),
-                    new MenuLink("Results", typeof(ResultsController),
-                            nameof(ResultsController.Index)).WithIconClasses("fas fa-list-ol")
-                        .RequiresRoles("Jury", "Moderator"),
+                    new MenuLink("Results", typeof(ResultsController), nameof(ResultsController.Index))
+                        .WithIconClasses("fas fa-list-ol").RequiresRoles("Jury", "Moderator"),
                     new MenuLink("Detailed results", typeof(ResultsController),
-                            nameof(ResultsController.DetailedResults)).WithIconClasses("fas fa-search")
-                        .RequiresRoles("Jury", "Moderator"),
+                            nameof(ResultsController.DetailedResults))
+                        .WithIconClasses("fas fa-search").RequiresRoles("Jury", "Moderator"),
                 }
             }.RequiresRoles("Moderator", "Jury"));
             config.Items.Add(new MenuSection

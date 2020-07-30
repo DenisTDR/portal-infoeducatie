@@ -55,7 +55,7 @@ namespace InfoEducatie.Contest.Judging.Judging
 
         public async Task<JudgingPageModel> BuildJudgingPageModel(JudgeEntity judge, JudgingType type)
         {
-            var model = new JudgingPageModel {Judge = judge};
+            var model = new JudgingPageModel {Judge = judge, Type = type};
             if (type == JudgingType.Open)
             {
                 ProjectsRepo.ChainQueryable(q => q.Where(p => p.IsInOpen));
@@ -81,7 +81,8 @@ namespace InfoEducatie.Contest.Judging.Judging
             return model;
         }
 
-        public async Task<Dictionary<string, object>> SetPoints(JudgeEntity judge, string criterionId, string projectId, int points)
+        public async Task<Dictionary<string, object>> SetPoints(JudgeEntity judge, string criterionId, string projectId,
+            int points)
         {
             var existing = await PointsRepo.GetOne(p =>
                 p.Judge == judge && p.Criterion.Id == criterionId && p.Project.Id == projectId);

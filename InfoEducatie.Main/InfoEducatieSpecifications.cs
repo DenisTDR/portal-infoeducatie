@@ -9,6 +9,7 @@ using MCMS.Base.Builder;
 using MCMS.Builder;
 using MCMS.Common.Translations.Translations;
 using MCMS.Data;
+using MCMS.Display.Link;
 using MCMS.Display.Menu;
 using MCMS.Files.Controllers;
 using Microsoft.Extensions.DependencyInjection;
