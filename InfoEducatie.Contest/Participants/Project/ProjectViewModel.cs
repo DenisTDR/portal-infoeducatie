@@ -27,6 +27,8 @@ namespace InfoEducatie.Contest.Participants.Project
         public string OldPlatformId { get; set; }
         public string DiscourseUrl { get; set; }
         [TableColumn] public bool IsInOpen { get; set; }
+        public float ScoreProject { get; set; }
+        public float ScoreOpen { get; set; }
 
         [DetailsField(Hidden = true)]
         [JsonIgnore]

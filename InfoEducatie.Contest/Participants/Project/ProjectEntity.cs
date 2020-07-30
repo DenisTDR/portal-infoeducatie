@@ -22,6 +22,9 @@ namespace InfoEducatie.Contest.Participants.Project
         public string DiscourseUrl { get; set; }
         public bool IsInOpen { get; set; }
 
+        public float ScoreProject { get; set; }
+        public float ScoreOpen { get; set; }
+
 
         public List<ProjectParticipantEntity> ProjectParticipants { get; set; }
         public List<ParticipantEntity> Participants => ProjectParticipants?.Select(p => p.Participant).ToList();

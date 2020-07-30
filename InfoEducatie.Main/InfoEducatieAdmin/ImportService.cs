@@ -291,6 +291,9 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 SchoolCounty = record["School county"],
                 SchoolCountry = record["School country"],
                 SchoolCity = record["School city"],
+                IdCardSeries = record["Id card type"],
+                IdCardNumber = record["Id card number"],
+                Cnp = record["Cnp"],
                 MentoringTeacher = record["Mentoring teacher first name"] + " " + record["Mentoring teacher last name"],
                 User = new User
                 {
@@ -348,7 +351,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             };
             foreach (var op in doc.Operations.ToList())
             {
-                if (forbiddenProps.Any(fprop => op.path.StartsWith(fprop)))
+                if (forbiddenProps.Any(fprop => op.path == fprop || op.path.StartsWith(fprop + "/")))
                 {
                     doc.Operations.Remove(op);
                 }
@@ -365,7 +368,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         {
             "Address", "City", "County", "Country", "Zip code", "Sex", "Phone number", "School name", "Grade",
             "School county", "School city", "School country", "Mentoring teacher first name",
-            "Mentoring teacher last name", "Email [User]", "First name [User]", "Last name [User]", "Id [Projects]"
+            "Mentoring teacher last name", "Email [User]", "First name [User]", "Last name [User]", "Id [Projects]",
+            "Id card type", "Id card number", "Cnp"
         };
     }
 }
