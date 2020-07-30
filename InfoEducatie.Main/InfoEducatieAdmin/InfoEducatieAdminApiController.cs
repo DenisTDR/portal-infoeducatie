@@ -2,21 +2,21 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Participants.Participant;
 using MCMS.Auth;
 using MCMS.Base.Attributes;
+using MCMS.Base.Helpers;
 using MCMS.Controllers.Api;
 using MCMS.Data;
 using MCMS.Emailing.Sender;
+using MCMS.Files;
 using MCMS.Files.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace InfoEducatie.Main.InfoEducatieAdmin
 {
@@ -104,13 +104,18 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             var service = ServiceProvider.GetService<FinalXlsxExportService>();
             var catsService = ServiceProvider.GetService<IRepository<CategoryEntity>>();
             var cats = await catsService.GetAll();
+            var dir = Env.GetOrThrow("RESULTS_PATH");
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
             foreach (var categoryEntity in cats)
             {
                 var wb = await service.BuildWorkbookForCategory(categoryEntity);
-                var filePath = "/home/nm/Desktop/ie-docs/" + categoryEntity.Slug + ".xlsx";
+                var filePath = Path.Combine(dir, categoryEntity.Slug + ".xlsx");
                 Console.WriteLine("Saving to " + filePath);
                 wb.SaveAs(filePath);
-                // break;
             }
 
             return Ok();
