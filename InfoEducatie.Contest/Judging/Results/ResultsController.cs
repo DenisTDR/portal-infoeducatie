@@ -60,7 +60,7 @@ namespace InfoEducatie.Contest.Judging.Results
             var judges = await JudgesRepo.GetAll(j => j.Category == targetCategory);
 
             model.JudgingPageModels = new List<JudgingPageModel>();
-
+            
             foreach (var judge in judges)
             {
                 model.JudgingPageModels.Add(await JudgingService.BuildJudgingPageModel(judge, JudgingType.Project));

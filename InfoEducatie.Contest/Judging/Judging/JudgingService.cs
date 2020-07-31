@@ -56,14 +56,12 @@ namespace InfoEducatie.Contest.Judging.Judging
         public async Task<JudgingPageModel> BuildJudgingPageModel(JudgeEntity judge, JudgingType type)
         {
             var model = new JudgingPageModel {Judge = judge, Type = type};
-            if (type == JudgingType.Open)
-            {
-                ProjectsRepo.ChainQueryable(q => q.Where(p => p.IsInOpen));
-            }
+
+            var projectsE = await ProjectsRepo.GetAll(p =>
+                p.Category == judge.Category && (type == JudgingType.Project || p.IsInOpen));
 
             model.Category = judge.Category;
-            model.Projects =
-                Mapper.Map<List<ProjectViewModel>>(await ProjectsRepo.GetAll(p => p.Category == judge.Category));
+            model.Projects = Mapper.Map<List<ProjectViewModel>>(projectsE);
 
             var sections = await SectionsRepo.GetAll(s => s.Category == model.Category && s.Type == type);
             foreach (var section in sections)
