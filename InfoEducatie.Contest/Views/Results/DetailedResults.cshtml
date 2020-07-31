@@ -22,9 +22,9 @@
     @foreach (var judgingPageModel in Model.JudgingPageModels)
     {
         <li class="nav-item">
-            <a class="nav-link @(Model.JudgingPageModels.First() == judgingPageModel ? "active" : "")" id="judge-tab-@judgingPageModel.Judge.Id" data-toggle="tab" href="#judge-panel-@judgingPageModel.Judge.Id"
+            <a class="nav-link @(Model.JudgingPageModels.First() == judgingPageModel ? "active" : "")" id="judge-tab-@judgingPageModel.Judge.Id" data-toggle="tab" href="#judge-panel-@judgingPageModel.Type-@judgingPageModel.Judge.Id"
                role="tab" aria-controls="home" aria-selected="false">
-                @judgingPageModel.Judge.FullName
+                @judgingPageModel.Judge.FullName @judgingPageModel.Type
             </a>
         </li>
     }
@@ -35,8 +35,8 @@
     {
         var otherPageModels = Model.JudgingPageModels.Where(jp => jp != judgingPageModel).ToList();
 
-        <div class="tab-pane fade @(Model.JudgingPageModels.First() == judgingPageModel ? "show active" : "")" id="judge-panel-@judgingPageModel.Judge.Id" role="tabpanel" aria-labelledby="judge-tab-@judgingPageModel.Judge.Id">
-            <table id="judge-table-@judgingPageModel.Judge.Id" class="judge-table table table-striped table-bordered judging-table">
+        <div class="tab-pane fade @(Model.JudgingPageModels.First() == judgingPageModel ? "show active" : "")" id="judge-panel-@judgingPageModel.Type-@judgingPageModel.Judge.Id" role="tabpanel" aria-labelledby="judge-tab-@judgingPageModel.Judge.Id">
+            <table id="judge-table-@judgingPageModel.Type-@judgingPageModel.Judge.Id" class="judge-table table table-striped table-bordered judging-table">
                 <thead>
                 <tr>
                     <th>Criteria</th>
@@ -88,7 +88,7 @@
                                 var otherJudgesPoints = otherPageModels.SelectMany(jp => jp.InitialPoints)
                                     .Where(p => p.Project.Id == project.Id && p.Criterion.Id == criterion.Id)
                                     .Sum(p => p.Points);
-                                var avgCriterionExceptThis = 1f * otherJudgesPoints / otherPageModels.Count;
+                                var avgCriterionExceptThis = 1f * otherJudgesPoints / otherPageModels.Count(op => op.Type == judgingPageModel.Type);
 
                                 var smellsSomethingWrong = false;
                                 var str = "";
@@ -121,9 +121,13 @@
                     </td>
                     @foreach (var project in judgingPageModel.Projects)
                     {
-                        var givenPoints = judgingPageModel.InitialPoints.Where(p => p.Project.Id == project.Id).Sum(jc => jc.Points);
-                        var otherJudgesPoints = otherPageModels.SelectMany(jp => jp.InitialPoints).Where(p => p.Project.Id == project.Id).Sum(jc => jc.Points);
-                        var avgExceptThis = 1f * otherJudgesPoints / otherPageModels.Count;
+                        var givenPoints = judgingPageModel.InitialPoints
+                            .Where(p => p.Project.Id == project.Id && p.Criterion.Type == judgingPageModel.Type)
+                            .Sum(jc => jc.Points);
+                        var otherJudgesPoints = otherPageModels.SelectMany(jp => jp.InitialPoints)
+                            .Where(p => p.Project.Id == project.Id && p.Criterion.Type == judgingPageModel.Type)
+                            .Sum(jc => jc.Points);
+                        var avgExceptThis = 1f * otherJudgesPoints / otherPageModels.Count(op => op.Type == judgingPageModel.Type);
 
                         var ratio = givenPoints / avgExceptThis - 1;
                         var smellsSomethingWrong = Math.Abs(ratio) > maxAbsRatioDiff;
@@ -153,7 +157,7 @@
     @foreach (var judgePage in Model.JudgingPageModels)
     {
         <script>
-          $("#judge-table-@judgePage.Judge.Id").dataTable({
+          $("#judge-table-@judgePage.Type-@judgePage.Judge.Id").dataTable({
                 sort: false,
                 colReorder: false,
                 filter: false,

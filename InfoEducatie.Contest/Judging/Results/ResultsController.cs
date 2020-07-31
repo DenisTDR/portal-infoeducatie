@@ -64,6 +64,7 @@ namespace InfoEducatie.Contest.Judging.Results
             foreach (var judge in judges)
             {
                 model.JudgingPageModels.Add(await JudgingService.BuildJudgingPageModel(judge, JudgingType.Project));
+                model.JudgingPageModels.Add(await JudgingService.BuildJudgingPageModel(judge, JudgingType.Open));
             }
 
             return View(model);
