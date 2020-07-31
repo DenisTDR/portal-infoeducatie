@@ -105,11 +105,15 @@ namespace InfoEducatie.Contest.Judging.Judging
                 });
             }
 
-            var projectPoints = await PointsRepo.DbSet.Where(p => p.Judge == judge && p.Project.Id == projectId)
+            var judgingType = await JudgingCriteriaRepo.Queryable.Where(jc => jc.Id == criterionId)
+                .Select(jc => jc.Type).FirstOrDefaultAsync();
+
+            var projectPoints = await PointsRepo.DbSet.Where(p =>
+                    p.Criterion.Type == judgingType && p.Judge == judge && p.Project.Id == projectId)
                 .SumAsync(p => p.Points);
 
             var sectionsPoints = await PointsRepo.DbSet
-                .Where(p => p.Judge == judge && p.Project.Id == projectId)
+                .Where(p => p.Criterion.Type == judgingType && p.Judge == judge && p.Project.Id == projectId)
                 .GroupBy(p => p.Criterion.Section.Id)
                 .Select(g => new {Id = g.Key, Points = g.Sum(p => p.Points)}).ToListAsync();
 
