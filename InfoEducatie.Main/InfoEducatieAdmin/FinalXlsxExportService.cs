@@ -47,6 +47,10 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 .Include(gp => gp.Criterion)
                 .ThenInclude(c => c.Section)
             );
+            ProjectsRepo.ChainQueryable(q => q
+                .Include(p => p.ProjectParticipants)
+                .ThenInclude(pp => pp.Participant)
+                .ThenInclude(p => p.User));
         }
 
         public async Task<XLWorkbook> BuildWorkbookForCategory(CategoryEntity category)
@@ -54,50 +58,172 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             var workbook = new XLWorkbook();
             workbook.Style.Font.FontName = "Times new roman";
 
-            var proiects = await ProjectsRepo.GetAll(p => p.Category == category);
+            var projects = await ProjectsRepo.GetAll(p => p.Category == category);
             var judges = await JudgesRepo.GetAll(j => j.Category == category);
+            var allCriteriaSections = await SectionsRepo.GetAll(s => s.Category == category);
+            var allPoints = await GivenPointsRepo.GetAll(p => p.Criterion.Category == category);
 
-            BuildProjectsSheet(workbook.Worksheets.Add("Listă proiecte"), proiects, category,
+            var projectCriteriaSections = allCriteriaSections.FindAll(s => s.Type == JudgingType.Project);
+            var projectGivenPoints = allPoints.FindAll(gp => gp.Criterion.Type == JudgingType.Project);
+            var openCriteriaSections = allCriteriaSections.FindAll(s => s.Type == JudgingType.Open);
+            var openGivenPoints = allPoints.FindAll(gp => gp.Criterion.Type == JudgingType.Open);
+            var openProjects = projects.Where(p => p.IsInOpen).ToList();
+
+            BuildProjectsSheet(workbook.Worksheets.Add("Listă proiecte"), projects, category,
                 judges.FirstOrDefault(j => j.IsVicePresident));
 
             #region BI
-
-            var projectCriteriaSections =
-                await SectionsRepo.GetAll(s => s.Category == category && s.Type == JudgingType.Project);
-
-            var projectGivenPoints = await GivenPointsRepo.GetAll(gp =>
-                gp.Criterion.Category == category && gp.Criterion.Type == JudgingType.Project);
 
             foreach (var judge in judges)
             {
                 var sheetTitle = "BI - " + judge.FullName;
                 sheetTitle = sheetTitle.Substring(0, Math.Min(sheetTitle.Length, 31));
-                BuildBorderouIndividual(workbook.Worksheets.Add(sheetTitle), judge, proiects, projectCriteriaSections,
-                    projectGivenPoints.FindAll(p => p.Judge.Id == judge.Id));
-            }
+                // BuildBorderouIndividual(workbook.Worksheets.Add(sheetTitle), judge, projects, projectCriteriaSections,
+                // projectGivenPoints.FindAll(p => p.Judge.Id == judge.Id));
 
-            #endregion
-
-            #region BIO
-
-            var openCriteriaSections =
-                await SectionsRepo.GetAll(s => s.Category == category && s.Type == JudgingType.Open);
-
-            var openGivenPoints = await GivenPointsRepo.GetAll(gp =>
-                gp.Criterion.Category == category && gp.Criterion.Type == JudgingType.Open);
-
-            foreach (var judge in judges)
-            {
-                var sheetTitle = "BIO - " + judge.FullName;
+                sheetTitle = "BIO - " + judge.FullName;
                 sheetTitle = sheetTitle.Substring(0, Math.Min(sheetTitle.Length, 31));
-                BuildBorderouIndividual(workbook.Worksheets.Add(sheetTitle), judge, proiects, openCriteriaSections,
-                    openGivenPoints.FindAll(p => p.Judge.Id == judge.Id), true);
+                // BuildBorderouIndividual(workbook.Worksheets.Add(sheetTitle), judge, openProjects, openCriteriaSections,
+                // openGivenPoints.FindAll(p => p.Judge.Id == judge.Id), true);
             }
 
             #endregion
 
+            CalcPoints(projects, allPoints, judges);
+
+            #region BFs
+
+            projects = projects.OrderByDescending(p => p.ScoreProject).ToList();
+            BuildBorderouFinal(workbook.Worksheets.Add("Borderou final"), judges, projects, projectGivenPoints,
+                category);
+            projects = projects.OrderByDescending(p => p.ScoreOpen).ToList();
+            BuildBorderouFinal(workbook.Worksheets.Add("Borderou final OPEN"), judges, openProjects, openGivenPoints,
+                category, true);
+
+            #endregion
+
+
+            #region RF
+
+            projects = projects.OrderByDescending(p => p.ScoreProject).ToList();
+            BuildResultsSheet(workbook.Worksheets.Add("Rezultate înainte OPEN"), projects, projectGivenPoints, category,
+                judges);
+            projects = projects.OrderByDescending(p => p.ScoreProject + p.ScoreOpen).ToList();
+            BuildResultsSheet(workbook.Worksheets.Add("Rezultate finale"), projects, allPoints, category, judges, true);
+
+            #endregion
 
             return workbook;
+        }
+
+        private void CalcPoints(List<ProjectEntity> projects, List<ProjectJudgingCriterionPointsEntity> points,
+            List<JudgeEntity> judges)
+        {
+            foreach (var projectEntity in projects)
+            {
+                projectEntity.ScoreProject =
+                    1f * points.Where(p => p.Project == projectEntity && p.Criterion.Type == JudgingType.Project)
+                        .Sum(p => p.Points)
+                    / judges.Count;
+                projectEntity.ScoreOpen =
+                    1f * points.Where(p => p.Project == projectEntity && p.Criterion.Type == JudgingType.Open)
+                        .Sum(p => p.Points)
+                    / judges.Count;
+            }
+        }
+
+        private void BuildResultsSheet(IXLWorksheet ws, List<ProjectEntity> projects,
+            List<ProjectJudgingCriterionPointsEntity> points, CategoryEntity category, List<JudgeEntity> judges,
+            bool withOpen = false)
+        {
+            PutPageHeader(ws);
+            var th = new List<string>
+            {
+                "Nr. Crt.", "Denumire proiect", "Nume și prenume elev", "Unitate de învățământ", "Localitate", "Județ",
+                // "MEN", 
+            };
+
+            if (!withOpen)
+            {
+                th.Add("Punctaj total");
+            }
+            else
+            {
+                th.Add("Punctaj inițial");
+                th.Add("Punctaj Open");
+                th.Add("Punctaj Final");
+            }
+
+            SetTitle(ws, $"REZULTATE {(withOpen ? "FINALE" : "ÎNAINTE DE OPEN")} SECȚIUNEA {category.Name.ToUpper()}",
+                7, th.Count);
+
+            int crtRow = 9;
+            var firstCol = 'A';
+            var tableData = new List<List<string>> {th};
+
+            foreach (var project in projects)
+            {
+                foreach (var participant in project.Participants)
+                {
+                    var row = new List<string>
+                    {
+                        project.Title, $"{participant.LastName} {participant.FirstName}", participant.School,
+                        participant.City, participant.County,
+                    };
+                    if (!withOpen)
+                    {
+                        row.Add(project.ScoreProject.ToString());
+                    }
+                    else
+                    {
+                        row.Add(project.ScoreProject.ToString());
+                        row.Add(project.ScoreOpen.ToString());
+                        row.Add(
+                            $"={(char) (firstCol + row.Count - 1)}<crtRow>+{(char) (firstCol + row.Count)}<crtRow>");
+                    }
+
+                    tableData.Add(row);
+                }
+            }
+
+            SetTableContent(ws, ref crtRow, tableData, false, true, firstCol);
+            SetWhoSigns(ws, ref crtRow,
+                new Tuple<string, string>("VICEPREȘEDINTE", judges.FirstOrDefault(j => j.IsVicePresident)?.FullName),
+                new Tuple<string, List<string>>("MEMBRI EVALUATORI",
+                    judges.Where(j => !j.IsVicePresident).Select(j => j.FullName).ToList()), th.Count);
+        }
+
+        private void BuildBorderouFinal(IXLWorksheet ws, List<JudgeEntity> judges, List<ProjectEntity> projects,
+            List<ProjectJudgingCriterionPointsEntity> points, CategoryEntity category, bool isOpen = false)
+        {
+            PutPageHeader(ws);
+            var th = new List<string> {"Nr. Crt.", "Denumire proiect"};
+            th.AddRange(judges.Select(j => "Punctaj\n" + j.FullName).Append("Media"));
+            SetTitle(ws,
+                $"BORDEROU{(isOpen ? " OPEN" : "")} SECȚIUNEA {category.Name.ToUpper()}", 7, th.Count);
+
+            int crtRow = 9;
+
+            var firstCol = 'A';
+            var tableData = new List<List<string>> {th};
+
+            foreach (var project in projects)
+            {
+                var row = new List<string> {project.Title};
+                row.AddRange(judges.Select(j =>
+                {
+                    return points.Where(p => p.Judge == j && p.Project == project).Sum(p => p.Points).ToString();
+                }));
+                row.Add($"=TRUNC(AVERAGE({(char) (firstCol + 2)}<crtRow>:{(char) (firstCol + row.Count)}<crtRow>), 2)");
+                tableData.Add(row);
+            }
+
+            SetTableContent(ws, ref crtRow, tableData, true, true, firstCol);
+
+            SetWhoSigns(ws, ref crtRow,
+                new Tuple<string, string>("VICEPREȘEDINTE", judges.FirstOrDefault(j => j.IsVicePresident)?.FullName),
+                new Tuple<string, List<string>>("MEMBRI EVALUATORI",
+                    judges.Where(j => !j.IsVicePresident).Select(j => j.FullName).ToList()), th.Count);
         }
 
         private void BuildBorderouIndividual(IXLWorksheet ws, JudgeEntity judge, List<ProjectEntity> projects,
@@ -117,17 +243,21 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             var tableData = new List<List<string>> {th};
             int crtRow = 9;
 
+            var firstCol = 'A';
             foreach (var project in projects)
             {
-                var sums = sections.Select(s =>
-                    points.Where(p => p.Project == project && p.Criterion.Section == s).Sum(p => p.Points)).ToList();
-                var list = sums.Select(s => s.ToString()).Append(sums.Sum().ToString()).Prepend(project.Title).ToList();
-                tableData.Add(list);
+                var row = sections.Select(s =>
+                        points.Where(p => p.Project == project && p.Criterion.Section == s).Sum(p => p.Points))
+                    .Select(s => s.ToString()).ToList();
+
+                row.Insert(0, project.Title);
+                row.Add($"=SUM({(char) (firstCol + 2)}<crtRow>:{(char) (firstCol + row.Count)}<crtRow>)");
+                tableData.Add(row);
             }
 
-            SetTableContent(ws, ref crtRow, tableData);
+            SetTableContent(ws, ref crtRow, tableData, true, true, firstCol);
 
-            SetWhoSigns(ws, ref crtRow, "MEMBRU EVALUATOR", judge.FullName.ToUpper(), th.Count - 1);
+            SetWhoSignsIndividual(ws, ref crtRow, "MEMBRU EVALUATOR", judge.FullName.ToUpper(), th.Count - 1);
         }
 
         private void BuildProjectsSheet(IXLWorksheet ws, List<ProjectEntity> projects,
@@ -143,9 +273,9 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
             int crtRow = 9;
 
-            SetTableContent(ws, ref crtRow, tableData);
+            SetTableContent(ws, ref crtRow, tableData, true, true);
 
-            SetWhoSigns(ws, ref crtRow, "VICEPREȘEDINTE", vicePresident?.FullName.ToUpper(), 1);
+            SetWhoSignsIndividual(ws, ref crtRow, "VICEPREȘEDINTE", vicePresident?.FullName.ToUpper(), 1);
         }
 
         private void SetTitle(IXLWorksheet ws, string title, int crtRow, int colCount)
@@ -156,10 +286,16 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             ws.Cell($"A{crtRow}").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
         }
 
-        private void SetTableContent(IXLWorksheet ws, ref int crtRow, List<List<string>> tableData)
+        private void SetTableContent(IXLWorksheet ws, ref int crtRow, List<List<string>> tableData, bool
+            alignTableContentCenter = false, bool adjustColumnsWidth = false, char firstCol = (char) 0)
         {
             var firstTableRow = crtRow;
-            var firstCol = 'A';
+            // var firstCol = 'A';
+            if (firstCol == 0)
+            {
+                firstCol = 'A';
+            }
+
             var lastCol = firstCol;
             foreach (var s in tableData[0])
             {
@@ -181,7 +317,16 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 lastCol++;
                 foreach (var cellValue in rowValues)
                 {
-                    ws.Cell($"{lastCol}{crtRow}").Value = cellValue;
+                    if (cellValue.StartsWith("="))
+                    {
+                        ws.Cell($"{lastCol}{crtRow}").FormulaA1 = cellValue.Replace("<crtRow>", crtRow.ToString());
+                        ws.Cell($"{lastCol}{crtRow}").Style.NumberFormat.Format = "#0.00";
+                    }
+                    else
+                    {
+                        ws.Cell($"{lastCol}{crtRow}").Value = cellValue;
+                    }
+
                     lastCol++;
                 }
 
@@ -190,13 +335,22 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
             SetTableBorders(ws.Range($"{firstCol}{firstTableRow}:{(char) (lastCol - 1)}{crtRow - 1}"));
 
-            ws.Columns($"{(char) (firstCol + 1)}:{lastCol}").AdjustToContents();
+            if (adjustColumnsWidth)
+            {
+                ws.Columns($"{(char) (firstCol + 1)}:{lastCol}").AdjustToContents();
+            }
 
-            ws.Cells($"{firstCol}{firstTableIndexRow}:{firstCol}{crtRow - 1}").Style.Alignment.Horizontal =
+            ws.Range($"{firstCol}{firstTableIndexRow}:{firstCol}{crtRow - 1}").Style.Alignment.Horizontal =
                 XLAlignmentHorizontalValues.Center;
+            if (alignTableContentCenter)
+            {
+                ws.Range($"{(char) (firstCol + 2)}{firstTableIndexRow}:{(char) (lastCol - 1)}{crtRow - 1}").Style
+                    .Alignment
+                    .Horizontal = XLAlignmentHorizontalValues.Center;
+            }
         }
 
-        private void SetWhoSigns(IXLWorksheet ws, ref int crtRow, string function, string name, int colCount)
+        private void SetWhoSignsIndividual(IXLWorksheet ws, ref int crtRow, string function, string name, int colCount)
         {
             var firstCol = 'A';
             crtRow += 2;
@@ -209,6 +363,45 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             ws.Range($"{firstCol}{crtRow}:{(char) (firstCol + colCount)}{crtRow}").Merge().Style.Alignment.Horizontal =
                 XLAlignmentHorizontalValues.Center;
             ws.Cell($"{firstCol}{crtRow}").Value = name;
+        }
+
+        private void SetWhoSigns(IXLWorksheet ws, ref int crtRow, Tuple<string, string> boss,
+            Tuple<string, List<string>> plebs, int colCount)
+        {
+            var bossCol = (char) ('A' + colCount / 3 - 1);
+            var plebsCol = (char) ('A' + colCount / 3 * 2 - 1);
+            if (bossCol == plebsCol)
+            {
+                plebsCol = (char) (bossCol + 1);
+            }
+
+            crtRow += 2;
+            var bossTitleCell = ws.Cell($"{bossCol}{crtRow}");
+            bossTitleCell.Value = $"{boss.Item1},";
+            bossTitleCell.Style.Font.Bold = true;
+            HCenter(bossTitleCell);
+            crtRow++;
+            var bossNameCell = ws.Cell($"{bossCol}{crtRow}");
+            bossNameCell.Value = boss.Item2;
+            HCenter(bossNameCell);
+
+            crtRow--;
+            var plebsTitleCell = ws.Cell($"{plebsCol}{crtRow}");
+            plebsTitleCell.Value = $"{plebs.Item1},";
+            plebsTitleCell.Style.Font.Bold = true;
+            HCenter(plebsTitleCell);
+            var plebNameCell = plebsTitleCell.CellBelow();
+            foreach (var plebName in plebs.Item2)
+            {
+                plebNameCell.Value = plebName;
+                HCenter(plebNameCell);
+                plebNameCell = plebNameCell.CellBelow();
+            }
+        }
+
+        private void HCenter(IXLCell cell)
+        {
+            cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
         }
 
         private void SetTableBorders(IXLRange range)
