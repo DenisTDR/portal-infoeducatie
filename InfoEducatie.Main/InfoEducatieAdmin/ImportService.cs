@@ -128,6 +128,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 }
                 else
                 {
+                    project.IsInOpen = existingProject.IsInOpen;
                     var patchDiff = JsonPatchUtils.CreatePatch(existingProject, project);
                     SanitizePatchDocument(patchDiff);
                     if (!patchDiff.IsEmpty())
