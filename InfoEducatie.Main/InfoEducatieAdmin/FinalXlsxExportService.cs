@@ -156,8 +156,13 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 }
             }
 
-            SetTableContent(ws, ref crtRow, tableData, false, true, firstCol);
             var rangeName =
+                $"{(char) (firstCol + 11)}{tableDataStartsAt}:{(char) (firstCol + 11)}{tableDataStartsAt + tableData.Count - 2}";
+            ws.Range(rangeName).Style.NumberFormat.Format = "@";
+
+            
+            SetTableContent(ws, ref crtRow, tableData, false, true, firstCol);
+            rangeName =
                 $"{(char) (firstCol + 3)}{tableDataStartsAt}:{(char) (firstCol + 3)}{tableDataStartsAt + tableData.Count - 2}";
             ws.Range(rangeName).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -176,7 +181,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             rangeName =
                 $"{(char) (firstCol + 12)}{tableDataStartsAt}:{(char) (firstCol + 12)}{tableDataStartsAt + tableData.Count - 2}";
             ws.Range(rangeName).Style.NumberFormat.Format = "#0.00";
-
+            
+            
             SetWhoSigns(ws, ref crtRow,
                 new Tuple<string, string>("VICEPREȘEDINTE", judges.FirstOrDefault(j => j.IsVicePresident)?.FullName),
                 new Tuple<string, List<string>>("MEMBRI EVALUATORI",
