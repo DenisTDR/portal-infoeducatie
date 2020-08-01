@@ -392,7 +392,8 @@ namespace InfoEducatie.Contest.Exports
                 row.AddRange(pageModel.Projects.Select(p => ""));
                 tableData.Add(row);
                 var sectionRow = ws.Row(crtRow);
-                sectionRow.Cells($"A{crtRow}:{(char) ('A' + th.Count)}{crtRow}").Style.Fill.BackgroundColor = XLColor.FromArgb(0xDFDFDF);
+                sectionRow.Cells($"A{crtRow}:{(char) ('A' + th.Count - 1)}{crtRow}").Style.Fill.BackgroundColor =
+                    XLColor.FromArgb(0xDFDFDF);
                 sectionRow.Height = 33;
                 sectionRow.Style.Font.Bold = true;
                 crtRow++;

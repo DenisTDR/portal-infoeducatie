@@ -106,7 +106,6 @@ namespace InfoEducatie.Contest.Judging.Results
                 openJudgingPageModel, allPoints, judges.Count);
 
             var ms = new MemoryStream();
-            // workbook.SaveAs("/home/nm/Desktop/ie-docs/avg-except.xlsx");
             workbook.SaveAs(ms);
             ms.Position = 0;
 
