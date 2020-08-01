@@ -78,13 +78,13 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             {
                 var sheetTitle = "BI - " + judge.FullName;
                 sheetTitle = sheetTitle.Substring(0, Math.Min(sheetTitle.Length, 31));
-                // BuildBorderouIndividual(workbook.Worksheets.Add(sheetTitle), judge, projects, projectCriteriaSections,
-                // projectGivenPoints.FindAll(p => p.Judge.Id == judge.Id));
+                BuildBorderouIndividual(workbook.Worksheets.Add(sheetTitle), judge, projects, projectCriteriaSections,
+                projectGivenPoints.FindAll(p => p.Judge.Id == judge.Id));
 
                 sheetTitle = "BIO - " + judge.FullName;
                 sheetTitle = sheetTitle.Substring(0, Math.Min(sheetTitle.Length, 31));
-                // BuildBorderouIndividual(workbook.Worksheets.Add(sheetTitle), judge, openProjects, openCriteriaSections,
-                // openGivenPoints.FindAll(p => p.Judge.Id == judge.Id), true);
+                BuildBorderouIndividual(workbook.Worksheets.Add(sheetTitle), judge, openProjects, openCriteriaSections,
+                openGivenPoints.FindAll(p => p.Judge.Id == judge.Id), true);
             }
 
             #endregion
@@ -176,18 +176,6 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             rangeName =
                 $"{(char) (firstCol + 12)}{tableDataStartsAt}:{(char) (firstCol + 12)}{tableDataStartsAt + tableData.Count - 2}";
             ws.Range(rangeName).Style.NumberFormat.Format = "#0.00";
-
-            // var specialRangeName =
-            //     $"{(char) (firstCol + 4)}{tableDataStartsAt}:{(char) (firstCol + (withOpen ? 9 : 7))}{tableDataStartsAt + tableData.Count - 2}";
-            // var specialRange = ws.Range(specialRangeName);
-            // specialRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-            // specialRange.Style.NumberFormat.Format = "#0.00";
-            // specialRange.Rows().ForEach(r =>
-            // {
-            //     var wsRow = r.WorksheetRow();
-            //     wsRow.Height = 33;
-            //     wsRow.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-            // });
 
             SetWhoSigns(ws, ref crtRow,
                 new Tuple<string, string>("VICEPREȘEDINTE", judges.FirstOrDefault(j => j.IsVicePresident)?.FullName),
