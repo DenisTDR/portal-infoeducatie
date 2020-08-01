@@ -79,17 +79,17 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 var sheetTitle = "BI - " + judge.FullName;
                 sheetTitle = sheetTitle.Substring(0, Math.Min(sheetTitle.Length, 31));
                 BuildBorderouIndividual(workbook.Worksheets.Add(sheetTitle), judge, projects, projectCriteriaSections,
-                projectGivenPoints.FindAll(p => p.Judge.Id == judge.Id));
+                    projectGivenPoints.FindAll(p => p.Judge.Id == judge.Id));
 
                 sheetTitle = "BIO - " + judge.FullName;
                 sheetTitle = sheetTitle.Substring(0, Math.Min(sheetTitle.Length, 31));
                 BuildBorderouIndividual(workbook.Worksheets.Add(sheetTitle), judge, openProjects, openCriteriaSections,
-                openGivenPoints.FindAll(p => p.Judge.Id == judge.Id), true);
+                    openGivenPoints.FindAll(p => p.Judge.Id == judge.Id), true);
             }
 
             #endregion
 
-            CalcPoints(projects, allPoints, judges);
+            CalcPoints(projects, allPoints, judges, category);
 
             #region BFs
 
@@ -184,18 +184,18 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         }
 
         private void CalcPoints(List<ProjectEntity> projects, List<ProjectJudgingCriterionPointsEntity> points,
-            List<JudgeEntity> judges)
+            List<JudgeEntity> judges, CategoryEntity cat)
         {
             foreach (var projectEntity in projects)
             {
                 projectEntity.ScoreProject =
                     1f * points.Where(p => p.Project == projectEntity && p.Criterion.Type == JudgingType.Project)
                         .Sum(p => p.Points)
-                    / judges.Count;
+                    / judges.Count / (cat.ScoresX10 ? 10 : 1);
                 projectEntity.ScoreOpen =
                     1f * points.Where(p => p.Project == projectEntity && p.Criterion.Type == JudgingType.Open)
                         .Sum(p => p.Points)
-                    / judges.Count;
+                    / judges.Count / (cat.ScoresX10 ? 10 : 1);
             }
         }
 
@@ -283,6 +283,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
             int crtRow = 9;
 
+            var tableDataStartsAt = crtRow + 1;
             var firstCol = 'A';
             var tableData = new List<List<string>> {th};
 
@@ -291,13 +292,20 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 var row = new List<string> {project.Title};
                 row.AddRange(judges.Select(j =>
                 {
-                    return points.Where(p => p.Judge == j && p.Project == project).Sum(p => p.Points).ToString();
+                    var sum = points.Where(p => p.Judge == j && p.Project == project).Sum(p => p.Points);
+                    return (sum / (category.ScoresX10 ? 10f : 1)).ToString();
                 }));
-                row.Add($"=TRUNC(AVERAGE({(char) (firstCol + 2)}<crtRow>:{(char) (firstCol + row.Count)}<crtRow>), 2)");
+                row.Add($"=AVERAGE({(char) (firstCol + 2)}<crtRow>:{(char) (firstCol + row.Count)}<crtRow>)");
                 tableData.Add(row);
             }
 
-            SetTableContent(ws, ref crtRow, tableData, true, true, firstCol);
+            SetTableContent(ws, ref crtRow, tableData, false, true, firstCol);
+
+            var specialRangeName =
+                $"{(char) (firstCol + 2)}{tableDataStartsAt}:{(char) (firstCol + th.Count - 1)}{tableDataStartsAt + tableData.Count - 2}";
+            var specialRange = ws.Range(specialRangeName);
+            specialRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            specialRange.Style.NumberFormat.Format = "#0.00";
 
             SetWhoSigns(ws, ref crtRow,
                 new Tuple<string, string>("VICEPREȘEDINTE", judges.FirstOrDefault(j => j.IsVicePresident)?.FullName),
@@ -309,10 +317,12 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             List<JudgingCriteriaSectionEntity> sections, List<ProjectJudgingCriterionPointsEntity> points,
             bool isOpen = false)
         {
+            var cat = judge.Category;
             PutPageHeader(ws);
 
             var th = new List<string> {"Nr. Crt.", "Denumire proiect"};
-            th.AddRange(sections.Select((s, i) => "Criteriu " + (i + 1) + "\n" + s.MaxPoints + "p"));
+            th.AddRange(sections.Select((s, i) =>
+                "Criteriu " + (i + 1) + "\n" + s.MaxPoints / (cat.ScoresX10 ? 10f : 1) + "p"));
             th.Add("TOTAL\n" + (isOpen ? "OPEN" : "PROIECT"));
 
             SetTitle(ws,
@@ -326,7 +336,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             foreach (var project in projects)
             {
                 var row = sections.Select(s =>
-                        points.Where(p => p.Project == project && p.Criterion.Section == s).Sum(p => p.Points))
+                        points.Where(p => p.Project == project && p.Criterion.Section == s).Sum(p => p.Points)
+                        / (cat.ScoresX10 ? 10f : 1))
                     .Select(s => s.ToString()).ToList();
 
                 row.Insert(0, project.Title);

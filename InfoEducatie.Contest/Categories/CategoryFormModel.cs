@@ -10,5 +10,6 @@ namespace InfoEducatie.Contest.Categories
 
         [Required] public string Slug { get; set; }
         [FormlyFieldDefaultValue(true)] public bool Published { get; set; }
+        public bool ScoresX10 { get; set; }
     }
 }

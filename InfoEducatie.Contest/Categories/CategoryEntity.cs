@@ -11,6 +11,8 @@ namespace InfoEducatie.Contest.Categories
         public int Order { get; set; }
         public bool Published { get; set; }
 
+        public bool ScoresX10 { get; set; }
+
         public override string ToString()
         {
             return Name;
