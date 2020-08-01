@@ -11,4 +11,9 @@
       <ProjectReference Include="..\MCMS\MCMS\MCMS.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="ClosedXML" Version="0.95.3" />
+        <PackageReference Include="ClosedXML.Report" Version="0.2.1" />
+    </ItemGroup>
+
 </Project>

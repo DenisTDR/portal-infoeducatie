@@ -1,7 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ClosedXML.Excel;
 using InfoEducatie.Contest.Categories;
+using InfoEducatie.Contest.Exports;
 using InfoEducatie.Contest.Judging.Judges;
 using InfoEducatie.Contest.Judging.Judging;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
@@ -60,7 +65,7 @@ namespace InfoEducatie.Contest.Judging.Results
             var judges = await JudgesRepo.GetAll(j => j.Category == targetCategory);
 
             model.JudgingPageModels = new List<JudgingPageModel>();
-            
+
             foreach (var judge in judges)
             {
                 model.JudgingPageModels.Add(await JudgingService.BuildJudgingPageModel(judge, JudgingType.Project));
@@ -68,6 +73,45 @@ namespace InfoEducatie.Contest.Judging.Results
             }
 
             return View(model);
+        }
+
+        [Route("{category}/{judgeId}")]
+        [Authorize(Roles = "Moderator")]
+        [HttpGet]
+        public async Task<IActionResult> ExportAverageScoresExceptJudgeForCategory(
+            [FromRoute] [Required] string category, [FromRoute] [Required] string judgeId)
+        {
+            var cat = await CatsRepo.GetOneOrThrow(category);
+            var judges = await JudgesRepo.GetAll(j => j.Category == cat);
+            var thejudge = judges.FirstOrDefault(j => j.Id == judgeId);
+            if (thejudge == null)
+            {
+                throw new KnownException("There is no judge with this id at this category.");
+            }
+
+            var projectJudgingPageModel = await JudgingService.BuildJudgingPageModel(thejudge, JudgingType.Project);
+            var openJudgingPageModel = await JudgingService.BuildJudgingPageModel(thejudge, JudgingType.Open);
+            var allPoints = await PointsRepo.GetAll(p => p.Criterion.Category == cat);
+
+            var workbook = new XLWorkbook();
+            workbook.Style.Font.FontName = "Times new roman";
+            var sw = ServiceProvider.GetService<FinalXlsxExportService>();
+            var sheetName = "Proj avg except " + thejudge.FullName;
+            sheetName = sheetName.Substring(0, Math.Min(31, sheetName.Length));
+            sw.BuildAvgScoresExceptJudgeSheet(workbook.AddWorksheet(sheetName),
+                projectJudgingPageModel, allPoints, judges.Count);
+            sheetName = "Open avg except " + thejudge.FullName;
+            sheetName = sheetName.Substring(0, Math.Min(31, sheetName.Length));
+            sw.BuildAvgScoresExceptJudgeSheet(workbook.AddWorksheet(sheetName),
+                openJudgingPageModel, allPoints, judges.Count);
+
+            var ms = new MemoryStream();
+            // workbook.SaveAs("/home/nm/Desktop/ie-docs/avg-except.xlsx");
+            workbook.SaveAs(ms);
+            ms.Position = 0;
+
+            return File(ms, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "avg-except-judge.xlsx");
         }
 
         private async Task<CategoryResultsModel> BuildResultsForCategory(CategoryEntity category)

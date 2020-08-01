@@ -163,7 +163,13 @@
                 filter: false,
                 bInfo: false,
                 paging: false,
-                buttons:[ {text: 'Download as CSV', extend: 'csv', title: '@judgePage.Judge.FullName.Split("@")[0]'}, {text: 'Copy as TSV', extend: 'copy'}],
+                buttons:[ {text: 'Download as CSV', extend: 'csv', title: '@judgePage.Judge.FullName.Split("@")[0]'}, {text: 'Copy as TSV', extend: 'copy'},
+                @if (User.HasRole("Moderator"))
+                {
+                    @Html.Raw("{text: 'Download xlsx with avg except this', action: function() { window.location = '/Results/ExportAverageScoresExceptJudgeForCategory/" +
+                              judgePage.Category.Id + "/" + judgePage.Judge.Id + "';}}")
+                }
+                ],
                 dom: "frtip<'d-flex justify-content-end'B>",
         });
         </script>

@@ -6,6 +6,7 @@ using AutoMapper;
 using ClosedXML.Excel;
 using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Judging.Judges;
+using InfoEducatie.Contest.Judging.Judging;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
 using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
@@ -15,7 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MoreLinq;
 
-namespace InfoEducatie.Main.InfoEducatieAdmin
+namespace InfoEducatie.Contest.Exports
 {
     public class FinalXlsxExportService
     {
@@ -160,7 +161,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 $"{(char) (firstCol + 11)}{tableDataStartsAt}:{(char) (firstCol + 11)}{tableDataStartsAt + tableData.Count - 2}";
             ws.Range(rangeName).Style.NumberFormat.Format = "@";
 
-            
+
             SetTableContent(ws, ref crtRow, tableData, false, true, firstCol);
             rangeName =
                 $"{(char) (firstCol + 3)}{tableDataStartsAt}:{(char) (firstCol + 3)}{tableDataStartsAt + tableData.Count - 2}";
@@ -181,8 +182,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             rangeName =
                 $"{(char) (firstCol + 12)}{tableDataStartsAt}:{(char) (firstCol + 12)}{tableDataStartsAt + tableData.Count - 2}";
             ws.Range(rangeName).Style.NumberFormat.Format = "#0.00";
-            
-            
+
+
             SetWhoSigns(ws, ref crtRow,
                 new Tuple<string, string>("VICEPREȘEDINTE", judges.FirstOrDefault(j => j.IsVicePresident)?.FullName),
                 new Tuple<string, List<string>>("MEMBRI EVALUATORI",
@@ -372,6 +373,50 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             SetTableContent(ws, ref crtRow, tableData, true, true);
 
             SetWhoSignsIndividual(ws, ref crtRow, "VICEPREȘEDINTE", vicePresident?.FullName.ToUpper(), 1);
+        }
+
+        public void BuildAvgScoresExceptJudgeSheet(IXLWorksheet ws, JudgingPageModel pageModel,
+            List<ProjectJudgingCriterionPointsEntity> allPoints, int judgesCount)
+        {
+            var startRow = 3;
+            var crtRow = startRow;
+            var th = pageModel.Projects.Select(p => p.Title).ToList();
+            th.Insert(0, "Criteria");
+            th.Insert(0, "#");
+
+            var tableData = new List<List<string>> {th};
+            crtRow++;
+            foreach (var section in pageModel.JudgingSections)
+            {
+                var row = new List<string> {section.Name};
+                row.AddRange(pageModel.Projects.Select(p => ""));
+                tableData.Add(row);
+                var sectionRow = ws.Row(crtRow);
+                sectionRow.Cells($"A{crtRow}:{(char) ('A' + th.Count)}{crtRow}").Style.Fill.BackgroundColor = XLColor.FromArgb(0xDFDFDF);
+                sectionRow.Height = 33;
+                sectionRow.Style.Font.Bold = true;
+                crtRow++;
+                foreach (var criterion in section.Criteria)
+                {
+                    row = new List<string> {criterion.Name};
+                    row.AddRange(pageModel.Projects.Select(p =>
+                    {
+                        var sum = allPoints.Where(points =>
+                            points.Criterion.Id == criterion.Id && points.Project.Id == p.Id &&
+                            points.Judge.Id != pageModel.Judge.Id).Sum(p1 => p1.Points);
+                        return (1f * sum / (judgesCount - 1)).ToString("#0.00");
+                    }));
+                    tableData.Add(row);
+                    ws.Row(crtRow).Height = 33;
+                    crtRow++;
+                }
+            }
+
+            SetTableContent(ws, ref startRow, tableData, true, false);
+            ws.Style.Alignment.WrapText = true;
+            ws.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            ws.Column("B").Width = 33;
+            ws.Row(3).Height = 75;
         }
 
         private void SetTitle(IXLWorksheet ws, string title, int crtRow, int colCount)
