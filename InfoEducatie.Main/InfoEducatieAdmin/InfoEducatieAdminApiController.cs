@@ -177,7 +177,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 wb.SaveAs(filePath);
                 
                 
-                wb = await origService.BuildWorkbookForCategory(categoryEntity);
+                wb = await serviceWithCeilings.BuildWorkbookForCategory(categoryEntity);
                 filePath = Path.Combine(dir, categoryEntity.Slug + "-with-ceilings.xlsx");
                 Console.WriteLine("Saving to " + filePath);
                 wb.SaveAs(filePath);
