@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using InfoEducatie.Contest.Categories;
+using InfoEducatie.Contest.Exports;
 using InfoEducatie.Contest.Judging.Judges;
 using InfoEducatie.Contest.Judging.Judging;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
@@ -22,6 +23,8 @@ namespace InfoEducatie.Contest
         {
             services.AddOptions<MenuConfig>().Configure(ConfigureMenu);
             services.AddScoped<JudgingService>();
+            services.AddScoped<FinalXlsxExportService>();
+            services.AddScoped<FinalXlsxExportServiceWithCeilings>();
         }
 
         private void ConfigureMenu(MenuConfig config)
@@ -33,7 +36,7 @@ namespace InfoEducatie.Contest
                 Items = new List<IMenuItem>
                 {
                     new MenuLink("Judging Projects", typeof(JudgingController),
-                        nameof(JudgingController.Index)).WithIconClasses("fas fa-gavel").RequiresRoles("Jury")
+                            nameof(JudgingController.Index)).WithIconClasses("fas fa-gavel").RequiresRoles("Jury")
                         .WithValues(new {type = "project"}),
                     new MenuLink("Judging Open", typeof(JudgingController), nameof(JudgingController.Index))
                         .WithIconClasses("fas fa-gavel").RequiresRoles("Jury").WithValues(new {type = "open"}),

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using InfoEducatie.Contest.Exports;
 using InfoEducatie.Main.Dashboard;
 using InfoEducatie.Main.Data;
 using InfoEducatie.Main.InfoEducatieAdmin;
@@ -30,7 +29,6 @@ namespace InfoEducatie.Main
             });
 
             services.AddScoped<ImportService>();
-            services.AddScoped<FinalXlsxExportService>();
         }
 
         private void ConfigureMenu(MenuConfig config)

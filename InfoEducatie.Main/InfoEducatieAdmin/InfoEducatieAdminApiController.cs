@@ -158,7 +158,9 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         [HttpPost]
         public async Task<IActionResult> BuildFinalShitsForAllCategories()
         {
-            var service = ServiceProvider.GetService<FinalXlsxExportService>();
+            var origService = ServiceProvider.GetService<FinalXlsxExportService>();
+            var serviceWithCeilings = ServiceProvider.GetService<FinalXlsxExportServiceWithCeilings>();
+            
             var catsService = ServiceProvider.GetService<IRepository<CategoryEntity>>();
             var cats = await catsService.GetAll();
             var dir = Env.GetOrThrow("RESULTS_PATH");
@@ -169,8 +171,14 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
             foreach (var categoryEntity in cats)
             {
-                var wb = await service.BuildWorkbookForCategory(categoryEntity);
+                var wb = await origService.BuildWorkbookForCategory(categoryEntity);
                 var filePath = Path.Combine(dir, categoryEntity.Slug + ".xlsx");
+                Console.WriteLine("Saving to " + filePath);
+                wb.SaveAs(filePath);
+                
+                
+                wb = await origService.BuildWorkbookForCategory(categoryEntity);
+                filePath = Path.Combine(dir, categoryEntity.Slug + "-with-ceilings.xlsx");
                 Console.WriteLine("Saving to " + filePath);
                 wb.SaveAs(filePath);
             }
