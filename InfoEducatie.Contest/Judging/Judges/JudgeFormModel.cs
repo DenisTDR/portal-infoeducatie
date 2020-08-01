@@ -14,6 +14,8 @@ namespace InfoEducatie.Contest.Judging.Judges
         public CategoryViewModel Category { get; set; }
 
         [FormlyFieldDefaultValue(false)] public bool IsVicePresident { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
 
         [FormlyFieldDefaultValue(JudgeType.Both)]
         public JudgeType AvailableFor { get; set; }

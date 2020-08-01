@@ -14,6 +14,21 @@ namespace InfoEducatie.Contest.Judging.Judges
         [Required] public CategoryEntity Category { get; set; }
         public bool IsVicePresident { get; set; }
         [NotMapped] public string FullName => User?.FullName ?? "-invalid-";
+
+        [NotMapped]
+        public string FirstName
+        {
+            get => User?.FirstName ?? "";
+            set => User.FirstName = value;
+        }
+
+        [NotMapped]
+        public string LastName
+        {
+            get => User?.LastName ?? "";
+            set => User.LastName = value;
+        }
+
         [NotMapped] public bool EmailConfirmed => User?.EmailConfirmed ?? false;
         [NotMapped] public string Email => User?.Email ?? "-invalid-";
         public JudgeType AvailableFor { get; set; }

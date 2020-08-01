@@ -115,7 +115,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
             #region prizes maybe
 
-            BuildPrizesSheet(workbook.Worksheets.Add("Pentru premii"), projects, category, judges);
+            BuildPrizesSheet(workbook.Worksheets.Add("Șablon premii"), projects, category, judges);
 
             #endregion
 
