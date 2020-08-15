@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using InfoEducatie.Contest.Judging.Judges;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Participants.Project;
-using MCMS.Base.Attributes;
+using MCMS.Base.Attributes.JsonConverters;
 using MCMS.Base.Data.ViewModels;
 using Newtonsoft.Json;
 

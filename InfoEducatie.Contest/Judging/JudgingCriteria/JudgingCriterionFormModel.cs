@@ -25,7 +25,7 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
         [DisablePatchSubProperties]
         public JudgingCriteriaSectionViewModel Section { get; set; }
 
-        [FormlyFieldDefaultValue(JudgingType.Project)]
+        [FormlyField(DefaultValue = JudgingType.Project)]
         public JudgingType Type { get; set; }
     }
 }

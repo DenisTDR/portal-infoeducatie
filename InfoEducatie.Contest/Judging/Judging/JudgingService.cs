@@ -8,7 +8,8 @@ using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
 using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
 using InfoEducatie.Contest.Participants.Project;
-using MCMS.Data;
+using MCMS.Base.Data;
+using MCMS.Base.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,17 +21,17 @@ namespace InfoEducatie.Contest.Judging.Judging
 
         protected readonly IServiceProvider ServiceProvider;
         protected IMapper Mapper => ServiceProvider.GetService<IMapper>();
-        protected IRepository<JudgeEntity> JudgesRepo => ServiceProvider.GetService<IRepository<JudgeEntity>>();
-        protected IRepository<ProjectEntity> ProjectsRepo => ServiceProvider.GetService<IRepository<ProjectEntity>>();
+        protected IRepository<JudgeEntity> JudgesRepo => ServiceProvider.GetRepo<JudgeEntity>();
+        protected IRepository<ProjectEntity> ProjectsRepo => ServiceProvider.GetRepo<ProjectEntity>();
 
         protected IRepository<ProjectJudgingCriterionPointsEntity> PointsRepo =>
-            ServiceProvider.GetService<IRepository<ProjectJudgingCriterionPointsEntity>>();
+            ServiceProvider.GetRepo<ProjectJudgingCriterionPointsEntity>();
 
         protected IRepository<JudgingCriterionEntity> JudgingCriteriaRepo =>
-            ServiceProvider.GetService<IRepository<JudgingCriterionEntity>>();
+            ServiceProvider.GetRepo<JudgingCriterionEntity>();
 
         protected IRepository<JudgingCriteriaSectionEntity> SectionsRepo =>
-            ServiceProvider.GetService<IRepository<JudgingCriteriaSectionEntity>>();
+            ServiceProvider.GetRepo<JudgingCriteriaSectionEntity>();
 
         #endregion
 

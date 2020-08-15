@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using MCMS.Base.Data.FormModels;
-using MCMS.Base.SwaggerFormly.Formly;
 using MCMS.Base.SwaggerFormly.Formly.Fields;
 
 namespace InfoEducatie.Main.Pages
@@ -16,7 +15,9 @@ namespace InfoEducatie.Main.Pages
         public string ShortDescription { get; set; }
 
         [Required] [FormlyCkEditor] public string Body { get; set; }
-        [FormlyFieldDefaultValue(true)] public bool Published { get; set; }
-        [FormlyFieldDefaultValue(true)] public bool DisplayTitle { get; set; }
+
+        [FormlyField(DefaultValue = true)] public bool Published { get; set; }
+
+        [FormlyField(DefaultValue = true)] public bool DisplayTitle { get; set; }
     }
 }

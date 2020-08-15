@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using InfoEducatie.Contest.Participants.Participant;
 using InfoEducatie.Contest.Participants.Project;
-using MCMS.Base.Attributes;
+using MCMS.Base.Attributes.JsonConverters;
 using MCMS.Base.Data.ViewModels;
 using Newtonsoft.Json;
 

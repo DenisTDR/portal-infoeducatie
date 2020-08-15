@@ -12,9 +12,9 @@ using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
 using InfoEducatie.Contest.Participants.Participant;
 using MCMS.Auth;
 using MCMS.Base.Attributes;
+using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
 using MCMS.Controllers.Api;
-using MCMS.Data;
 using MCMS.Emailing.Sender;
 using MCMS.Files.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -31,7 +31,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         [ModelValidation]
         public async Task<IActionResult> Import([FromBody] [Required] ImportFormModel model)
         {
-            var filesRepo = ServiceProvider.GetService<IRepository<FileEntity>>();
+            var filesRepo = ServiceProvider.GetRepo<FileEntity>();
             var contestantsFile = await filesRepo.GetOneOrThrow(model.ContestantsFile.Id);
             var projectsFile = await filesRepo.GetOneOrThrow(model.ProjectsFile.Id);
 
@@ -57,7 +57,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 return BadRequest("invalid category");
             }
 
-            var query = ServiceProvider.GetService<IRepository<ParticipantEntity>>().Queryable;
+            var query = ServiceProvider.GetRepo<ParticipantEntity>().Queryable;
             if (model.Type == SendEmailToParticipantsType.Category)
             {
                 query = query.Where(p =>
@@ -89,9 +89,9 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         public async Task<IActionResult> CloneCriteriaFromProjectToOpenForCategory(
             [FromBody] [Required] CloneCriteriaFromProjectToOpenForCategoryFormModel model)
         {
-            var catsRepo = ServiceProvider.GetService<IRepository<CategoryEntity>>();
-            var criteriaRepo = ServiceProvider.GetService<IRepository<JudgingCriterionEntity>>();
-            var sectionsRepo = ServiceProvider.GetService<IRepository<JudgingCriteriaSectionEntity>>();
+            var catsRepo = ServiceProvider.GetRepo<CategoryEntity>();
+            var criteriaRepo = ServiceProvider.GetRepo<JudgingCriterionEntity>();
+            var sectionsRepo = ServiceProvider.GetRepo<JudgingCriteriaSectionEntity>();
             sectionsRepo.ChainQueryable(q => q.Include(s => s.Criteria));
 
             var category = await catsRepo.GetOneOrThrow(model.Category.Id);
@@ -142,7 +142,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         {
             
             
-            var participantsRepo = ServiceProvider.GetService<IRepository<ParticipantEntity>>();
+            var participantsRepo = ServiceProvider.GetRepo<ParticipantEntity>();
             var img = Image.FromFile("./wwwroot/diploma_participare.png");
             var g = Graphics.FromImage(img);
 
@@ -161,7 +161,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         [HttpPost]
         public async Task<IActionResult> SendActivationMails()
         {
-            var participantsRepo = ServiceProvider.GetService<IRepository<ParticipantEntity>>();
+            var participantsRepo = ServiceProvider.GetRepo<ParticipantEntity>();
             var authService = ServiceProvider.GetService<AuthService>();
             participantsRepo.ChainQueryable(q => q.Include(p => p.User));
             var participants = await participantsRepo.GetAll(p => !p.ActivationEmailSent);
@@ -182,7 +182,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             var origService = ServiceProvider.GetService<FinalXlsxExportService>();
             var serviceWithCeilings = ServiceProvider.GetService<FinalXlsxExportServiceWithCeilings>();
 
-            var catsService = ServiceProvider.GetService<IRepository<CategoryEntity>>();
+            var catsService = ServiceProvider.GetRepo<CategoryEntity>();
             var cats = await catsService.GetAll();
             var dir = Env.GetOrThrow("RESULTS_PATH");
             if (!Directory.Exists(dir))

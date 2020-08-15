@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
-using MCMS.Base.Attributes;
+using MCMS.Base.Attributes.JsonConverters;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Display.ModelDisplay.Attributes;
 using Newtonsoft.Json;

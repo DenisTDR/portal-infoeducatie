@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using MCMS.Base.Data.FormModels;
-using MCMS.Base.SwaggerFormly.Formly;
+using MCMS.Base.SwaggerFormly.Formly.Fields;
 using MCMS.Files.Attributes;
 using MCMS.Files.Controllers;
 using MCMS.Files.Models;
@@ -39,7 +39,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         // public bool FixEncoding { get; set; }
         [Display(Name = "Just process and debug",
             Description = "Don't save in db and just process and return how many entities were processed.")]
-        [FormlyFieldDefaultValue(true)]
+        [FormlyField(DefaultValue = true)]
         public bool JustProcessAndDebug { get; set; }
     }
 

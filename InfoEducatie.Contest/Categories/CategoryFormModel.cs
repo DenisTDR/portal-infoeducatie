@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using MCMS.Base.Data.FormModels;
-using MCMS.Base.SwaggerFormly.Formly;
+using MCMS.Base.SwaggerFormly.Formly.Fields;
 
 namespace InfoEducatie.Contest.Categories
 {
@@ -9,7 +9,8 @@ namespace InfoEducatie.Contest.Categories
         [Required] public string Name { get; set; }
 
         [Required] public string Slug { get; set; }
-        [FormlyFieldDefaultValue(true)] public bool Published { get; set; }
+
+        [FormlyField(DefaultValue = true)] public bool Published { get; set; }
         public bool ScoresX10 { get; set; }
     }
 }

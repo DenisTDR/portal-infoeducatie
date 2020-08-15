@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using InfoEducatie.Contest.Participants.Project;
-using MCMS.Base.Attributes;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Display.ModelDisplay.Attributes;
 using Newtonsoft.Json;

@@ -1,17 +1,17 @@
 using System.Linq;
 using System.Threading.Tasks;
+using MCMS.Base.Data;
+using MCMS.Base.Extensions;
 using MCMS.Controllers.Ui;
-using MCMS.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace InfoEducatie.Main.Pages
 {
     [Route("/[controller]")]
     public class PagesController : UiController
     {
-        protected IRepository<PageEntity> Repo => ServiceProvider.GetService<IRepository<PageEntity>>();
+        protected IRepository<PageEntity> Repo => ServiceProvider.GetRepo<PageEntity>();
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {

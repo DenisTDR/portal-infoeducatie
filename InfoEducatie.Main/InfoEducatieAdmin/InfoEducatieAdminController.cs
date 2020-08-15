@@ -3,11 +3,10 @@ using System.Threading.Tasks;
 using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
 using InfoEducatie.Contest.Participants.Participant;
 using InfoEducatie.Contest.Participants.Project;
-using MCMS.Auth;
 using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
+using MCMS.Base.Extensions;
 using MCMS.Controllers.Ui;
-using MCMS.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -55,13 +54,13 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         [HttpPost, ActionName("DeleteParticipants")]
         public async Task<IActionResult> DeleteParticipantsConfirmed()
         {
-            var participantsRepo = ServiceProvider.GetService<IRepository<ParticipantEntity>>();
-            var projectsRepo = ServiceProvider.GetService<IRepository<ProjectEntity>>();
+            var participantsRepo = ServiceProvider.GetRepo<ParticipantEntity>();
+            var projectsRepo = ServiceProvider.GetRepo<ProjectEntity>();
             await participantsRepo.Delete(p => true);
             await projectsRepo.Delete(p => true);
 
 
-            var uService = ServiceProvider.GetService<IRepository<User>>();
+            var uService = ServiceProvider.GetRepo<User>();
             var userManager = ServiceProvider.GetService<UserManager<User>>();
             var users = await userManager.GetUsersInRoleAsync("Participant");
             uService.DbSet.RemoveRange(users);
@@ -72,7 +71,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
         public async Task<IActionResult> CheckCriteriaIntegrity()
         {
-            var sectionsRepo = ServiceProvider.GetService<IRepository<JudgingCriteriaSectionEntity>>();
+            var sectionsRepo = ServiceProvider.GetRepo<JudgingCriteriaSectionEntity>();
             sectionsRepo.ChainQueryable(q => q
                 .Include(s => s.Category)
                 .Include(s => s.Criteria).ThenInclude(c => c.Category));
@@ -103,7 +102,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         [ViewLayout("_ModalLayout")]
         public async Task<IActionResult> SendActivationMails()
         {
-            var accountsWithoutEmailSent = await ServiceProvider.GetService<IRepository<ParticipantEntity>>().Queryable
+            var accountsWithoutEmailSent = await ServiceProvider.GetRepo<ParticipantEntity>().Queryable
                 .CountAsync(p => !p.ActivationEmailSent);
             return View(accountsWithoutEmailSent);
         }

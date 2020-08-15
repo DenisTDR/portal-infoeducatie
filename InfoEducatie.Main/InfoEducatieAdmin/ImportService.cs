@@ -12,6 +12,7 @@ using InfoEducatie.Contest.Participants.Participant;
 using InfoEducatie.Contest.Participants.Project;
 using InfoEducatie.Contest.Participants.ProjectParticipant;
 using MCMS.Base.Auth;
+using MCMS.Base.Data;
 using MCMS.Base.Exceptions;
 using MCMS.Base.JsonPatch;
 using MCMS.Data;

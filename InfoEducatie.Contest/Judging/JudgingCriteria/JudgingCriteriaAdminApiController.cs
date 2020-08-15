@@ -4,13 +4,12 @@ using System.Threading.Tasks;
 using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
 using MCMS.Base.Exceptions;
+using MCMS.Base.Extensions;
 using MCMS.Controllers.Api;
-using MCMS.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace InfoEducatie.Contest.Judging.JudgingCriteria
 {
@@ -41,8 +40,8 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
                 throw new KnownException("Invalid section.");
             }
 
-            ServiceProvider.GetService<IRepository<CategoryEntity>>().Attach(e.Category);
-            ServiceProvider.GetService<IRepository<JudgingCriteriaSectionEntity>>().Attach(e.Section);
+            ServiceProvider.GetRepo<CategoryEntity>().Attach(e.Category);
+            ServiceProvider.GetRepo<JudgingCriteriaSectionEntity>().Attach(e.Section);
             return Task.CompletedTask;
         }
 

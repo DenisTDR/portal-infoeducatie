@@ -11,9 +11,9 @@ using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
 using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
 using InfoEducatie.Contest.Participants.Project;
-using MCMS.Data;
+using MCMS.Base.Data;
+using MCMS.Base.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using MoreLinq;
 // ReSharper disable StringLiteralTypo
 
@@ -23,14 +23,14 @@ namespace InfoEducatie.Contest.Exports
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private IRepository<ProjectEntity> ProjectsRepo => _serviceProvider.GetService<IRepository<ProjectEntity>>();
-        private IRepository<JudgeEntity> JudgesRepo => _serviceProvider.GetService<IRepository<JudgeEntity>>();
+        private IRepository<ProjectEntity> ProjectsRepo => _serviceProvider.GetRepo<ProjectEntity>();
+        private IRepository<JudgeEntity> JudgesRepo => _serviceProvider.GetRepo<JudgeEntity>();
 
         private IRepository<JudgingCriteriaSectionEntity> SectionsRepo =>
-            _serviceProvider.GetService<IRepository<JudgingCriteriaSectionEntity>>();
+            _serviceProvider.GetRepo<JudgingCriteriaSectionEntity>();
 
         private IRepository<ProjectJudgingCriterionPointsEntity> GivenPointsRepo =>
-            _serviceProvider.GetService<IRepository<ProjectJudgingCriterionPointsEntity>>();
+            _serviceProvider.GetRepo<ProjectJudgingCriterionPointsEntity>();
 
         public FinalXlsxExportServiceWithCeilings(IServiceProvider serviceProvider)
         {

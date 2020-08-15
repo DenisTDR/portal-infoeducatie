@@ -7,9 +7,10 @@ using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
 using InfoEducatie.Contest.Participants.Project;
 using MCMS.Base.Attributes;
+using MCMS.Base.Data;
 using MCMS.Base.Exceptions;
+using MCMS.Base.Extensions;
 using MCMS.Controllers.Ui;
-using MCMS.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,14 +22,14 @@ namespace InfoEducatie.Contest.Judging.Judging
     {
         protected JudgingService JudgingService => ServiceProvider.GetRequiredService<JudgingService>();
 
-        protected IRepository<JudgeEntity> JudgesRepo => ServiceProvider.GetService<IRepository<JudgeEntity>>();
-        protected IRepository<ProjectEntity> ProjectsRepo => ServiceProvider.GetService<IRepository<ProjectEntity>>();
+        protected IRepository<JudgeEntity> JudgesRepo => ServiceProvider.GetRepo<JudgeEntity>();
+        protected IRepository<ProjectEntity> ProjectsRepo => ServiceProvider.GetRepo<ProjectEntity>();
 
         protected IRepository<ProjectJudgingCriterionPointsEntity> PointsRepo =>
-            ServiceProvider.GetService<IRepository<ProjectJudgingCriterionPointsEntity>>();
+            ServiceProvider.GetRepo<ProjectJudgingCriterionPointsEntity>();
 
         protected IRepository<JudgingCriterionEntity> JudgingCriteriaRepo =>
-            ServiceProvider.GetService<IRepository<JudgingCriterionEntity>>();
+            ServiceProvider.GetRepo<JudgingCriterionEntity>();
 
         [Route("/[controller]/{type?}")]
         public async Task<IActionResult> Index([FromRoute] [Optional] JudgingType type)

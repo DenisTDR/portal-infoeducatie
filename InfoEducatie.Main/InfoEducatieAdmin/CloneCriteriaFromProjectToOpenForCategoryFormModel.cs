@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using InfoEducatie.Contest.Categories;
 using MCMS.Base.Data.FormModels;
-using MCMS.Base.SwaggerFormly.Formly;
 using MCMS.Base.SwaggerFormly.Formly.Fields;
 
 namespace InfoEducatie.Main.InfoEducatieAdmin
@@ -12,6 +11,6 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         [Required]
         public CategoryViewModel Category { get; set; }
 
-        [FormlyFieldDefaultValue(false)] public bool RemoveExistingOpenCriteriaFirst { get; set; }
+        [FormlyField(DefaultValue = false)] public bool RemoveExistingOpenCriteriaFirst { get; set; }
     }
 }

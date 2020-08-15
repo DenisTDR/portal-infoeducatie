@@ -2,12 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Categories;
+using MCMS.Base.Extensions;
 using MCMS.Controllers.Api;
-using MCMS.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace InfoEducatie.Contest.Participants.Project
 {
@@ -24,7 +23,7 @@ namespace InfoEducatie.Contest.Participants.Project
 
         protected override Task PatchBeforeSaveNew(ProjectEntity e)
         {
-            ServiceProvider.GetService<IRepository<CategoryEntity>>().Attach(e.Category);
+            ServiceProvider.GetRepo<CategoryEntity>().Attach(e.Category);
             return base.PatchBeforeSaveNew(e);
         }
 

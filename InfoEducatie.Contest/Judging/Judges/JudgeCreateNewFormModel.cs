@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using MCMS.Base.SwaggerFormly.Formly;
 
 namespace InfoEducatie.Contest.Judging.Judges
 {

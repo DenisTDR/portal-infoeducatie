@@ -9,7 +9,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 {
     public class CustomEmailToParticipantsModel : IFormModel
     {
-        [FormlyFieldDefaultValue(SendEmailToParticipantsType.Category)]
+        [FormlyField(DefaultValue = SendEmailToParticipantsType.Category)]
         public SendEmailToParticipantsType Type { get; set; }
 
         [FormlySelect(typeof(CategoriesAdminApiController))]
@@ -18,7 +18,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
         [Required] public string Subject { get; set; }
         [Required] [FormlyCkEditor] public string Message { get; set; }
-        [FormlyFieldDefaultValue(false)] public bool SendIt { get; set; }
+        [FormlyField(DefaultValue = false)] public bool SendIt { get; set; }
     }
 
     public enum SendEmailToParticipantsType

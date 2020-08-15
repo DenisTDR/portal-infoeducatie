@@ -1,18 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MCMS.Base.Data;
+using MCMS.Base.Extensions;
 using MCMS.Controllers.Ui;
-using MCMS.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace InfoEducatie.Main.Seminars
 {
     [Route("/[controller]")]
     public class SeminarsController : UiController
     {
-        protected IRepository<SeminarEntity> Repo => ServiceProvider.GetService<IRepository<SeminarEntity>>();
+        protected IRepository<SeminarEntity> Repo => ServiceProvider.GetRepo<SeminarEntity>();
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {

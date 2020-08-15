@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using MCMS.Base.Data.FormModels;
-using MCMS.Base.SwaggerFormly.Formly;
 using MCMS.Base.SwaggerFormly.Formly.Fields;
 
 namespace InfoEducatie.Main.Seminars
@@ -22,7 +21,7 @@ namespace InfoEducatie.Main.Seminars
         [Required] [FormlyCkEditor] public string Description { get; set; }
         [Required] public string Link { get; set; }
 
-        [FormlyFieldDefaultValue(true)] public bool Published { get; set; }
+        [FormlyField(DefaultValue = true)] public bool Published { get; set; }
         [Required] public string Slug { get; set; }
     }
 }

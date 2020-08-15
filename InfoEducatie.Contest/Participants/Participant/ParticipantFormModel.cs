@@ -1,6 +1,4 @@
-using InfoEducatie.Contest.Participants.Project;
 using MCMS.Base.Data.FormModels;
-using MCMS.Base.SwaggerFormly.Formly.Fields;
 
 namespace InfoEducatie.Contest.Participants.Participant
 {

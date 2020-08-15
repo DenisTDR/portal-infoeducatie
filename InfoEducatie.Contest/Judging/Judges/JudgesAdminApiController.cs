@@ -6,8 +6,8 @@ using InfoEducatie.Contest.Categories;
 using MCMS.Auth;
 using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
+using MCMS.Base.Extensions;
 using MCMS.Controllers.Api;
-using MCMS.Data;
 using MCMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -32,7 +32,7 @@ namespace InfoEducatie.Contest.Judging.Judges
 
         protected override Task PatchBeforeSaveNew(JudgeEntity e)
         {
-            ServiceProvider.GetService<IRepository<CategoryEntity>>().Attach(e.Category);
+            ServiceProvider.GetRepo<CategoryEntity>().Attach(e.Category);
             return base.PatchBeforeSaveNew(e);
         }
 
@@ -62,7 +62,7 @@ namespace InfoEducatie.Contest.Judging.Judges
         public async Task<ActionResult<ModelResponse<JudgeFormModel>>> Create([FromBody] JudgeCreateNewFormModel fm)
         {
             var userManager = ServiceProvider.GetService<UserManager<User>>();
-            var user = await ServiceProvider.GetService<IRepository<User>>()
+            var user = await ServiceProvider.GetRepo<User>()
                 .GetOne(u => u.NormalizedEmail == fm.Email.ToUpper());
             if (user == null)
             {
@@ -72,6 +72,7 @@ namespace InfoEducatie.Contest.Judging.Judges
                 {
                     return BadRequest(result.Errors);
                 }
+
                 await ServiceProvider.GetService<AuthService>().SendActivationEmail(user, Url, Request.Scheme);
             }
 
@@ -87,7 +88,7 @@ namespace InfoEducatie.Contest.Judging.Judges
 
             var e = new JudgeEntity
             {
-                Category = ServiceProvider.GetService<IRepository<CategoryEntity>>()
+                Category = ServiceProvider.GetRepo<CategoryEntity>()
                     .Attach(new CategoryEntity {Id = fm.Category.Id}),
                 AvailableFor = fm.AvailableFor,
                 User = user

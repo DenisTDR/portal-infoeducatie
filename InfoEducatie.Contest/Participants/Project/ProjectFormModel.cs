@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using InfoEducatie.Contest.Categories;
 using MCMS.Base.Data.FormModels;
-using MCMS.Base.SwaggerFormly.Formly;
 using MCMS.Base.SwaggerFormly.Formly.Fields;
 
 namespace InfoEducatie.Contest.Participants.Project
@@ -20,8 +19,9 @@ namespace InfoEducatie.Contest.Participants.Project
         public string Homepage { get; set; }
         public string OldPlatformId { get; set; }
         public string DiscourseUrl { get; set; }
-        [FormlyFieldDefaultValue(false)] public bool IsInOpen { get; set; }
-        
+
+        [FormlyField(DefaultValue = false)] public bool IsInOpen { get; set; }
+
         public float ScoreProject { get; set; }
         public float ScoreOpen { get; set; }
     }

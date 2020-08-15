@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using InfoEducatie.Contest.Categories;
-using MCMS.Base.Attributes;
+using MCMS.Base.Attributes.JsonConverters;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Display.ModelDisplay.Attributes;
 using Newtonsoft.Json;

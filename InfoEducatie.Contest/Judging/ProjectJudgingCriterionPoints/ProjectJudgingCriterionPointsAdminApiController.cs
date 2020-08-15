@@ -2,12 +2,11 @@ using System.Threading.Tasks;
 using InfoEducatie.Contest.Judging.Judges;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Participants.Project;
+using MCMS.Base.Extensions;
 using MCMS.Controllers.Api;
-using MCMS.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints
 {
@@ -29,9 +28,9 @@ namespace InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints
 
         protected override Task PatchBeforeSaveNew(ProjectJudgingCriterionPointsEntity e)
         {
-            ServiceProvider.GetService<IRepository<ProjectEntity>>().Attach(e.Project);
-            ServiceProvider.GetService<IRepository<JudgeEntity>>().Attach(e.Judge);
-            ServiceProvider.GetService<IRepository<JudgingCriterionEntity>>().Attach(e.Criterion);
+            ServiceProvider.GetRepo<ProjectEntity>().Attach(e.Project);
+            ServiceProvider.GetRepo<JudgeEntity>().Attach(e.Judge);
+            ServiceProvider.GetRepo<JudgingCriterionEntity>().Attach(e.Criterion);
             return base.PatchBeforeSaveNew(e);
         }
     }
