@@ -31,6 +31,7 @@ namespace InfoEducatie.Contest.Judging.Results
         protected IRepository<JudgeEntity> JudgesRepo => ServiceProvider.GetRepo<JudgeEntity>();
         protected IRepository<ProjectEntity> ProjectsRepo => ServiceProvider.GetRepo<ProjectEntity>();
         protected JudgingService JudgingService => ServiceProvider.GetRequiredService<JudgingService>();
+        protected ResultsService ResultsService => ServiceProvider.GetRequiredService<ResultsService>();
 
         protected IRepository<ProjectJudgingCriterionPointsEntity> PointsRepo =>
             ServiceProvider.GetRepo<ProjectJudgingCriterionPointsEntity>();
@@ -128,8 +129,8 @@ namespace InfoEducatie.Contest.Judging.Results
                     j.Category == category && (j.AvailableFor == JudgeType.Open || j.AvailableFor == JudgeType.Both))
             };
 
-            var projects = await GetProjectsPointsTypeForCategory(category.Id, JudgingType.Project);
-            var openProjects = await GetProjectsPointsTypeForCategory(category.Id, JudgingType.Open);
+            var projects = await ResultsService.GetProjectsPointsTypeForCategory(category.Id, JudgingType.Project);
+            var openProjects = await ResultsService.GetProjectsPointsTypeForCategory(category.Id, JudgingType.Open);
             foreach (var proj in projects)
             {
                 proj.TotalOpenPoints =
@@ -139,26 +140,6 @@ namespace InfoEducatie.Contest.Judging.Results
             results.Projects = projects.OrderByDescending(p => p.TotalPoints).ToList();
 
             return results;
-        }
-
-        private async Task<List<ProjectResultsModel>> GetProjectsPointsTypeForCategory(string categoryId,
-            JudgingType type)
-        {
-            return await (
-                from project in ProjectsRepo.DbSet.Where(p => p.Category.Id == categoryId)
-                join points in PointsRepo.DbSet.Where(p =>
-                        p.Criterion.Type == type) on project equals
-                    points.Project into pointsProjects
-                from pointsProject in pointsProjects.DefaultIfEmpty()
-                group pointsProject by new {project.Id, project.Title}
-                into grouped
-                select new ProjectResultsModel
-                {
-                    TotalProjectPoints = grouped.Sum(p => p.Points),
-                    ProjectId = grouped.Key.Id,
-                    ProjectTitle = grouped.Key.Title
-                }
-            ).ToListAsync();
         }
 
         private async Task<List<CategoryEntity>> GetAvailableCategories()

@@ -10,6 +10,7 @@ using InfoEducatie.Contest.Exports;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
 using InfoEducatie.Contest.Participants.Participant;
+using InfoEducatie.Main.InfoEducatieAdmin.Diplomas;
 using MCMS.Auth;
 using MCMS.Base.Attributes;
 using MCMS.Base.Extensions;
@@ -140,20 +141,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         [HttpPost]
         public async Task<IActionResult> BuildDiplomas()
         {
+            await ServiceProvider.GetService<DiplomasService>().MakeParticipationDiplomas();
             
-            
-            var participantsRepo = ServiceProvider.GetRepo<ParticipantEntity>();
-            var img = Image.FromFile("./wwwroot/diploma_participare.png");
-            var g = Graphics.FromImage(img);
-
-            var drawFont = new Font("Arial", 48);
-            var drawBrush = new SolidBrush(Color.Black);
-            var x = 1400F;
-            var y = 1002F;
-
-            g.DrawString("ceva test", drawFont, drawBrush, x, y);
-
-            img.Save("./wwwroot/out.png", ImageFormat.Png);
 
             return Ok();
         }

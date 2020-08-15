@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using InfoEducatie.Main.Dashboard;
 using InfoEducatie.Main.Data;
 using InfoEducatie.Main.InfoEducatieAdmin;
+using InfoEducatie.Main.InfoEducatieAdmin.Diplomas;
 using InfoEducatie.Main.Pages;
 using InfoEducatie.Main.Seminars;
 using MCMS.Admin.Users;
@@ -29,6 +30,7 @@ namespace InfoEducatie.Main
             });
 
             services.AddScoped<ImportService>();
+            services.AddScoped<DiplomasService>();
         }
 
         private void ConfigureMenu(MenuConfig config)

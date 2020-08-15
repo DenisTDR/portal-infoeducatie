@@ -23,6 +23,7 @@ namespace InfoEducatie.Contest
         {
             services.AddOptions<MenuConfig>().Configure(ConfigureMenu);
             services.AddScoped<JudgingService>();
+            services.AddScoped<ResultsService>();
             services.AddScoped<FinalXlsxExportService>();
             services.AddScoped<FinalXlsxExportServiceWithCeilings>();
         }
