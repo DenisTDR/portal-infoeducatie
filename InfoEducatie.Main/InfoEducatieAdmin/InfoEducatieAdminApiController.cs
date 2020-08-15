@@ -1,5 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,13 +16,11 @@ using MCMS.Base.Helpers;
 using MCMS.Controllers.Api;
 using MCMS.Data;
 using MCMS.Emailing.Sender;
-using MCMS.Files;
 using MCMS.Files.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace InfoEducatie.Main.InfoEducatieAdmin
 {
@@ -138,6 +138,27 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         }
 
         [HttpPost]
+        public async Task<IActionResult> BuildDiplomas()
+        {
+            
+            
+            var participantsRepo = ServiceProvider.GetService<IRepository<ParticipantEntity>>();
+            var img = Image.FromFile("./wwwroot/diploma_participare.png");
+            var g = Graphics.FromImage(img);
+
+            var drawFont = new Font("Arial", 48);
+            var drawBrush = new SolidBrush(Color.Black);
+            var x = 1400F;
+            var y = 1002F;
+
+            g.DrawString("ceva test", drawFont, drawBrush, x, y);
+
+            img.Save("./wwwroot/out.png", ImageFormat.Png);
+
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> SendActivationMails()
         {
             var participantsRepo = ServiceProvider.GetService<IRepository<ParticipantEntity>>();
@@ -160,7 +181,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         {
             var origService = ServiceProvider.GetService<FinalXlsxExportService>();
             var serviceWithCeilings = ServiceProvider.GetService<FinalXlsxExportServiceWithCeilings>();
-            
+
             var catsService = ServiceProvider.GetService<IRepository<CategoryEntity>>();
             var cats = await catsService.GetAll();
             var dir = Env.GetOrThrow("RESULTS_PATH");
@@ -175,8 +196,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 var filePath = Path.Combine(dir, categoryEntity.Slug + ".xlsx");
                 Console.WriteLine("Saving to " + filePath);
                 wb.SaveAs(filePath);
-                
-                
+
+
                 wb = await serviceWithCeilings.BuildWorkbookForCategory(categoryEntity);
                 filePath = Path.Combine(dir, categoryEntity.Slug + "-with-ceilings.xlsx");
                 Console.WriteLine("Saving to " + filePath);
