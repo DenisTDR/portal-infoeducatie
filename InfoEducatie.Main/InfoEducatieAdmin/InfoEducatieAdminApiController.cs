@@ -156,8 +156,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         [HttpPost]
         public async Task<IActionResult> SendParticipationDiplomasMails()
         {
-            await ServiceProvider.GetService<DiplomasService>().MakeParticipationDiplomas();
-            return Ok();
+            var c = await ServiceProvider.GetService<DiplomasService>().SendParticipationDiplomaMails();
+            return Ok(c);
         }
 
         [HttpPost]

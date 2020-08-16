@@ -6,16 +6,19 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Categories;
-using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Judging.Results;
 using InfoEducatie.Contest.Participants.Participant;
 using MCMS.Base.Data;
 using MCMS.Base.Exceptions;
+using MCMS.Emailing.Clients.SendGrid;
 using MCMS.Files;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
 {
@@ -25,17 +28,20 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
         private readonly IRepository<CategoryEntity> _categoriesRepo;
         private readonly ResultsService _resultsService;
         private readonly ILogger<DiplomasService> _logger;
+        private readonly SendgridClientOptions sendgridConfig;
 
         public DiplomasService(
             IRepository<ParticipantEntity> participantsRepo,
             IRepository<CategoryEntity> categoriesRepo,
             ResultsService resultsService,
-            ILogger<DiplomasService> logger)
+            ILogger<DiplomasService> logger,
+            IOptions<SendgridClientOptions> clientOptions)
         {
             _participantsRepo = participantsRepo;
             _categoriesRepo = categoriesRepo;
             _resultsService = resultsService;
             _logger = logger;
+            sendgridConfig = clientOptions.Value;
         }
 
         public async Task MakeParticipationDiplomas()
@@ -157,6 +163,60 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             {
                 g.DrawString(textModel.Text, textModel.Font ?? drawFont, drawBrush, textModel.X, textModel.Y);
             }
+        }
+
+        public async Task<int> SendParticipationDiplomaMails()
+        {
+            var diplomasPath = Path.Combine(MFiles.PublicPath, "diplomas/participare");
+            _participantsRepo.ChainQueryable(q => q
+                .Include(p => p.User)
+                // .Include(p => p.ProjectParticipants).ThenInclude(pp => pp.Project)
+                .Where(p => p.ProjectParticipants.Any(pp => pp.Project.ScoreProject > 0))
+            );
+            var participants = await _participantsRepo.GetAll();
+
+            var subject = "InfoEducație - Diplomă participare";
+            var message =
+                "Salut {{NAME}}, <br/><br/> Atașat găsești un pdf cu diploma ta de participare. <br/><br/>Mulțumim, <br/> Echipa InfoEducație";
+            int c = 0;
+            foreach (var participant in participants)
+            {
+                _logger.LogWarning($"Sending email with SendGrid: '{subject}' to '{participant.User.Email}'");
+                var client = new SendGridClient(sendgridConfig.Key);
+                var msgText = message.Replace("{{NAME}}", participant.FirstName);
+                var msg = new SendGridMessage
+                {
+                    From = new EmailAddress(sendgridConfig.DefaultSenderAddress, sendgridConfig.DefaultSenderName),
+                    Subject = subject,
+                    PlainTextContent = msgText,
+                    HtmlContent = msgText,
+                };
+                msg.AddTo(new EmailAddress(participant.User.Email));
+                // msg.AddTo(new EmailAddress("test@tdrs.ro"));
+
+                var diplomaPath = Path.Combine(diplomasPath, "pd-" + participant.Id + ".pdf");
+                if (!File.Exists(diplomaPath))
+                {
+                    _logger.LogError("Diploma not found: " + diplomaPath);
+                    continue;
+                }
+
+                var bytes = await File.ReadAllBytesAsync(diplomaPath);
+                var base64String = Convert.ToBase64String(bytes);
+
+                var attach = new Attachment
+                {
+                    Filename = "diploma-participare.pdf", Disposition = "attachment", Type = "application/pdf",
+                    Content = base64String
+                };
+                msg.AddAttachment(attach);
+
+                msg.SetClickTracking(false, false);
+                var response = await client.SendEmailAsync(msg);
+                c++;
+            }
+
+            return c;
         }
     }
 }
