@@ -14,6 +14,8 @@ using MCMS.Base.Exceptions;
 using MCMS.Files;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using PdfSharpCore.Drawing;
+using PdfSharpCore.Pdf;
 
 namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
 {
@@ -67,6 +69,13 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                 Directory.CreateDirectory(outputPath);
             }
 
+            var jpgEncoder = ImageCodecInfo.GetImageDecoders()
+                .FirstOrDefault(codec => codec.FormatID == ImageFormat.Jpeg.Guid);
+            var myEncoder = Encoder.Quality;
+            var myEncoderParameters = new EncoderParameters(1);
+            var myEncoderParameter = new EncoderParameter(myEncoder, 50L);
+            myEncoderParameters.Param[0] = myEncoderParameter;
+
             var now = DateTime.Now;
             _logger.LogWarning("Starting diplomas generation at: " + now.ToString("O"));
             Parallel.For(0, filteredParticipants.Count, i =>
@@ -74,8 +83,17 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                 var participant = participants[i];
                 var img = template.Clone() as Image ?? throw new KnownException("Can't clone template image.");
                 MakeParticipationDiploma(participant, img);
-                var filePath = Path.Combine(outputPath, "pd-" + participant.Id + ".png");
-                img.Save(filePath, ImageFormat.Png);
+
+                var filePathWithoutExtension = Path.Combine(outputPath, "pd-" + participant.Id);
+
+                var jpgPath = filePathWithoutExtension + ".jpg";
+                img.Save(jpgPath, jpgEncoder, myEncoderParameters);
+
+                var pngPath = filePathWithoutExtension + ".png";
+                img.Save(pngPath, ImageFormat.Png);
+
+                var pdfPath = filePathWithoutExtension + ".pdf";
+                CreatePdfWithImage(pngPath, pdfPath);
 
                 _logger.LogWarning($"Created {i}th diploma.");
             });
@@ -83,6 +101,18 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             var span = DateTime.Now - now;
             _logger.LogWarning("Finished diplomas generation at: " + DateTime.Now.ToString("O") + "\nDuration: " +
                                span.ToString("g"));
+        }
+
+        private void CreatePdfWithImage(string imagePath, string pdfPath)
+        {
+            var img = XImage.FromFile(imagePath);
+            var pdfPage = new PdfPage {Width = img.PointWidth, Height = img.PointHeight};
+            var document = new PdfDocument();
+            document.AddPage(pdfPage);
+            var gfx = XGraphics.FromPdfPage(pdfPage);
+            gfx.DrawImage(img, 0, 0);
+
+            document.Save(pdfPath);
         }
 
         private void MakeParticipationDiploma(ParticipantEntity participant, Image img)
