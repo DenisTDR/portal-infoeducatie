@@ -49,7 +49,7 @@ namespace InfoEducatie.Contest.Judging.Results
             var cats = await GetAvailableCategories();
             foreach (var categoryEntity in cats)
             {
-                results.Add(await BuildResultsForCategory(categoryEntity));
+                results.Add(await ServiceProvider.GetService<ResultsService>().GetResultsForCategory(categoryEntity));
             }
 
             return View(results);
@@ -113,33 +113,6 @@ namespace InfoEducatie.Contest.Judging.Results
 
             return File(ms, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 "avg-except-judge.xlsx");
-        }
-
-        private async Task<CategoryResultsModel> BuildResultsForCategory(CategoryEntity category)
-        {
-            var results = new CategoryResultsModel
-            {
-                CategoryName = category.Name,
-                CategorySlug = category.Slug,
-                ProjectJudgeCount =
-                    await JudgesRepo.Queryable.CountAsync(j =>
-                        j.Category == category &&
-                        (j.AvailableFor == JudgeType.Project || j.AvailableFor == JudgeType.Both)),
-                OpenJudgeCount = await JudgesRepo.Queryable.CountAsync(j =>
-                    j.Category == category && (j.AvailableFor == JudgeType.Open || j.AvailableFor == JudgeType.Both))
-            };
-
-            var projects = await ResultsService.GetProjectsPointsTypeForCategory(category.Id, JudgingType.Project);
-            var openProjects = await ResultsService.GetProjectsPointsTypeForCategory(category.Id, JudgingType.Open);
-            foreach (var proj in projects)
-            {
-                proj.TotalOpenPoints =
-                    openProjects.FirstOrDefault(op => op.ProjectId == proj.ProjectId)?.TotalProjectPoints ?? 0;
-            }
-
-            results.Projects = projects.OrderByDescending(p => p.TotalPoints).ToList();
-
-            return results;
         }
 
         private async Task<List<CategoryEntity>> GetAvailableCategories()

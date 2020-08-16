@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -9,6 +10,7 @@ using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Exports;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
+using InfoEducatie.Contest.Judging.Results;
 using InfoEducatie.Contest.Participants.Participant;
 using InfoEducatie.Main.InfoEducatieAdmin.Diplomas;
 using MCMS.Auth;
@@ -96,7 +98,6 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             sectionsRepo.ChainQueryable(q => q.Include(s => s.Criteria));
 
             var category = await catsRepo.GetOneOrThrow(model.Category.Id);
-            var result = new {addedSections = 0, addedCriteria = 0, removedSections = 0, removedCriteria = 0};
             var addedSections = 0;
             var addedCriteria = 0;
             var removedSections = 0;
@@ -139,11 +140,23 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         }
 
         [HttpPost]
+        public async Task<IActionResult> SaveCalculatedResults()
+        {
+            await ServiceProvider.GetService<ResultsService>().SaveCalculatedResults();
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> BuildDiplomas()
         {
             await ServiceProvider.GetService<DiplomasService>().MakeParticipationDiplomas();
-            
+            return Ok();
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> SendParticipationDiplomasMails()
+        {
+            await ServiceProvider.GetService<DiplomasService>().MakeParticipationDiplomas();
             return Ok();
         }
 
