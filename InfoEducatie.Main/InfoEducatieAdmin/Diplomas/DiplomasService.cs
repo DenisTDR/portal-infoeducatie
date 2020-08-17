@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Judging.Results;
 using InfoEducatie.Contest.Participants.Participant;
+using InfoEducatie.Contest.Participants.Project;
 using MCMS.Base.Data;
 using MCMS.Base.Exceptions;
 using MCMS.Emailing.Clients.SendGrid;
@@ -25,6 +27,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
     public class DiplomasService
     {
         private readonly IRepository<ParticipantEntity> _participantsRepo;
+        private readonly IRepository<ProjectEntity> _projectsRepo;
         private readonly IRepository<CategoryEntity> _categoriesRepo;
         private readonly ResultsService _resultsService;
         private readonly ILogger<DiplomasService> _logger;
@@ -33,15 +36,64 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
         public DiplomasService(
             IRepository<ParticipantEntity> participantsRepo,
             IRepository<CategoryEntity> categoriesRepo,
+            IRepository<ProjectEntity> projectsRepo,
             ResultsService resultsService,
             ILogger<DiplomasService> logger,
             IOptions<SendgridClientOptions> clientOptions)
         {
             _participantsRepo = participantsRepo;
+            _projectsRepo = projectsRepo;
             _categoriesRepo = categoriesRepo;
             _resultsService = resultsService;
             _logger = logger;
             sendgridConfig = clientOptions.Value;
+        }
+
+
+        public async Task MakePrizesDiplomas()
+        {
+            _participantsRepo.ChainQueryable(q => q
+                .Include(p => p.User)
+                // .Include(p => p.ProjectParticipants).ThenInclude(pp => pp.Project)
+                .Where(p => p.ProjectParticipants.Any(pp => pp.Project.ScoreProject > 0))
+            );
+            _projectsRepo.ChainQueryable(q => q
+                .Include(p => p.ProjectParticipants)
+                .ThenInclude(pp => pp.Participant)
+                .ThenInclude(part => part.User)
+            );
+
+            var outputPath = Path.Combine(MFiles.PublicPath, "diplomas/prizes");
+            if (!Directory.Exists(outputPath))
+            {
+                _logger.LogWarning($"Creating '{outputPath}' directory.");
+                Directory.CreateDirectory(outputPath);
+            }
+
+            var template = Image.FromFile(Path.Combine(MFiles.PrivatePath, "diplomas/diploma_premii.png"));
+
+            var cats = await _categoriesRepo.GetAll();
+            foreach (var cat in cats)
+            {
+                _logger.LogWarning($"Generating prizes diplomas for '{cat.Name}'.");
+                var projects = await _projectsRepo.Queryable.Where(p => p.Category == cat)
+                    .OrderByDescending(p => p.ScoreProject + p.ScoreOpen).Take(5).ToListAsync();
+                for (int i = 0; i < projects.Count; i++)
+                {
+                    var project = projects[i];
+                    var prize = i < 3 ? new String('I', i + 1) : "M";
+                    foreach (var participant in project.ProjectParticipants.Select(pp => pp.Participant))
+                    {
+                        Console.WriteLine(prize + " - " + participant.User.FullName);
+                        var img = template.Clone() as Image ?? throw new KnownException("Can't clone image template.");
+                        MakePrizeDiploma(img, prize, cat.Name, participant);
+                        var diplomaPath = Path.Combine(outputPath, $"{cat.Slug}-{prize}-{participant.Id}.png");
+                        img.Save(diplomaPath, ImageFormat.Png);
+                    }
+                }
+            }
+
+            _logger.LogWarning($"Generated prizes diplomas.");
         }
 
         public async Task MakeParticipationDiplomas()
@@ -75,9 +127,9 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
 
             var now = DateTime.Now;
             _logger.LogWarning("Starting diplomas generation at: " + now.ToString("O"));
-            Parallel.For(0, participants.Count, i =>
+
+            foreach (var participant in participants)
             {
-                var participant = participants[i];
                 var img = template.Clone() as Image ?? throw new KnownException("Can't clone template image.");
                 MakeParticipationDiploma(participant, img);
 
@@ -95,8 +147,12 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                 // var pdfTextsPath = filePathWithoutExtension + "-texts.pdf";
                 // CreatePdfWithTexts(xTemplate, pdfTextsPath, participant);
 
-                _logger.LogWarning($"Created {i}th diploma.");
-            });
+                _logger.LogWarning($"Created {participants.IndexOf(participant)}th diploma.");
+                img.Dispose();
+            }
+
+            template.Dispose();
+            xTemplate.Dispose();
 
             var span = DateTime.Now - now;
             _logger.LogWarning("Finished diplomas generation at: " + DateTime.Now.ToString("O") + "\nDuration: " +
@@ -113,6 +169,9 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             gfx.DrawImage(img, 0, 0);
 
             document.Save(pdfPath);
+            gfx.Dispose();
+            img.Dispose();
+            document.Dispose();
         }
 
         private void CreatePdfWithTexts(XImage img, string pdfPath, ParticipantEntity participant)
@@ -142,6 +201,34 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             }
 
             document.Save(pdfPath);
+            gfx.Dispose();
+            document.Dispose();
+        }
+
+        private void MakePrizeDiploma(Image img, string prize, string category, ParticipantEntity participant)
+        {
+            var g = Graphics.FromImage(img);
+
+            var drawFont = new Font("Arial", 48);
+            var drawBrush = new SolidBrush(Color.Black);
+
+            var texts = new List<ImageTextModel>
+            {
+                new ImageTextModel(prize, 2066, 843),
+                new ImageTextModel(participant.User.FullName, 1830, 980),
+                new ImageTextModel(participant.School, 1100, 1093),
+                new ImageTextModel(participant.SchoolCity, 1651, 1205),
+                new ImageTextModel(category, 1842, 1433),
+                new ImageTextModel(participant.MentoringTeacher, 1772, 1545),
+            };
+
+            foreach (var textModel in texts)
+            {
+                g.DrawString(textModel.Text, textModel.Font ?? drawFont, drawBrush, textModel.X, textModel.Y);
+            }
+
+            g.Flush(FlushIntention.Flush);
+            g.Dispose();
         }
 
         private void MakeParticipationDiploma(ParticipantEntity participant, Image img)
@@ -163,6 +250,9 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             {
                 g.DrawString(textModel.Text, textModel.Font ?? drawFont, drawBrush, textModel.X, textModel.Y);
             }
+
+            g.Flush(FlushIntention.Flush);
+            g.Dispose();
         }
 
         public async Task<int> SendParticipationDiplomaMails()
