@@ -35,4 +35,18 @@
         }
         <partial name="Partials/_MRichLink" model="link"/>
     </li>
+    <li>
+        @{
+            link = new MRichLink("List participation diplomas", typeof(InfoEducatieAdminController), nameof(InfoEducatieAdminController.ListDiplomasDirectory))
+                .WithModal().WithValues(null);
+        }
+        <partial name="Partials/_MRichLink" model="link"/>
+    </li>
+    <li>
+        @{
+            link = new MRichLink("List prizes diplomas", typeof(InfoEducatieAdminController), nameof(InfoEducatieAdminController.ListDiplomasDirectory))
+                .WithModal().WithValues(new {prizes = true});
+        }
+        <partial name="Partials/_MRichLink" model="link"/>
+    </li>
 </ul>
