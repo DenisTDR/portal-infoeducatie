@@ -1,0 +1,20 @@
+@using MCMS.Base.Repositories
+
+@model List<InfoEducatie.Main.InfoEducatieAdmin.Diplomas.LinkFileModel>
+@inject ITranslationsRepository TransRepo
+@{
+    ViewBag.Title = $"Directory";
+}
+<div class="modal-body">
+    <ul>
+        @foreach (var link in Model)
+        {
+            <li>
+                <a href="@link.Url">@link.FileName</a>
+            </li>
+        }
+    </ul>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">@await TransRepo.GetValueOrSlug("cancel")</button>
+</div>

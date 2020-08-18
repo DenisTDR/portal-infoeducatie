@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Judging.Results;
@@ -70,6 +71,10 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                 Directory.CreateDirectory(outputPath);
             }
 
+            var jpgEncoder = ImageCodecInfo.GetImageDecoders()
+                .FirstOrDefault(codec => codec.FormatID == ImageFormat.Jpeg.Guid);
+            var jpgEncoderParams = new EncoderParameters(1)
+                {Param = {[0] = new EncoderParameter(Encoder.Quality, 75)}};
             var template = Image.FromFile(Path.Combine(MFiles.PrivatePath, "diplomas/diploma_premii.png"));
 
             var cats = await _categoriesRepo.GetAll();
@@ -87,8 +92,16 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                         Console.WriteLine(prize + " - " + participant.User.FullName);
                         var img = template.Clone() as Image ?? throw new KnownException("Can't clone image template.");
                         MakePrizeDiploma(img, prize, cat.Name, participant);
+
                         var diplomaPath = Path.Combine(outputPath, $"{cat.Slug}-{prize}-{participant.Id}.png");
-                        img.Save(diplomaPath, ImageFormat.Png);
+                        // img.Save(diplomaPath, ImageFormat.Jpeg);
+
+
+                        var jpgPath = diplomaPath.Replace(".png", ".jpg");
+                        img.Save(jpgPath, jpgEncoder, jpgEncoderParams);
+
+                        var pdfPath = jpgPath.Replace(".jpg", ".pdf");
+                        CreatePdfWithImage(jpgPath, pdfPath);
                     }
                 }
             }
@@ -120,10 +133,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
 
             var jpgEncoder = ImageCodecInfo.GetImageDecoders()
                 .FirstOrDefault(codec => codec.FormatID == ImageFormat.Jpeg.Guid);
-            var myEncoder = Encoder.Quality;
-            var myEncoderParameters = new EncoderParameters(1);
-            var myEncoderParameter = new EncoderParameter(myEncoder, 50L);
-            myEncoderParameters.Param[0] = myEncoderParameter;
+            var jpgEncoderParams = new EncoderParameters(1)
+                {Param = {[0] = new EncoderParameter(Encoder.Quality, 50L)}};
 
             var now = DateTime.Now;
             _logger.LogWarning("Starting diplomas generation at: " + now.ToString("O"));
@@ -136,7 +147,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                 var filePathWithoutExtension = Path.Combine(outputPath, "pd-" + participant.Id);
 
                 // var jpgPath = filePathWithoutExtension + ".jpg";
-                // img.Save(jpgPath, jpgEncoder, myEncoderParameters);
+                // img.Save(jpgPath, jpgEncoder, jpgEncoderParams);
 
                 var pngPath = filePathWithoutExtension + ".png";
                 img.Save(pngPath, ImageFormat.Png);
@@ -209,17 +220,18 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
         {
             var g = Graphics.FromImage(img);
 
-            var drawFont = new Font("Arial", 48);
+            var drawFont = new Font("Arial", 42);
             var drawBrush = new SolidBrush(Color.Black);
 
             var texts = new List<ImageTextModel>
             {
                 new ImageTextModel(prize, 2066, 843),
-                new ImageTextModel(participant.User.FullName, 1830, 980),
-                new ImageTextModel(participant.School, 1100, 1093),
-                new ImageTextModel(participant.SchoolCity, 1651, 1205),
-                new ImageTextModel(category, 1842, 1433),
-                new ImageTextModel(participant.MentoringTeacher, 1772, 1545),
+                new ImageTextModel(participant.User.LastName + " " + participant.User.FirstName, 1800, 990),
+                // {Font = new Font("Arial", 42)},
+                new ImageTextModel(participant.School, 1100, 1100),
+                new ImageTextModel(participant.SchoolCity, 1651, 1215),
+                new ImageTextModel(category, 1842, 1432),
+                new ImageTextModel(participant.MentoringTeacher, 1746, 1555) {Font = new Font("Arial", 35)},
             };
 
             foreach (var textModel in texts)
@@ -304,6 +316,80 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                 msg.SetClickTracking(false, false);
                 var response = await client.SendEmailAsync(msg);
                 c++;
+            }
+
+            return c;
+        }
+
+        public async Task<int> SendPrizesDiplomaMails()
+        {
+            var diplomasPath = Path.Combine(MFiles.PublicPath, "diplomas/prizes");
+
+            _participantsRepo.ChainQueryable(q => q
+                .Include(p => p.User)
+                // .Include(p => p.ProjectParticipants).ThenInclude(pp => pp.Project)
+                .Where(p => p.ProjectParticipants.Any(pp => pp.Project.ScoreProject > 0))
+            );
+            _projectsRepo.ChainQueryable(q => q
+                .Include(p => p.ProjectParticipants)
+                .ThenInclude(pp => pp.Participant)
+                .ThenInclude(part => part.User)
+            );
+
+            var subject = "InfoEducație - Diplomă premiu";
+            var message =
+                "Salut {{NAME}}, <br/><br/> Atașat găsești diploma cu premiul în format pdf. <br/>Pentru orice nelămurire/probleme apărute poți scrie pe Discord pe channelul #general<br/><br/>Mulțumim, <br/> Echipa InfoEducație";
+            int c = 0;
+
+            var cats = await _categoriesRepo.GetAll();
+            var mailClient = new SendGridClient(sendgridConfig.Key);
+            foreach (var cat in cats)
+            {
+                var projects = await _projectsRepo.Queryable.Where(p => p.Category == cat)
+                    .OrderByDescending(p => p.ScoreProject + p.ScoreOpen).Take(5).ToListAsync();
+                for (int i = 0; i < projects.Count; i++)
+                {
+                    var project = projects[i];
+                    var prize = i < 3 ? new String('I', i + 1) : "M";
+                    foreach (var participant in project.ProjectParticipants.Select(pp => pp.Participant))
+                    {
+                        if ((participant.SentMails & SentMailsState.PrizeDiplomaEmailSent) != 0)
+                        {
+                            _logger.LogWarning($"mail diploma already send: '{subject}' to '{participant.User.Email}'");
+                            continue;
+                        }
+                        _logger.LogWarning($"Sending email with SendGrid: '{subject}' to '{participant.User.Email}'");
+
+                        var diplomaPath = Path.Combine(diplomasPath, $"{cat.Slug}-{prize}-{participant.Id}.pdf");
+                        var bytes = await File.ReadAllBytesAsync(diplomaPath);
+                        var base64String = Convert.ToBase64String(bytes);
+                        var msgText = message.Replace("{{NAME}}", participant.FirstName);
+                        var msg = new SendGridMessage
+                        {
+                            From = new EmailAddress(sendgridConfig.DefaultSenderAddress,
+                                sendgridConfig.DefaultSenderName),
+                            Subject = subject,
+                            PlainTextContent = msgText,
+                            HtmlContent = msgText,
+                        };
+                        msg.AddTo(new EmailAddress(participant.User.Email, participant.User.FullName));
+
+                        msg.AddAttachment(new Attachment
+                        {
+                            Filename = "diploma-premiu.pdf", Disposition = "attachment", Type = "application/pdf",
+                            Content = base64String
+                        });
+                        msg.SetClickTracking(true, true);
+                        // var response = await mailClient.SendEmailAsync(msg);
+                        var response = new {StatusCode = HttpStatusCode.OK};
+                        if (response.StatusCode == HttpStatusCode.OK)
+                        {
+                            participant.SentMails |= SentMailsState.PrizeDiplomaEmailSent;
+                            await _participantsRepo.SaveChanges();
+                            c++;
+                        }
+                    }
+                }
             }
 
             return c;

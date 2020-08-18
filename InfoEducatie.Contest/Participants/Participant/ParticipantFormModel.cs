@@ -22,6 +22,7 @@ namespace InfoEducatie.Contest.Participants.Participant
         public string OldPlatformId { get; set; }
         public bool ActivationEmailSent { get; set; }
                 
+        public SentMailsState SentMails { get; set; } 
 
     }
 }

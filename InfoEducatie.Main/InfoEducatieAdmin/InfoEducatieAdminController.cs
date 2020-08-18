@@ -1,12 +1,16 @@
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
 using InfoEducatie.Contest.Participants.Participant;
 using InfoEducatie.Contest.Participants.Project;
+using InfoEducatie.Main.InfoEducatieAdmin.Diplomas;
 using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
 using MCMS.Base.Extensions;
 using MCMS.Controllers.Ui;
+using MCMS.Files;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -105,6 +109,24 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             var accountsWithoutEmailSent = await ServiceProvider.GetRepo<ParticipantEntity>().Queryable
                 .CountAsync(p => !p.ActivationEmailSent);
             return View(accountsWithoutEmailSent);
+        }
+
+        [ViewLayout("_ModalLayout")]
+        public IActionResult ListDiplomasDirectory([FromQuery]bool prizes = false)
+        {
+            var list = new List<LinkFileModel>();
+            var path = Path.Combine(MFiles.PublicPath, "diplomas", prizes ? "prizes" : "participare");
+            foreach (var file in Directory.GetFiles(path).OrderBy(f => f))
+            {
+                list.Add(new LinkFileModel
+                {
+                    FileName = Path.GetFileName(file),
+                    Url = file.Replace(MFiles.PublicPath, MFiles.PublicVirtualPath),
+                    IsPrize = prizes
+                });
+            }
+
+            return View(list);
         }
     }
 }

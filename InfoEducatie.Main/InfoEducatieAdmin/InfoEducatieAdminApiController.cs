@@ -152,6 +152,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             await ServiceProvider.GetService<DiplomasService>().MakeParticipationDiplomas();
             return Ok();
         }
+
         [HttpPost]
         public async Task<IActionResult> MakePrizesDiploma()
         {
@@ -163,6 +164,13 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         public async Task<IActionResult> SendParticipationDiplomasMails()
         {
             var c = await ServiceProvider.GetService<DiplomasService>().SendParticipationDiplomaMails();
+            return Ok(c);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SendPrizesDiplomaMails()
+        {
+            var c = await ServiceProvider.GetService<DiplomasService>().SendPrizesDiplomaMails();
             return Ok(c);
         }
 
