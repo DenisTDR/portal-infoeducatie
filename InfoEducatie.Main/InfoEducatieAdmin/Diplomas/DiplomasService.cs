@@ -338,7 +338,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
 
             var subject = "InfoEducație - Diplomă premiu";
             var message =
-                "Salut {{NAME}}, <br/><br/> Atașat găsești diploma cu premiul în format pdf. <br/>Pentru orice nelămurire/probleme apărute poți scrie pe Discord pe channelul #general<br/><br/>Mulțumim, <br/> Echipa InfoEducație";
+                "Salut {{NAME}}, <br/><br/> Atașat găsești diploma cu premiul în format pdf. <br/>Pentru orice nelămurire/problemă poți scrie pe Discord pe channelul #general<br/><br/>Mulțumim, <br/> Echipa InfoEducație";
             int c = 0;
 
             var cats = await _categoriesRepo.GetAll();
@@ -353,11 +353,11 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                     var prize = i < 3 ? new String('I', i + 1) : "M";
                     foreach (var participant in project.ProjectParticipants.Select(pp => pp.Participant))
                     {
-                        if ((participant.SentMails & SentMailsState.PrizeDiplomaEmailSent) != 0)
-                        {
-                            _logger.LogWarning($"mail diploma already send: '{subject}' to '{participant.User.Email}'");
-                            continue;
-                        }
+                        // if ((participant.SentMails & SentMailsState.PrizeDiplomaEmailSent) != 0)
+                        // {
+                            // _logger.LogWarning($"mail diploma already send: '{subject}' to '{participant.User.Email}'");
+                            // continue;
+                        // }
                         _logger.LogWarning($"Sending email with SendGrid: '{subject}' to '{participant.User.Email}'");
 
                         var diplomaPath = Path.Combine(diplomasPath, $"{cat.Slug}-{prize}-{participant.Id}.pdf");
@@ -380,8 +380,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                             Content = base64String
                         });
                         msg.SetClickTracking(true, true);
-                        // var response = await mailClient.SendEmailAsync(msg);
-                        var response = new {StatusCode = HttpStatusCode.OK};
+                        var response = await mailClient.SendEmailAsync(msg);
                         if (response.StatusCode == HttpStatusCode.OK)
                         {
                             participant.SentMails |= SentMailsState.PrizeDiplomaEmailSent;
