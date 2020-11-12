@@ -23,10 +23,10 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection
             );
         }
 
-        protected override Task PatchBeforeSaveNew(JudgingCriteriaSectionEntity e)
+        protected override Task OnCreating(JudgingCriteriaSectionEntity e)
         {
             ServiceProvider.GetRepo<CategoryEntity>().Attach(e.Category);
-            return base.PatchBeforeSaveNew(e);
+            return base.OnCreating(e);
         }
 
         public override async Task<ActionResult<List<JudgingCriteriaSectionViewModel>>> IndexLight()

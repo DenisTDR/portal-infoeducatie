@@ -28,7 +28,7 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
             );
         }
 
-        protected override Task PatchBeforeSaveNew(JudgingCriterionEntity e)
+        protected override Task OnCreating(JudgingCriterionEntity e)
         {
             if (e.Category == null)
             {

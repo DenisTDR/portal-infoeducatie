@@ -79,8 +79,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
             foreach (var email in emails)
             {
-                await emailSender.SendEmailAsync("no-reply@portal.infoeducatie.ro", "InfoEducație", email,
-                    model.Subject, model.Message);
+                await emailSender.SendEmail("no-reply@portal.infoeducatie.ro", "InfoEducație", email, model.Subject,
+                    model.Message);
             }
 
 

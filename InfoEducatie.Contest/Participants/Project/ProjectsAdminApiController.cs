@@ -21,10 +21,10 @@ namespace InfoEducatie.Contest.Participants.Project
                 .Include(p => p.ProjectParticipants).ThenInclude(pp => pp.Participant).ThenInclude(p => p.User));
         }
 
-        protected override Task PatchBeforeSaveNew(ProjectEntity e)
+        protected override Task OnCreating(ProjectEntity e)
         {
             ServiceProvider.GetRepo<CategoryEntity>().Attach(e.Category);
-            return base.PatchBeforeSaveNew(e);
+            return base.OnCreating(e);
         }
 
         public override Task<ActionResult<List<ProjectViewModel>>> IndexLight()

@@ -26,12 +26,12 @@ namespace InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints
             );
         }
 
-        protected override Task PatchBeforeSaveNew(ProjectJudgingCriterionPointsEntity e)
+        protected override Task OnCreating(ProjectJudgingCriterionPointsEntity e)
         {
             ServiceProvider.GetRepo<ProjectEntity>().Attach(e.Project);
             ServiceProvider.GetRepo<JudgeEntity>().Attach(e.Judge);
             ServiceProvider.GetRepo<JudgingCriterionEntity>().Attach(e.Criterion);
-            return base.PatchBeforeSaveNew(e);
+            return base.OnCreating(e);
         }
     }
 }

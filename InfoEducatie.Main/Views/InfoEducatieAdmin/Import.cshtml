@@ -2,6 +2,7 @@
 @using MCMS.Base.Extensions
 @using MCMS.Base.Helpers
 @using MCMS.Base.Repositories
+@using MCMS.SwaggerFormly
 @using MCMS.SwaggerFormly.FormParamsHelpers
 @inject ITranslationsRepository TransRepo
 
@@ -11,7 +12,7 @@
     var formParamsService = new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(InfoEducatieAdminApiController)), nameof(ImportFormModel)) {SubmitActionName = nameof(InfoEducatieAdminApiController.Import)};
 
     var formParams = formParamsService.ForCreate();
-    formParams.Options = new {hideSubmitButton = true};
+    formParams.AddOption("hideSubmitButton", true);
     var returnUrl = Context.Request.Query.ContainsKey("returnUrl") ? (string) Context.Request.Query["returnUrl"] : null;
 }
 <partial name="_Menu"/>

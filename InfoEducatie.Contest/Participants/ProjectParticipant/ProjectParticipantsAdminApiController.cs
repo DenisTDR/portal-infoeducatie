@@ -20,7 +20,7 @@ namespace InfoEducatie.Contest.Participants.ProjectParticipant
             Repo.ChainQueryable(q => q.Include(pp => pp.Project).ThenInclude(p => p.Category));
         }
 
-        protected override Task PatchBeforeSaveNew(ProjectParticipantEntity e)
+        protected override Task OnCreating(ProjectParticipantEntity e)
         {
             ServiceProvider.GetRepo<ProjectEntity>().Attach(e.Project);
             ServiceProvider.GetRepo<ParticipantEntity>().Attach(e.Participant);

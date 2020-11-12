@@ -30,10 +30,10 @@ namespace InfoEducatie.Contest.Judging.Judges
             );
         }
 
-        protected override Task PatchBeforeSaveNew(JudgeEntity e)
+        protected override Task OnCreating(JudgeEntity e)
         {
             ServiceProvider.GetRepo<CategoryEntity>().Attach(e.Category);
-            return base.PatchBeforeSaveNew(e);
+            return base.OnCreating(e);
         }
 
         public override async Task<ActionResult<List<JudgeViewModel>>> Index()
