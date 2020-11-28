@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 as build-env
+FROM mcr.microsoft.com/dotnet/sdk:5.0 as build-env
 WORKDIR /app/
 
 COPY ./InfoEducatie.sln /app/src/InfoEducatie.sln
@@ -19,7 +19,7 @@ COPY ./ /app/src
 RUN dotnet publish --output "/app/bin" --configuration release 
 
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 as runtime-env
+FROM mcr.microsoft.com/dotnet/aspnet:5.0 as runtime-env
 RUN apt-get update && apt-get install -y \
     sudo \
     libgdiplus \

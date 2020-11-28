@@ -47,7 +47,8 @@ namespace InfoEducatie.Main
         public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider, ILogger<Startup> logger)
         {
             _mApp.Configure(app, serviceProvider);
-            if (!string.IsNullOrEmpty(Env.Get("ASPNETCORE_URLS")) && !_mApp.HostEnvironment.IsProduction())
+            var env = serviceProvider.GetRequiredService<IWebHostEnvironment>();
+            if (!string.IsNullOrEmpty(Env.Get("ASPNETCORE_URLS")) && !env.IsProduction())
             {
                 logger.LogInformation("Listening on " + Env.Get("ASPNETCORE_URLS") + "\nOpen your browser at " +
                                       Env.Get("ASPNETCORE_URLS").Replace("0.0.0.0", "localhost"));
