@@ -29,11 +29,16 @@ namespace InfoEducatie.Main
                 .AddSpecifications<InfoEducatieContestSpecifications>()
                 .WithPostgres<ApplicationDbContext>()
                 .WithSwagger(new SwaggerConfigOptions
-                {
-                    Name = "infoeducatie",
-                    Title = "InfoEducație API",
-                    Version = "v1"
-                })
+                    {
+                        Title = "Admin API",
+                        Version = "v1"
+                    }
+                    // new SwaggerConfigOptions
+                    // {
+                    //     Title = "API",
+                    //     Version = "v1"
+                    // }
+                )
                 .Build();
         }
 

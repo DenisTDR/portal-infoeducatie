@@ -98,7 +98,7 @@ function initializeJudgingInputFields() {
 
 function disableMouseScrollOnInputNumberInputs() {
     // code stolen from https://stackoverflow.com/a/20838527
-    var judgeTable =  $('.judging-table');
+    var judgeTable = $('.judging-table');
     judgeTable.on('focus', 'input[type=number]', function (e) {
         $(this).on('wheel.disableScroll', function (e) {
             e.preventDefault();
@@ -115,7 +115,7 @@ function setPointsFor(cell, criterionId, projectId, points, successCallback) {
     addSpinnerElem(cell);
     $.ajax({
         type: "POST",
-        url: "/Judging/SetPoints",
+        url: setPointsUrl,
         data: JSON.stringify(data),
         contentType: "application/json; charset=utf-8",
         dataType: "json",

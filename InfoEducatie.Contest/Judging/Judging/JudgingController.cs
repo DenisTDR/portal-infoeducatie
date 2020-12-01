@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
@@ -18,7 +19,8 @@ using Microsoft.Extensions.DependencyInjection;
 namespace InfoEducatie.Contest.Judging.Judging
 {
     [Authorize(Roles = "Jury")]
-    public class JudgingController : UiController
+    [ApiExplorerSettings(GroupName = "admin-api")]
+    public class JudgingController : AdminUiController
     {
         protected JudgingService JudgingService => ServiceProvider.GetRequiredService<JudgingService>();
 
@@ -31,8 +33,16 @@ namespace InfoEducatie.Contest.Judging.Judging
         protected IRepository<JudgingCriterionEntity> JudgingCriteriaRepo =>
             ServiceProvider.GetRepo<JudgingCriterionEntity>();
 
-        [Route("/[controller]/{type?}")]
-        public async Task<IActionResult> Index([FromRoute] [Optional] JudgingType type)
+        [NonAction]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public override Task<IActionResult> Index()
+        {
+            throw new NotImplementedException();
+        }
+
+        [AdminRoute("~/[controller]/{type?}")]
+        [HttpGet]
+        public async Task<IActionResult> Judging([FromRoute] [Optional] JudgingType type)
         {
             var model = await JudgingService.BuildJudgingPageModel(await GetJudgeProfileOrThrow(), type);
             return View(model);

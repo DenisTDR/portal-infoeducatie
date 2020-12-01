@@ -25,7 +25,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace InfoEducatie.Contest.Judging.Results
 {
     [Authorize(Roles = "Moderator, Jury")]
-    public class ResultsController : UiController
+    public class ResultsController : AdminUiController
     {
         protected IRepository<CategoryEntity> CatsRepo => ServiceProvider.GetRepo<CategoryEntity>();
         protected IRepository<JudgeEntity> JudgesRepo => ServiceProvider.GetRepo<JudgeEntity>();
@@ -42,14 +42,13 @@ namespace InfoEducatie.Contest.Judging.Results
             JudgesRepo.ChainQueryable(q => q.Include(j => j.Category).Include(j => j.User));
         }
 
-        [Route("/[controller]")]
-        public async Task<IActionResult> Index()
+        public override async Task<IActionResult> Index()
         {
             var results = new List<CategoryResultsModel>();
             var cats = await GetAvailableCategories();
             foreach (var categoryEntity in cats)
             {
-                results.Add(await ServiceProvider.GetService<ResultsService>().GetResultsForCategory(categoryEntity));
+                results.Add(await ServiceProvider.GetRequiredService<ResultsService>().GetResultsForCategory(categoryEntity));
             }
 
             return View(results);

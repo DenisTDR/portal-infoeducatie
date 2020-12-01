@@ -1,3 +1,4 @@
+@using InfoEducatie.Contest.Judging.Judging
 @using InfoEducatie.Contest.Judging.JudgingCriteria
 @using MCMS.Base.Extensions
 @model InfoEducatie.Contest.Judging.Judging.JudgingPageModel
@@ -134,11 +135,13 @@
 }
 @using (Html.BeginMStyles())
 {
-    <link rel="stylesheet" href="~/judging/assets/judging.css" asp-append-version="true"/>
-}
+    <link rel="stylesheet" href="~/judging/assets/judging.css" asp-append-version="true"/>}
 
 @using (Html.BeginMPageScripts())
 {
+    <script>
+        var setPointsUrl = '@Html.Raw(Url.ActionLink(nameof(JudgingController.SetPoints)))';
+    </script>
     <script src="~/judging/assets/judging.js" asp-append-version="true"></script>
     <script>
         initializeJudgingTable();

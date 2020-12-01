@@ -36,10 +36,9 @@ namespace InfoEducatie.Contest
                 IsCollapsed = true,
                 Items = new List<IMenuItem>
                 {
-                    new MenuLink("Judging Projects", typeof(JudgingController),
-                            nameof(JudgingController.Index)).WithIconClasses("fas fa-gavel").RequiresRoles("Jury")
-                        .WithValues(new {type = "project"}),
-                    new MenuLink("Judging Open", typeof(JudgingController), nameof(JudgingController.Index))
+                    new MenuLink("Judging Projects", typeof(JudgingController), nameof(JudgingController.Judging))
+                        .WithIconClasses("fas fa-gavel").RequiresRoles("Jury").WithValues(new {type = "project"}),
+                    new MenuLink("Judging Open", typeof(JudgingController), nameof(JudgingController.Judging))
                         .WithIconClasses("fas fa-gavel").RequiresRoles("Jury").WithValues(new {type = "open"}),
                     new MenuLink("Judges", typeof(JudgesAdminController),
                         nameof(JudgesAdminController.Index)).RequiresRoles("Moderator"),
