@@ -31,12 +31,13 @@ namespace InfoEducatie.Main
                 .WithSwagger(new SwaggerConfigOptions
                     {
                         Title = "Admin API",
-                        Version = "v1"
+                        Version = "v1",
                     }
-                    // new SwaggerConfigOptions
+                    // , new SwaggerConfigOptions
                     // {
-                    //     Title = "API",
-                    //     Version = "v1"
+                        // Title = "API",
+                        // Version = "v1",
+                        // UiType = SwaggerUiType.ReDoc
                     // }
                 )
                 .Build();
