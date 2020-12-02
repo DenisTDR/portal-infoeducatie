@@ -3,10 +3,12 @@
 ## ASP NET Core Solution
 
 ### Projects Structure
-* InfoEducatie
+* InfoEducatie.Contest
+* InfoEducatie.Main
 
 ### Local Setup
- * `git clone` && init submodules with: `git submodule update --init --recursive`
+ * `git clone`
+ * `git submodule update --init --recursive`
  * DB: 
    * PostgreSQL 13+: example docker-compose file [here](./db-docker-compose.yml)
    * Migrations:
@@ -18,7 +20,10 @@
     * `dotnet aspnet-codegenerator identity -dc ApplicationDbContext --files "Account.Register;Account.Login"
 `
 
-#### Environment variables 
-  copy `.env` file to `.local.env` and adjust your settings
-  
+### Environment variables 
+  * InfoEducatie
+    * `RESULTS_PATH`
+
+  copy `.env` file to `.local.env` and adjust your settings \
   Docs: `./MCMS/README.md` (MCMS submodule directory)
+
