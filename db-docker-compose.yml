@@ -1,9 +1,9 @@
-# Comment omnidb service if you use other [GUI] client.
+# pgadmin service is a useful [GUI] client.
 version: '3.1'
 
 services:
   pdb:
-    image: postgres:13
+    image: postgres:12.5
     container_name: postgres
     restart: always
     environment:
@@ -11,26 +11,29 @@ services:
       POSTGRES_USER: root
     volumes:
       - postgres-data:/var/lib/postgresql/data
+#      - ./postgres-data:/opt/postgres-data
     ports:
       - 5432:5432
     networks:
       postgres-net:
 
-  omnidb:
-    image: taivokasper/omnidb
-    container_name: omnidb
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
     restart: always
     ports:
-      - 8085:8080
-      - 25482:25482
+      - 8086:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: tdr@tdrs.ro
+      PGADMIN_DEFAULT_PASSWORD: parola01
     volumes:
-      - omnidb-config:/etc/omnidb
+      - pgadmin-config:/var/lib/pgadmin
     networks:
       postgres-net:
 
 volumes:
   postgres-data:
-  omnidb-config:
+  pgadmin-config:
 
 
 networks:
