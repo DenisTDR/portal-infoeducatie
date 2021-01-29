@@ -13,20 +13,19 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection
     public class JudgingCriteriaSectionViewModel : ViewModel
     {
         [JsonConverter(typeof(ToStringJsonConverter))]
+        [TableColumn(DbColumn = "Category.Name")]
         public CategoryViewModel Category { get; set; }
 
-        public JudgingType Type { get; set; }
+        [TableColumn] public JudgingType Type { get; set; }
+        [TableColumn] public string Name { get; set; }
+        public string Description { get; set; }
 
-        public string Name { get; set; }
-        [TableColumn(Hidden = true)] public string Description { get; set; }
 
-        [TableColumn(Hidden = true)]
         [DetailsField(Hidden = true)]
         [JsonIgnore]
         public List<JudgingCriterionViewModel> Criteria { get; set; }
 
         [JsonIgnore]
-        [TableColumn(Hidden = true)]
         [DetailsField(Hidden = true)]
         public int MaxPoints => Criteria?.Sum(c => c.MaxPoints) ?? 0;
 

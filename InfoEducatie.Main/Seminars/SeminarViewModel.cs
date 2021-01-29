@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using MCMS.Base.Data.ViewModels;
+using MCMS.Base.Display.ModelDisplay;
 using MCMS.Base.Display.ModelDisplay.Attributes;
 
 namespace InfoEducatie.Main.Seminars
@@ -8,9 +9,9 @@ namespace InfoEducatie.Main.Seminars
     [DisplayName("Seminar")]
     public class SeminarViewModel : ViewModel
     {
-        public string Name { get; set; }
-        public string Speaker { get; set; }
-        public string ShortDescription { get; set; }
+        [TableColumn] public string Name { get; set; }
+        [TableColumn] public string Speaker { get; set; }
+        [TableColumn] public string ShortDescription { get; set; }
         [TableColumn(Hidden = true)] public string Description { get; set; }
 
         [TableColumn(Hidden = true)]
@@ -21,11 +22,16 @@ namespace InfoEducatie.Main.Seminars
         [DetailsField(Hidden = true)]
         public DateTime When { get; set; }
 
-        [DisplayName("When")] public string DisplayTime => When.ToString("u");
+        [TableColumn(Searchable = ServerClient.Client, DbColumn = "When")]
+        [DisplayName("When")]
+        public string DisplayTime => When.ToString("u");
 
-        [DisplayName("Link")] public string DisplayLink => $"<a target='_blank' href='{Link}'>Link</a>";
+        [TableColumn(Searchable = ServerClient.Client, Orderable = ServerClient.Client)]
+        [DisplayName("Link")]
+        public string DisplayLink => $"<a target='_blank' href='{Link}'>Link</a>";
 
-        public bool Published { get; set; }
+
+        [TableColumn] public bool Published { get; set; }
 
         [TableColumn(Hidden = true)] public string Slug { get; set; }
 

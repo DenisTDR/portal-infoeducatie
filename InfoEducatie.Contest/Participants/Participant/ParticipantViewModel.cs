@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using InfoEducatie.Contest.Participants.Project;
 using MCMS.Base.Data.ViewModels;
+using MCMS.Base.Display.ModelDisplay;
 using MCMS.Base.Display.ModelDisplay.Attributes;
 using Newtonsoft.Json;
 
@@ -13,7 +14,10 @@ namespace InfoEducatie.Contest.Participants.Participant
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        [TableColumn] public string FullName => FirstName != null ? FirstName + " " + LastName : PhoneNumber;
+
+        [TableColumn(DbColumn = "User.FirstName", DbFuncFormat = "MDbFunctions.Concat({0}, ' ', x.User.LastName)")]
+        public string FullName => FirstName != null ? FirstName + " " + LastName : PhoneNumber;
+
         public string PhoneNumber { get; set; }
         [TableColumn] public int Grade { get; set; }
         [TableColumn] public string City { get; set; }
@@ -30,12 +34,14 @@ namespace InfoEducatie.Contest.Participants.Participant
         public string OldPlatformId { get; set; }
         public bool ActivationEmailSent { get; set; }
 
-        public SentMailsState SentMails { get; set; } 
+        public SentMailsState SentMails { get; set; }
+
         [DetailsField(Hidden = true)]
         [JsonIgnore]
         public List<ProjectViewModel> Projects { get; set; }
 
-        [TableColumn]
+        [TableColumn(DbColumn = "Projects",
+            DbFuncFormat = "{0}.Any(p=> <condition>)<sel>p.Title", Orderable = ServerClient.None)]
         [DisplayName("Projects")]
         public string ProjectsNames => Projects?.Count is { } nr && nr > 0
             ? string.Join(", ", Projects.Select(p => p.Title))

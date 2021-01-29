@@ -5,6 +5,7 @@ using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Participants.Participant;
 using MCMS.Base.Attributes.JsonConverters;
 using MCMS.Base.Data.ViewModels;
+using MCMS.Base.Display.ModelDisplay;
 using MCMS.Base.Display.ModelDisplay.Attributes;
 using Newtonsoft.Json;
 
@@ -14,7 +15,7 @@ namespace InfoEducatie.Contest.Participants.Project
     public class ProjectViewModel : ViewModel
     {
         [JsonConverter(typeof(ToStringJsonConverter))]
-        [TableColumn]
+        [TableColumn(DbColumn = "Category.Name")]
         public CategoryViewModel Category { get; set; }
 
         [TableColumn] public string Title { get; set; }
@@ -22,7 +23,9 @@ namespace InfoEducatie.Contest.Participants.Project
         public string Technologies { get; set; }
         public string SystemRequirements { get; set; }
 
-        [TableColumn] public string SourceUrl { get; set; }
+        [TableColumn(Orderable = ServerClient.None)]
+        public string SourceUrl { get; set; }
+
         public string Homepage { get; set; }
         public string OldPlatformId { get; set; }
         public string DiscourseUrl { get; set; }
@@ -34,7 +37,9 @@ namespace InfoEducatie.Contest.Participants.Project
         [JsonIgnore]
         public List<ParticipantViewModel> Participants { get; set; }
 
-        [TableColumn]
+        [TableColumn(DbColumn = "Participants",
+            DbFuncFormat = "{0}.Any(p=> <condition>)<sel>MDbFunctions.Concat(p.User.FirstName, ' ', p.User.LastName)",
+            Orderable = ServerClient.None)]
         [DisplayName("Participants")]
         public string ProjectsNames => Participants?.Count is { } nr && nr > 0
             ? string.Join(", ", Participants.Select(p => p.FullName))

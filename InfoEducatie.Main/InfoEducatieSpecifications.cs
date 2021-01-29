@@ -30,6 +30,8 @@ namespace InfoEducatie.Main
 
             services.AddScoped<ImportService>();
             services.AddScoped<DiplomasService>();
+
+            services.AddOptions<LayoutIncludesOptions>().Configure(c => { c.AddForPages("InfoeducatieIncludes"); });
         }
 
         private void ConfigureMenu(MenuConfig config)

@@ -11,18 +11,25 @@ namespace InfoEducatie.Contest.Judging.Judges
     [DisplayName("Judge")]
     public class JudgeViewModel : ViewModel
     {
+        [TableColumn(DbColumn = "User.FirstName", DbFuncFormat = "MDbFunctions.Concat({0}, ' ', x.User.LastName)")]
         public string FullName { get; set; }
-        public bool IsVicePresident { get; set; }
-        [TableColumn(Hidden = true)] public bool EmailConfirmed { get; set; }
-        [TableColumn(Hidden = true)] public string Email { get; set; }
 
-        [DetailsField(Hidden = true)] public string EmailAddress => Email + (EmailConfirmed ? "✔️" : "❌");
+        [DisplayName("Vice Pres.")]
+        [TableColumn]
+        public bool IsVicePresident { get; set; }
+
+        public bool EmailConfirmed { get; set; }
+        public string Email { get; set; }
+
+        [TableColumn(DbColumn = "User.Email")]
+        [DetailsField(Hidden = true)]
+        public string EmailAddress => Email + " " + (EmailConfirmed ? "✔️" : "❌");
 
         [JsonConverter(typeof(ToStringJsonConverter))]
+        [TableColumn(DbColumn = "Category.Name")]
         public CategoryViewModel Category { get; set; }
 
-
-        public JudgeType AvailableFor { get; set; }
+        [TableColumn] public JudgeType AvailableFor { get; set; }
 
         public override string ToString()
         {
