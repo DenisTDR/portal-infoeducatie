@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore;
 namespace InfoEducatie.Contest.Participants.Project
 {
     public class
-        ProjectsAdminApiController : GenericAdminApiController<ProjectEntity, ProjectFormModel, ProjectViewModel>
+        ProjectsAdminApiController : CrudAdminApiController<ProjectEntity, ProjectFormModel, ProjectViewModel>
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);
             Repo.ChainQueryable(q => q
                 .Include(p => p.Category)
-                .Include(p => p.ProjectParticipants).ThenInclude(pp => pp.Participant).ThenInclude(p => p.User));
+                .Include(p => p.Participants).ThenInclude(p => p.User));
         }
 
         protected override Task OnCreating(ProjectEntity e)

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InfoEducatie.Contest.Participants.Participant
 {
-    public class ParticipantsAdminApiController : GenericAdminApiController<ParticipantEntity, ParticipantFormModel,
+    public class ParticipantsAdminApiController : CrudAdminApiController<ParticipantEntity, ParticipantFormModel,
         ParticipantViewModel>
     {
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -16,7 +16,7 @@ namespace InfoEducatie.Contest.Participants.Participant
             base.OnActionExecuting(context);
             Repo.ChainQueryable(q => q
                 .Include(p => p.User)
-                .Include(p => p.ProjectParticipants).ThenInclude(pp => pp.Project)
+                .Include(p => p.Projects)
             );
         }
 

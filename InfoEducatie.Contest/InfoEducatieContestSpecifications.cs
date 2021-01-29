@@ -9,7 +9,6 @@ using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
 using InfoEducatie.Contest.Judging.Results;
 using InfoEducatie.Contest.Participants.Participant;
 using InfoEducatie.Contest.Participants.Project;
-using InfoEducatie.Contest.Participants.ProjectParticipant;
 using MCMS.Base.Builder;
 using MCMS.Display.Menu;
 using MCMS.Display.Link;
@@ -65,8 +64,6 @@ namespace InfoEducatie.Contest
                         nameof(ParticipantsAdminController.Index)),
                     new MenuLink("Projects", typeof(ProjectsAdminController),
                         nameof(ProjectsAdminController.Index)),
-                    new MenuLink("Project Participants", typeof(ProjectParticipantsAdminController),
-                        nameof(ProjectParticipantsAdminController.Index)).RequiresRoles("God"),
                     new MenuLink("Categories", typeof(CategoriesAdminController),
                         nameof(CategoriesAdminController.Index)),
                 }

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints
 {
     [Authorize(Roles = "God")]
-    public class ProjectJudgingCriterionPointsAdminApiController : GenericAdminApiController<
+    public class ProjectJudgingCriterionPointsAdminApiController : CrudAdminApiController<
         ProjectJudgingCriterionPointsEntity, ProjectJudgingCriterionPointsFormModel,
         ProjectJudgingCriterionPointsViewModel>
     {

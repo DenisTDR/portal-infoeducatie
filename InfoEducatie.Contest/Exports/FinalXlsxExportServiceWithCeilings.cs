@@ -47,8 +47,7 @@ namespace InfoEducatie.Contest.Exports
                 .ThenInclude(c => c.Section)
             );
             ProjectsRepo.ChainQueryable(q => q
-                .Include(p => p.ProjectParticipants)
-                .ThenInclude(pp => pp.Participant)
+                .Include(p => p.Participants)
                 .ThenInclude(p => p.User));
         }
 

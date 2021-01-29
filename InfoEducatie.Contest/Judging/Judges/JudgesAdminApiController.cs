@@ -19,7 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace InfoEducatie.Contest.Judging.Judges
 {
     [Authorize(Roles = "Moderator")]
-    public class JudgesAdminApiController : GenericAdminApiController<JudgeEntity, JudgeFormModel, JudgeViewModel>
+    public class JudgesAdminApiController : CrudAdminApiController<JudgeEntity, JudgeFormModel, JudgeViewModel>
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {

@@ -9,7 +9,7 @@ namespace InfoEducatie.Contest.Categories
 {
     [Authorize(Roles = "Moderator")]
     public class
-        CategoriesAdminApiController : GenericAdminApiController<CategoryEntity, CategoryFormModel, CategoryViewModel>
+        CategoriesAdminApiController : CrudAdminApiController<CategoryEntity, CategoryFormModel, CategoryViewModel>
     {
         public override Task<ActionResult<List<CategoryViewModel>>> IndexLight()
         {

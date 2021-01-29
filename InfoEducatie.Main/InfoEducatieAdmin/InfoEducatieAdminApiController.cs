@@ -60,8 +60,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             var query = ServiceProvider.GetRepo<ParticipantEntity>().Queryable;
             if (model.Type == SendEmailToParticipantsType.Category)
             {
-                query = query.Where(p =>
-                    p.ProjectParticipants.Any(pp => pp.Project.Category.Id == model.Category.Id));
+                query = query.Where(p => p.Projects.Any(pp => pp.Category.Id == model.Category.Id));
             }
 
             var emails = await query.Select(p => p.User.Email).ToListAsync();

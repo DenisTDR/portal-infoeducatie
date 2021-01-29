@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 namespace InfoEducatie.Contest.Judging.JudgingCriteria
 {
     [Authorize(Roles = "Moderator")]
-    public class JudgingCriteriaAdminApiController : GenericAdminApiController<JudgingCriterionEntity,
+    public class JudgingCriteriaAdminApiController : CrudAdminApiController<JudgingCriterionEntity,
         JudgingCriterionFormModel, JudgingCriterionViewModel>
     {
         public override void OnActionExecuting(ActionExecutingContext context)

@@ -56,11 +56,10 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             _participantsRepo.ChainQueryable(q => q
                 .Include(p => p.User)
                 // .Include(p => p.ProjectParticipants).ThenInclude(pp => pp.Project)
-                .Where(p => p.ProjectParticipants.Any(pp => pp.Project.ScoreProject > 0))
+                .Where(p => p.Projects.Any(pp => pp.ScoreProject > 0))
             );
             _projectsRepo.ChainQueryable(q => q
-                .Include(p => p.ProjectParticipants)
-                .ThenInclude(pp => pp.Participant)
+                .Include(p => p.Participants)
                 .ThenInclude(part => part.User)
             );
 
@@ -87,7 +86,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                 {
                     var project = projects[i];
                     var prize = i < 3 ? new String('I', i + 1) : "M";
-                    foreach (var participant in project.ProjectParticipants.Select(pp => pp.Participant))
+                    foreach (var participant in project.Participants)
                     {
                         Console.WriteLine(prize + " - " + participant.User.FullName);
                         var img = template.Clone() as Image ?? throw new KnownException("Can't clone image template.");
@@ -114,7 +113,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             _participantsRepo.ChainQueryable(q => q
                 .Include(p => p.User)
                 // .Include(p => p.ProjectParticipants).ThenInclude(pp => pp.Project)
-                .Where(p => p.ProjectParticipants.Any(pp => pp.Project.ScoreProject > 0))
+                .Where(p => p.Projects.Any(pp => pp.ScoreProject > 0))
             );
             var participants = await _participantsRepo.GetAll();
 
@@ -273,7 +272,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             _participantsRepo.ChainQueryable(q => q
                 .Include(p => p.User)
                 // .Include(p => p.ProjectParticipants).ThenInclude(pp => pp.Project)
-                .Where(p => p.ProjectParticipants.Any(pp => pp.Project.ScoreProject > 0))
+                .Where(p => p.Projects.Any(pp => pp.ScoreProject > 0))
             );
             var participants = await _participantsRepo.GetAll();
 
@@ -328,11 +327,10 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             _participantsRepo.ChainQueryable(q => q
                 .Include(p => p.User)
                 // .Include(p => p.ProjectParticipants).ThenInclude(pp => pp.Project)
-                .Where(p => p.ProjectParticipants.Any(pp => pp.Project.ScoreProject > 0))
+                .Where(p => p.Projects.Any(pp => pp.ScoreProject > 0))
             );
             _projectsRepo.ChainQueryable(q => q
-                .Include(p => p.ProjectParticipants)
-                .ThenInclude(pp => pp.Participant)
+                .Include(p => p.Participants)
                 .ThenInclude(part => part.User)
             );
 
@@ -351,12 +349,12 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                 {
                     var project = projects[i];
                     var prize = i < 3 ? new String('I', i + 1) : "M";
-                    foreach (var participant in project.ProjectParticipants.Select(pp => pp.Participant))
+                    foreach (var participant in project.Participants)
                     {
                         // if ((participant.SentMails & SentMailsState.PrizeDiplomaEmailSent) != 0)
                         // {
-                            // _logger.LogWarning($"mail diploma already send: '{subject}' to '{participant.User.Email}'");
-                            // continue;
+                        // _logger.LogWarning($"mail diploma already send: '{subject}' to '{participant.User.Email}'");
+                        // continue;
                         // }
                         _logger.LogWarning($"Sending email with SendGrid: '{subject}' to '{participant.User.Email}'");
 

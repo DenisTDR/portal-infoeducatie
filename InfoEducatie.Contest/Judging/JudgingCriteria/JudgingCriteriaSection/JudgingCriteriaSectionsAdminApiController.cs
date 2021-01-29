@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection
 {
-    public class JudgingCriteriaSectionsAdminApiController : GenericAdminApiController<JudgingCriteriaSectionEntity,
+    public class JudgingCriteriaSectionsAdminApiController : CrudAdminApiController<JudgingCriteriaSectionEntity,
         JudgingCriteriaSectionFormModel, JudgingCriteriaSectionViewModel>
     {
         public override void OnActionExecuting(ActionExecutingContext context)
