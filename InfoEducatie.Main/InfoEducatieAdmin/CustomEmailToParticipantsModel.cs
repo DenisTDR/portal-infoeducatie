@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using InfoEducatie.Contest.Categories;
 using MCMS.Base.Data.FormModels;
 using MCMS.Base.SwaggerFormly.Formly;
+using MCMS.Base.SwaggerFormly.Formly.Base;
 using MCMS.Base.SwaggerFormly.Formly.Fields;
 
 namespace InfoEducatie.Main.InfoEducatieAdmin

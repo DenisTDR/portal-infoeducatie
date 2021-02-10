@@ -7,6 +7,7 @@ using InfoEducatie.Main.Pages;
 using InfoEducatie.Main.Seminars;
 using MCMS.Admin.Users;
 using MCMS.Base.Builder;
+using MCMS.Base.Data.Seeder;
 using MCMS.Common.Translations.Translations;
 using MCMS.Data;
 using MCMS.Display.Link;
@@ -32,6 +33,9 @@ namespace InfoEducatie.Main
             services.AddScoped<DiplomasService>();
 
             services.AddOptions<LayoutIncludesOptions>().Configure(c => { c.AddForPages("InfoeducatieIncludes"); });
+
+            services.AddOptions<SeedSources>().Configure(ss =>
+                ss.Add((typeof(InfoEducatieSpecifications).Assembly, "seed-ie.json")));
         }
 
         private void ConfigureMenu(MenuConfig config)

@@ -71,7 +71,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             await contestantsCsvReader.ReadAsync();
             contestantsCsvReader.ReadHeader();
 
-            var missingProjectsFields = RequiredProjectsFields.Except(projectsCsvReader.Context.HeaderRecord).ToList();
+            var missingProjectsFields = RequiredProjectsFields.Except(projectsCsvReader.HeaderRecord).ToList();
             if (missingProjectsFields.Any())
             {
                 throw new KnownException("Missing columns from projects csv file: " +
@@ -79,7 +79,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             }
 
             var missingContestantsFields =
-                RequiredContestantsFields.Except(contestantsCsvReader.Context.HeaderRecord).ToList();
+                RequiredContestantsFields.Except(contestantsCsvReader.HeaderRecord).ToList();
             if (missingContestantsFields.Any())
             {
                 throw new KnownException("Missing columns from projects csv file: " +
