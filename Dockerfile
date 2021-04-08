@@ -1,17 +1,13 @@
 FROM mcr.microsoft.com/dotnet/sdk:5.0 as build-env
-WORKDIR /app/
 
-COPY ./InfoEducatie.sln /app/src/InfoEducatie.sln
-COPY ./MCMS/MCMS/MCMS.csproj /app/src/MCMS/MCMS/MCMS.csproj
-COPY ./MCMS/MCMS.Base/MCMS.Base.csproj /app/src/MCMS/MCMS.Base/MCMS.Base.csproj
-COPY ./MCMS/MCMS.Common/MCMS.Common.csproj /app/src/MCMS/MCMS.Common/MCMS.Common.csproj
-COPY ./MCMS/MCMS.Files/MCMS.Files.csproj /app/src/MCMS/MCMS.Files/MCMS.Files.csproj
-COPY ./MCMS/MCMS.Emailing/MCMS.Emailing.csproj /app/src/MCMS/MCMS.Emailing/MCMS.Emailing.csproj
+COPY ./InfoEducatie.Base/InfoEducatie.Base.csproj /app/src/InfoEducatie.Base/InfoEducatie.Base.csproj
 COPY ./InfoEducatie.Main/InfoEducatie.Main.csproj /app/src/InfoEducatie.Main/InfoEducatie.Main.csproj
 COPY ./InfoEducatie.Contest/InfoEducatie.Contest.csproj /app/src/InfoEducatie.Contest/InfoEducatie.Contest.csproj
 
-WORKDIR /app/src/
+WORKDIR /app/src/InfoEducatie.Main
 
+ARG ENV_TYPE=CI_BUILD
+COPY InfoEducatie.Main/nuget.config /root/.nuget/NuGet/NuGet.Config
 RUN dotnet restore
 
 COPY ./ /app/src

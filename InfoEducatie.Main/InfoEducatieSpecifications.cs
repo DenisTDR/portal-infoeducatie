@@ -40,19 +40,18 @@ namespace InfoEducatie.Main
 
         private void ConfigureMenu(MenuConfig config)
         {
-            // var typeConfig = new BaseEntityTypeConfiguration<User>();
-            config.Items.Add(new MenuSection
+            config.Add(new MenuSection
             {
                 Name = " ",
                 Index = 0,
-                Items = new List<IMenuItem>
+                Items = new List<IMenuItemBase>
                 {
                     new MenuLink("Acasă", typeof(DashboardController)).WithIconClasses("fas fa-home"),
                     new MenuSection
                     {
                         Name = "Administrare",
-                        IsCollapsed = true,
-                        Items = new List<IMenuItem>
+                        IsCollapsable = true,
+                        Items = new List<IMenuItemBase>
                         {
                             new MenuLink("Panou Administrare", typeof(InfoEducatieAdminController),
                                     nameof(InfoEducatieAdminController.Index)).WithIconClasses("fas fa-tools")
@@ -60,8 +59,8 @@ namespace InfoEducatie.Main
                             new MenuSection
                             {
                                 Name = "Conținut",
-                                IsCollapsed = true,
-                                Items = new List<IMenuItem>
+                                IsCollapsable = true,
+                                Items = new List<IMenuItemBase>
                                 {
                                     new MenuLink("Seminarii", typeof(SeminarsAdminController),
                                         nameof(SeminarsAdminController.Index)),
@@ -81,9 +80,9 @@ namespace InfoEducatie.Main
                     }.WithIconClasses("fas fa-tools").RequiresRoles("Admin", "Moderator")
                 }
             });
-            config.Items.Add(new MenuLink("Seminarii", typeof(SeminarsController),
+            config.Add(new MenuLink("Seminarii", typeof(SeminarsController),
                 nameof(SeminarsController.Index)));
-            config.Items.Add(new MenuLink("Program", "/Pages/program-2020") {Index = 20});
+            config.Add(new MenuLink("Program", "/Pages/program-2020") {Index = 20});
         }
     }
 }

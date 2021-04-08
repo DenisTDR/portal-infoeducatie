@@ -29,11 +29,11 @@ namespace InfoEducatie.Contest
 
         private void ConfigureMenu(MenuConfig config)
         {
-            config.Items.Add(new MenuSection
+            config.Add(new MenuSection
             {
                 Name = "Judging",
-                IsCollapsed = true,
-                Items = new List<IMenuItem>
+                IsCollapsable = true,
+                Items = new List<IMenuItemBase>
                 {
                     new MenuLink("Judging Projects", typeof(JudgingController), nameof(JudgingController.Judging))
                         .WithIconClasses("fas fa-gavel").RequiresRoles("Jury").WithValues(new {type = "project"}),
@@ -54,11 +54,11 @@ namespace InfoEducatie.Contest
                         .WithIconClasses("fas fa-search").RequiresRoles("Jury", "Moderator"),
                 }
             }.RequiresRoles("Moderator", "Jury"));
-            config.Items.Add(new MenuSection
+            config.Add(new MenuSection
             {
                 Name = "Contest",
-                IsCollapsed = true,
-                Items = new List<IMenuItem>
+                IsCollapsable = true,
+                Items = new List<IMenuItemBase>
                 {
                     new MenuLink("Participants", typeof(ParticipantsAdminController),
                         nameof(ParticipantsAdminController.Index)),

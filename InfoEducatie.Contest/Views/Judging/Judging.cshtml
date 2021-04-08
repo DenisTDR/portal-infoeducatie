@@ -135,14 +135,14 @@
 }
 @using (Html.BeginMStyles())
 {
-    <link rel="stylesheet" href="~/judging/assets/judging.css" asp-append-version="true"/>}
+    <link rel="stylesheet" href="~/_content/InfoEducatie.Contest/judging/assets/judging.css" asp-append-version="true"/>}
 
 @using (Html.BeginMPageScripts())
 {
     <script>
         var setPointsUrl = '@Html.Raw(Url.ActionLink(nameof(JudgingController.SetPoints)))';
     </script>
-    <script src="~/judging/assets/judging.js" asp-append-version="true"></script>
+    <script src="~/_content/InfoEducatie.Contest/judging/assets/judging.js" asp-append-version="true"></script>
     <script>
         initializeJudgingTable();
     </script>

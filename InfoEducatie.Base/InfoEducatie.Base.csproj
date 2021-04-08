@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup Condition="$(ENV_TYPE) != 'CI_BUILD'">
+        <ProjectReference Include="..\MCMS\MCMS.Common\MCMS.Common.csproj" />
+        <ProjectReference Include="..\MCMS\MCMS.Emailing\MCMS.Emailing.csproj" />
+        <ProjectReference Include="..\MCMS\MCMS.Auth\MCMS.Auth.csproj" />
+        <ProjectReference Include="..\MCMS\MCMS.Files\MCMS.Files.csproj" />
+    </ItemGroup>
+
+    <ItemGroup Condition="$(ENV_TYPE) == 'CI_BUILD'">
+        <PackageReference Include="MCMS.Common" Version="0.0.17" />
+        <PackageReference Include="MCMS.Emailing" Version="0.0.17" />
+        <PackageReference Include="MCMS.Auth" Version="0.0.17" />
+        <PackageReference Include="MCMS.Files" Version="0.0.17" />
+    </ItemGroup>
+</Project>

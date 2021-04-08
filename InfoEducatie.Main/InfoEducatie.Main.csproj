@@ -6,12 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\InfoEducatie.Base\InfoEducatie.Base.csproj" />
       <ProjectReference Include="..\InfoEducatie.Contest\InfoEducatie.Contest.csproj" />
-      <ProjectReference Include="..\MCMS\MCMS.Base\MCMS.Base.csproj" />
-      <ProjectReference Include="..\MCMS\MCMS.Common\MCMS.Common.csproj" />
-      <ProjectReference Include="..\MCMS\MCMS.Emailing\MCMS.Emailing.csproj" />
-      <ProjectReference Include="..\MCMS\MCMS.Files\MCMS.Files.csproj" />
-      <ProjectReference Include="..\MCMS\MCMS\MCMS.csproj" />
     </ItemGroup>
 
     <ItemGroup>
