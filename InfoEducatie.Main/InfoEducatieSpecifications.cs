@@ -81,9 +81,9 @@ namespace InfoEducatie.Main
                     }.WithIconClasses("fas fa-tools").RequiresRoles("Admin", "Moderator")
                 }
             });
-            config.Add(new MenuLink("Seminarii", typeof(SeminarsController),
-                nameof(SeminarsController.Index)));
-            config.Add(new MenuLink("Program", "/Pages/program-2020") {Index = 20});
+            // config.Add(new MenuLink("Seminarii", typeof(SeminarsController),
+                // nameof(SeminarsController.Index)));
+            // config.Add(new MenuLink("Program", "/Pages/program-2021") {Index = 20});
         }
     }
 }
