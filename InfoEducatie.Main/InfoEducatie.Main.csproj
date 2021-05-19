@@ -28,4 +28,11 @@
       <Content Remove="ie-seed.json" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Remove="seed-ie.json" />
+      <EmbeddedResource Include="seed-ie.json">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      </EmbeddedResource>
+    </ItemGroup>
+
 </Project>
