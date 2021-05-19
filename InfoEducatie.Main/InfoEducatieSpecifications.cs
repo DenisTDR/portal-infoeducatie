@@ -26,7 +26,8 @@ namespace InfoEducatie.Main
             services.AddOptions<SiteConfig>().Configure(c =>
             {
                 c.SiteName = "Portal InfoEducație";
-                c.SiteCopyright = "Copyright &copy; TDR 2020";
+                c.SiteCopyright = "Copyright &copy; TDR 2021";
+                c.FaviconPath = "~/favicon.ico";
             });
 
             services.AddScoped<ImportService>();
