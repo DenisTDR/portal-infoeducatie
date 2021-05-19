@@ -23,7 +23,7 @@ RUN apt-get update && apt-get install -y \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app/bin
-EXPOSE 4450
+EXPOSE 80
 ENV NETCORE_USER_UID 69
 
 COPY docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
