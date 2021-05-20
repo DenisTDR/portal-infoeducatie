@@ -185,13 +185,14 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
                 foreach (var projectId in projectIds)
                 {
+                    participant.Projects ??= new();
                     if (participant.Projects.All(proj => proj.OldPlatformId != projectId))
                     {
                         var project = GetProjectCaching(projectId);
                         if (project == null)
                         {
                             participantsResult.Errors.Add(
-                                $"required project with id {projectId} not found (for contenstant with id: " + opId +
+                                $"required project with id {projectId} not found (for contestant with id: " + opId +
                                 ")");
                         }
                         else
