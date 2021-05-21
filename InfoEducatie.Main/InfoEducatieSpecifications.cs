@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using InfoEducatie.Contest.Judging.Results;
 using InfoEducatie.Main.Dashboard;
 using InfoEducatie.Main.Data;
 using InfoEducatie.Main.InfoEducatieAdmin;
@@ -78,11 +77,6 @@ namespace InfoEducatie.Main
                                 .RequiresRoles("Admin"),
                             new MenuLink("Fișiere", typeof(FilesController), nameof(FilesController.Index))
                                 .WithIconClasses("fas fa-copy").RequiresRoles("Admin"),
-                            new MenuLink("Results", typeof(ResultsController), nameof(ResultsController.Index))
-                                .WithIconClasses("fas fa-list-ol").RequiresRoles("Jury", "Moderator"),
-                            new MenuLink("Detailed results", typeof(ResultsController),
-                                    nameof(ResultsController.DetailedResults))
-                                .WithIconClasses("fas fa-search").RequiresRoles("Jury", "Moderator"),
                         }
                     }.WithIconClasses("fas fa-tools").RequiresRoles("Admin", "Moderator")
                 }
