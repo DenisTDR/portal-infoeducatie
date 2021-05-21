@@ -18,7 +18,7 @@ namespace InfoEducatie.Contest.Participants.Participant
         [TableColumn(DbColumn = "User.FirstName", DbFuncFormat = "MDbFunctions.Concat({0}, ' ', x.User.LastName)")]
         public string FullName => FirstName != null ? FirstName + " " + LastName : PhoneNumber;
 
-        public string PhoneNumber { get; set; }
+        [TableColumn(Invisible = true)] public string PhoneNumber { get; set; }
         [TableColumn] public int Grade { get; set; }
         [TableColumn] public string City { get; set; }
         [TableColumn] public string County { get; set; }
@@ -35,6 +35,9 @@ namespace InfoEducatie.Contest.Participants.Participant
         public bool ActivationEmailSent { get; set; }
 
         public SentMailsState SentMails { get; set; }
+
+        [TableColumn(Invisible = true, DbColumn = "User.Email")]
+        public string Email { get; set; }
 
         [DetailsField(Hidden = true)]
         [JsonIgnore]

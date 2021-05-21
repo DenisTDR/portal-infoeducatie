@@ -11,6 +11,8 @@ namespace InfoEducatie.Contest.Participants.Participant
     {
         public User User { get; set; }
 
+        [NotMapped] public string Email => User.Email;
+        
         [NotMapped]
         public string FirstName
         {
