@@ -34,7 +34,7 @@ namespace InfoEducatie.Main
             services.AddScoped<ImportService>();
             services.AddScoped<DiplomasService>();
 
-            services.AddOptions<LayoutIncludesOptions>().Configure(c => { c.AddForPages("InfoeducatieIncludes"); });
+            // services.AddOptions<LayoutIncludesOptions>().Configure(c => { c.AddForPages("InfoeducatieIncludes"); });
 
             services.AddOptions<SeedSources>().Configure(ss =>
                 ss.Add((typeof(InfoEducatieSpecifications).Assembly, "seed-ie.json")));
