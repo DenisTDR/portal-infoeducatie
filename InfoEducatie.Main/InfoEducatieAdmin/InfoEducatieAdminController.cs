@@ -9,6 +9,7 @@ using InfoEducatie.Main.InfoEducatieAdmin.Diplomas;
 using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
 using MCMS.Base.Extensions;
+using MCMS.Base.Helpers;
 using MCMS.Controllers.Ui;
 using MCMS.Files;
 using Microsoft.AspNetCore.Authorization;
@@ -47,6 +48,25 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         public IActionResult BuildXlsxs()
         {
             return View();
+        }
+
+        [ViewLayout("_ModalLayout")]
+        public IActionResult ListBuiltXlsxs()
+        {
+            var list = new List<LinkFileModel>();
+            var dir = Env.GetOrThrow("RESULTS_PATH");
+
+            foreach (var file in Directory.GetFiles(dir).OrderBy(f => f))
+            {
+                list.Add(new LinkFileModel
+                {
+                    FileName = Path.GetFileName(file),
+                    Url = file.Replace(MFiles.PublicPath, MFiles.PublicVirtualPath),
+                    IsPrize = false
+                });
+            }
+
+            return View(list);
         }
 
         [HttpGet]
@@ -112,7 +132,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         }
 
         [ViewLayout("_ModalLayout")]
-        public IActionResult ListDiplomasDirectory([FromQuery]bool prizes = false)
+        public IActionResult ListDiplomasDirectory([FromQuery] bool prizes = false)
         {
             var list = new List<LinkFileModel>();
             var path = Path.Combine(MFiles.PublicPath, "diplomas", prizes ? "prizes" : "participare");

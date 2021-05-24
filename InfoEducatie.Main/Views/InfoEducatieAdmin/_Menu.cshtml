@@ -30,7 +30,14 @@
     </li>
     <li>
         @{
-            link = new MRichLink("Build Xlsx", typeof(InfoEducatieAdminController), nameof(InfoEducatieAdminController.BuildXlsxs))
+            link = new MRichLink("Build Results Xlsx sheets", typeof(InfoEducatieAdminController), nameof(InfoEducatieAdminController.BuildXlsxs))
+                .WithModal().WithValues(null);
+        }
+        <partial name="Partials/_MRichLink" model="link"/>
+    </li>
+    <li>
+        @{
+            link = new MRichLink("List built Results Xlsx sheets", typeof(InfoEducatieAdminController), nameof(InfoEducatieAdminController.ListBuiltXlsxs))
                 .WithModal().WithValues(null);
         }
         <partial name="Partials/_MRichLink" model="link"/>
