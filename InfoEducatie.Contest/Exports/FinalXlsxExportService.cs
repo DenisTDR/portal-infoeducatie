@@ -581,8 +581,8 @@ namespace InfoEducatie.Contest.Exports
         private void PutPageHeader(IXLWorksheet worksheet)
         {
             worksheet.Cell("A2").Value = "InfoEducație - Olimpiada de inovare și creație digitală";
-            worksheet.Cell("A3").Value = "Ediția 2020, Etapa Națională - online";
-            worksheet.Cell("A4").Value = "27 iulie - 2 august 2020";
+            worksheet.Cell("A3").Value = "Ediția 2021 Online";
+            worksheet.Cell("A4").Value = "22 Mai 2021";
             worksheet.Range("A2:A4").Style.Font.Bold = true;
         }
 
