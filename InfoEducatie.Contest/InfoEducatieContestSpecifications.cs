@@ -47,11 +47,11 @@ namespace InfoEducatie.Contest
                         nameof(JudgingCriteriaSectionsAdminController.Index)).RequiresRoles("Moderator"),
                     new MenuLink("Judging criteria points", typeof(ProjectJudgingCriterionPointsAdminController),
                         nameof(ProjectJudgingCriterionPointsAdminController.Index)).RequiresRoles("God"),
-                    new MenuLink("Results", typeof(ResultsController), nameof(ResultsController.Index))
-                        .WithIconClasses("fas fa-list-ol").RequiresRoles("Jury", "Moderator"),
-                    new MenuLink("Detailed results", typeof(ResultsController),
-                            nameof(ResultsController.DetailedResults))
-                        .WithIconClasses("fas fa-search").RequiresRoles("Jury", "Moderator"),
+                    // new MenuLink("Results", typeof(ResultsController), nameof(ResultsController.Index))
+                        // .WithIconClasses("fas fa-list-ol").RequiresRoles("Jury", "Moderator"),
+                    // new MenuLink("Detailed results", typeof(ResultsController),
+                            // nameof(ResultsController.DetailedResults))
+                        // .WithIconClasses("fas fa-search").RequiresRoles("Jury", "Moderator"),
                 }
             }.RequiresRoles("Moderator", "Jury"));
             config.Add(new MenuSection
