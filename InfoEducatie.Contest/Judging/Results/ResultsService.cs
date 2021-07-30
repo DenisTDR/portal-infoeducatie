@@ -37,7 +37,7 @@ namespace InfoEducatie.Contest.Judging.Results
             return await (
                 from project in ProjectsRepo.DbSet.Where(p => p.Category.Id == categoryId)
                 join points in PointsRepo.DbSet.Where(p =>
-                        p.Criterion.Type == type && p.Category == p.Criterion.Category) on project equals
+                        p.Criterion.Type == type && p.Category.Id == p.Criterion.Category.Id) on project equals
                     points.Project into pointsProjects
                 from pointsProject in pointsProjects.DefaultIfEmpty()
                 group pointsProject by new {project.Id, project.Title}
