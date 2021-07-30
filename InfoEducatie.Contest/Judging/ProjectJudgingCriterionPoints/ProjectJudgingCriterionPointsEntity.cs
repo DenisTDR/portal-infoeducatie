@@ -15,7 +15,7 @@ namespace InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints
         [Required] public JudgeEntity Judge { get; set; }
         [Required] public JudgingCriterionEntity Criterion { get; set; }
 
-        [NotMapped] public CategoryEntity Categoey => Criterion.Category;
+        [NotMapped] public CategoryEntity Category => Criterion.Category;
         [Required] public ProjectEntity Project { get; set; }
         public int Points { get; set; }
 
