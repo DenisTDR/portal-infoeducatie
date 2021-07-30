@@ -20,6 +20,7 @@ namespace InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints
             base.OnActionExecuting(context);
             Repo.ChainQueryable(q => q
                 .Include(pjcp => pjcp.Criterion)
+                .ThenInclude(crit => crit.Category)
                 .Include(pjcp => pjcp.Project)
                 .Include(pjcp => pjcp.Judge)
                 .ThenInclude(j => j.User)

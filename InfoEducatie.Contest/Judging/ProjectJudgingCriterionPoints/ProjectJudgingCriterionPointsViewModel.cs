@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Judging.Judges;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Participants.Project;
@@ -17,6 +18,10 @@ namespace InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints
         [TableColumn(DbColumn = "Judge.User.FirstName",
             DbFuncFormat = "MDbFunctions.Concat({0}, ' ', x.Judge.User.LastName)")]
         public JudgeViewModel Judge { get; set; }
+
+        [JsonConverter(typeof(ToStringJsonConverter))]
+        [TableColumn(DbColumn = "Criterion.Category.Name")]
+        public CategoryViewModel Category { get; set; }
 
         [JsonConverter(typeof(ToStringJsonConverter))]
         [TableColumn(DbColumn = "Criterion.Name",

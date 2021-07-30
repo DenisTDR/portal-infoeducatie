@@ -1,5 +1,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Judging.Judges;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Participants.Project;
@@ -12,6 +14,8 @@ namespace InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints
     {
         [Required] public JudgeEntity Judge { get; set; }
         [Required] public JudgingCriterionEntity Criterion { get; set; }
+
+        [NotMapped] public CategoryEntity Categoey => Criterion.Category;
         [Required] public ProjectEntity Project { get; set; }
         public int Points { get; set; }
 
