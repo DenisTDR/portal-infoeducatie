@@ -23,8 +23,8 @@ namespace InfoEducatie.Contest.Exports
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private bool EditionWithOpen => false;
-        private bool EditionHasVicePresidents => false;
+        private bool EditionWithOpen => true;
+        private bool EditionHasVicePresidents => true;
 
         private IRepository<ProjectEntity> ProjectsRepo => _serviceProvider.GetRepo<ProjectEntity>();
         private IRepository<JudgeEntity> JudgesRepo => _serviceProvider.GetRepo<JudgeEntity>();
