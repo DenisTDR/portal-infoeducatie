@@ -35,7 +35,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             var contestantsFile = await filesRepo.GetOneOrThrow(model.ContestantsFile.Id);
             var projectsFile = await filesRepo.GetOneOrThrow(model.ProjectsFile.Id);
 
-            var result = await ServiceProvider.GetService<ImportService>()
+            var result = await ServiceProvider.GetRequiredService<ImportService>()
                 .Import(projectsFile, contestantsFile, model.JustProcessAndDebug);
 
             if (!model.JustProcessAndDebug)
@@ -71,7 +71,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 return Ok(new {debug = true, request = model, emails});
             }
 
-            var emailSender = ServiceProvider.GetService<IMEmailSender>();
+            var emailSender = ServiceProvider.GetRequiredService<IMEmailSender>();
 
             foreach (var email in emails)
             {
@@ -138,35 +138,35 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         [HttpPost]
         public async Task<IActionResult> SaveCalculatedResults()
         {
-            await ServiceProvider.GetService<ResultsService>().SaveCalculatedResults();
+            await ServiceProvider.GetRequiredService<ResultsService>().SaveCalculatedResults();
             return Ok();
         }
 
         [HttpPost]
         public async Task<IActionResult> MakeParticipationDiplomas()
         {
-            await ServiceProvider.GetService<DiplomasService>().MakeParticipationDiplomas();
+            await ServiceProvider.GetRequiredService<DiplomasService>().MakeParticipationDiplomas();
             return Ok();
         }
 
         [HttpPost]
         public async Task<IActionResult> MakePrizesDiploma()
         {
-            await ServiceProvider.GetService<DiplomasService>().MakePrizesDiplomas();
+            await ServiceProvider.GetRequiredService<DiplomasService>().MakePrizesDiplomas();
             return Ok();
         }
 
         [HttpPost]
         public async Task<IActionResult> SendParticipationDiplomasMails()
         {
-            var c = await ServiceProvider.GetService<DiplomasService>().SendParticipationDiplomaMails();
+            var c = await ServiceProvider.GetRequiredService<DiplomasService>().SendParticipationDiplomaMails();
             return Ok(c);
         }
 
         [HttpPost]
         public async Task<IActionResult> SendPrizesDiplomaMails()
         {
-            var c = await ServiceProvider.GetService<DiplomasService>().SendPrizesDiplomaMails();
+            var c = await ServiceProvider.GetRequiredService<DiplomasService>().SendPrizesDiplomaMails();
             return Ok(c);
         }
 
@@ -174,7 +174,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         public async Task<IActionResult> SendActivationMails()
         {
             var participantsRepo = ServiceProvider.GetRepo<ParticipantEntity>();
-            var authService = ServiceProvider.GetService<AuthService>();
+            var authService = ServiceProvider.GetRequiredService<AuthService>();
             participantsRepo.ChainQueryable(q => q.Include(p => p.User));
             var participants = await participantsRepo.GetAll(p => !p.ActivationEmailSent);
             foreach (var participantEntity in participants)
@@ -191,8 +191,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         [HttpPost]
         public async Task<IActionResult> BuildFinalShitsForAllCategories()
         {
-            var origService = ServiceProvider.GetService<FinalXlsxExportService>();
-            var serviceWithCeilings = ServiceProvider.GetService<FinalXlsxExportServiceWithCeilings>();
+            var origService = ServiceProvider.GetRequiredService<FinalXlsxExportService>();
+            var serviceWithCeilings = ServiceProvider.GetRequiredService<FinalXlsxExportServiceWithCeilings>();
 
             var catsService = ServiceProvider.GetRepo<CategoryEntity>();
             var cats = await catsService.GetAll();

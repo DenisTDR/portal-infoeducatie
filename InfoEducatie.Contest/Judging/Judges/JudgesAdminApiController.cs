@@ -61,7 +61,7 @@ namespace InfoEducatie.Contest.Judging.Judges
         [ModelValidation]
         public async Task<ActionResult<ModelResponse<JudgeFormModel>>> Create([FromBody] JudgeCreateNewFormModel fm)
         {
-            var userManager = ServiceProvider.GetService<UserManager<User>>();
+            var userManager = ServiceProvider.GetRequiredService<UserManager<User>>();
             var user = await ServiceProvider.GetRepo<User>()
                 .GetOne(u => u.NormalizedEmail == fm.Email.ToUpper());
             if (user == null)
@@ -73,7 +73,7 @@ namespace InfoEducatie.Contest.Judging.Judges
                     return BadRequest(result.Errors);
                 }
 
-                await ServiceProvider.GetService<AuthService>().SendActivationEmail(user, Url, Request.Scheme);
+                await ServiceProvider.GetRequiredService<AuthService>().SendActivationEmail(user, Url, Request.Scheme);
             }
 
             if (await Repo.Any(j => j.User == user))

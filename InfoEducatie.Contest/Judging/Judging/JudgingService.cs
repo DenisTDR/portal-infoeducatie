@@ -20,7 +20,7 @@ namespace InfoEducatie.Contest.Judging.Judging
         #region repos
 
         protected readonly IServiceProvider ServiceProvider;
-        protected IMapper Mapper => ServiceProvider.GetService<IMapper>();
+        protected IMapper Mapper => ServiceProvider.GetRequiredService<IMapper>();
         protected IRepository<JudgeEntity> JudgesRepo => ServiceProvider.GetRepo<JudgeEntity>();
         protected IRepository<ProjectEntity> ProjectsRepo => ServiceProvider.GetRepo<ProjectEntity>();
 

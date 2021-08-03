@@ -80,7 +80,7 @@ namespace InfoEducatie.Contest.Judging.Results
         public async Task SaveCalculatedResults()
         {
             var catsRepo = _serviceProvider.GetRepo<CategoryEntity>();
-            var resultsService = _serviceProvider.GetService<ResultsService>();
+            var resultsService = _serviceProvider.GetRequiredService<ResultsService>();
 
             var cats = await catsRepo.Queryable.ToListAsync();
 

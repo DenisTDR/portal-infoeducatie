@@ -85,7 +85,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
 
             var uService = ServiceProvider.GetRepo<User>();
-            var userManager = ServiceProvider.GetService<UserManager<User>>();
+            var userManager = ServiceProvider.GetRequiredService<UserManager<User>>();
             var users = await userManager.GetUsersInRoleAsync("Participant");
             uService.DbSet.RemoveRange(users);
             await uService.SaveChanges();

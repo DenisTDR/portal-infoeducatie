@@ -104,7 +104,7 @@ namespace InfoEducatie.Contest.Judging.Results
 
             var workbook = new XLWorkbook();
             workbook.Style.Font.FontName = "Times new roman";
-            var sw = ServiceProvider.GetService<FinalXlsxExportService>();
+            var sw = ServiceProvider.GetRequiredService<FinalXlsxExportService>();
             var sheetName = "Proj avg except " + thejudge.FullName;
             sheetName = sheetName.Substring(0, Math.Min(31, sheetName.Length));
             sw.BuildAvgScoresExceptJudgeSheet(workbook.AddWorksheet(sheetName),
