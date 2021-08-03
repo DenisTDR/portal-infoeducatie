@@ -13,6 +13,7 @@ using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
 using InfoEducatie.Contest.Participants.Project;
 using MCMS.Base.Data;
 using MCMS.Base.Extensions;
+using MCMS.Base.Helpers;
 using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 
@@ -23,8 +24,9 @@ namespace InfoEducatie.Contest.Exports
     public class FinalXlsxExportServiceWithCeilings
     {
         private readonly IServiceProvider _serviceProvider;
-        private bool EditionWithOpen => false;
-        private bool EditionHasVicePresidents => false;
+
+        private readonly bool _editionWithOpen = Env.GetBool("EDITION_WITH_OPEN");
+        private readonly bool _editionHasVicePresidents = Env.GetBool("EDITION_HAS_VPS");
 
         private IRepository<ProjectEntity> ProjectsRepo => _serviceProvider.GetRepo<ProjectEntity>();
         private IRepository<JudgeEntity> JudgesRepo => _serviceProvider.GetRepo<JudgeEntity>();
@@ -73,18 +75,22 @@ namespace InfoEducatie.Contest.Exports
             BuildProjectsSheet(workbook.Worksheets.Add("Listă proiecte"), projects, category,
                 judges.FirstOrDefault(j => j.IsVicePresident));
 
-            #region BI
+            #region BI/BIO
 
             foreach (var judge in judges)
             {
-                var sheetTitle = "BI - " + judge.FullName;
-                sheetTitle = sheetTitle.Substring(0, Math.Min(sheetTitle.Length, 31));
-                BuildIndividualTallySheet(workbook.Worksheets.Add(sheetTitle), judge, projects, projectCriteriaSections,
-                    projectGivenPoints.FindAll(p => p.Judge.Id == judge.Id));
-
-                if (EditionWithOpen)
+                if (judge.AvailableFor.JudgesProject())
                 {
-                    sheetTitle = "BIO - " + judge.FullName;
+                    var sheetTitle = "BI - " + judge.FullName;
+                    sheetTitle = sheetTitle.Substring(0, Math.Min(sheetTitle.Length, 31));
+                    BuildIndividualTallySheet(workbook.Worksheets.Add(sheetTitle), judge, projects,
+                        projectCriteriaSections,
+                        projectGivenPoints.FindAll(p => p.Judge.Id == judge.Id));
+                }
+
+                if (_editionWithOpen && judge.AvailableFor.JudgesOpen())
+                {
+                    var sheetTitle = "BIO - " + judge.FullName;
                     sheetTitle = sheetTitle.Substring(0, Math.Min(sheetTitle.Length, 31));
                     BuildIndividualTallySheet(workbook.Worksheets.Add(sheetTitle), judge, openProjects,
                         openCriteriaSections,
@@ -101,7 +107,7 @@ namespace InfoEducatie.Contest.Exports
             projects = projects.OrderByDescending(p => p.ScoreProject).ToList();
             BuildFinalTallySheet(workbook.Worksheets.Add("Borderou final"), judges, projects, projectGivenPoints,
                 category);
-            if (EditionWithOpen)
+            if (_editionWithOpen)
             {
                 openProjects = openProjects.OrderByDescending(p => p.ScoreOpen).ToList();
                 BuildFinalTallySheet(workbook.Worksheets.Add("Borderou final OPEN"), judges, openProjects,
@@ -113,7 +119,7 @@ namespace InfoEducatie.Contest.Exports
 
             #region RF
 
-            if (EditionWithOpen)
+            if (_editionWithOpen)
             {
                 projects = projects.OrderByDescending(p => p.ScoreProject).ToList();
                 BuildResultsSheet(workbook.Worksheets.Add("Rezultate înainte OPEN"), projects, category,
@@ -207,6 +213,8 @@ namespace InfoEducatie.Contest.Exports
         private void CalcTotalScore(List<ProjectEntity> projects, List<ProjectJudgingCriterionPointsEntity> points,
             List<JudgeEntity> judges, CategoryEntity cat)
         {
+            var projectJudgesCount = judges.Count(j => j.AvailableFor.JudgesProject());
+            var openJudgesCount = judges.Count(j => j.AvailableFor.JudgesOpen());
             foreach (var projectEntity in projects)
             {
                 // projectEntity.ScoreProject =
@@ -220,7 +228,7 @@ namespace InfoEducatie.Contest.Exports
                             .GroupBy(p => p.Judge)
                             .Select(gr => Math.Ceiling(gr.Sum(p => p.Points / (cat.ScoresX10 ? 10d : 1))))
                             .Sum()
-                        / judges.Count);
+                        / projectJudgesCount);
                 // projectEntity.ScoreOpen =
                 //     (float) Math.Ceiling(Math.Ceiling(
                 //         1f * points.Where(p => p.Project == projectEntity && p.Criterion.Type == JudgingType.Open)
@@ -232,7 +240,7 @@ namespace InfoEducatie.Contest.Exports
                             .GroupBy(p => p.Judge)
                             .Select(gr => Math.Ceiling(gr.Sum(p => p.Points / (cat.ScoresX10 ? 10d : 1))))
                             .Sum()
-                        / judges.Count);
+                        / openJudgesCount);
             }
         }
 
@@ -312,15 +320,19 @@ namespace InfoEducatie.Contest.Exports
             List<ProjectJudgingCriterionPointsEntity> points, CategoryEntity category, bool isOpen = false)
         {
             PutPageHeader(ws);
+            var vp = judges.FirstOrDefault(j => j.IsVicePresident);
+            judges = judges.Where(j =>
+                    j.AvailableFor == JudgeType.Both || j.AvailableFor == (isOpen ? JudgeType.Open : JudgeType.Project))
+                .ToList();
             var th = new List<string> {"Nr. Crt.", "Denumire proiect"};
             th.AddRange(judges.Select(j => "Punctaj\n" + j.FullName).Append("Media"));
             SetTitle(ws,
                 $"BORDEROU{(isOpen ? " OPEN" : "")} SECȚIUNEA {category.Name.ToUpper()}", 7, th.Count);
 
-            int crtRow = 9;
+            var crtRow = 9;
 
             var tableDataStartsAt = crtRow + 1;
-            var firstCol = 'A';
+            const char firstCol = 'A';
             var tableData = new List<List<string>> {th};
 
             foreach (var project in projects)
@@ -350,9 +362,9 @@ namespace InfoEducatie.Contest.Exports
             specialRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
             SetWhoSigns(ws, ref crtRow,
-                new Tuple<string, string>("VICEPREȘEDINTE", judges.FirstOrDefault(j => j.IsVicePresident)?.FullName),
+                new Tuple<string, string>("VICEPREȘEDINTE", vp?.FullName),
                 new Tuple<string, List<string>>("MEMBRI EVALUATORI",
-                    judges.Where(j => !j.IsVicePresident).Select(j => j.FullName).ToList()), th.Count);
+                    judges.Select(j => j.FullName).ToList()), th.Count);
         }
 
         private void BuildIndividualTallySheet(IXLWorksheet ws, JudgeEntity judge, List<ProjectEntity> projects,
@@ -414,7 +426,7 @@ namespace InfoEducatie.Contest.Exports
 
             SetTableContent(ws, ref crtRow, tableData, true, true);
 
-            if (EditionHasVicePresidents)
+            if (_editionHasVicePresidents)
             {
                 SetWhoSignsIndividual(ws, ref crtRow, "VICEPREȘEDINTE", vicePresident?.FullName.ToUpper(), 1);
             }
@@ -558,7 +570,7 @@ namespace InfoEducatie.Contest.Exports
         private void SetWhoSigns(IXLWorksheet ws, ref int crtRow, Tuple<string, string> boss,
             Tuple<string, List<string>> plebs, int colCount)
         {
-            if (!EditionHasVicePresidents)
+            if (!_editionHasVicePresidents)
             {
                 boss = new Tuple<string, string>("", "");
             }

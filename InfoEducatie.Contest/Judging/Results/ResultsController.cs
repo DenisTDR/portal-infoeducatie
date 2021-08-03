@@ -48,7 +48,8 @@ namespace InfoEducatie.Contest.Judging.Results
             var cats = await GetAvailableCategories();
             foreach (var categoryEntity in cats)
             {
-                results.Add(await ServiceProvider.GetRequiredService<ResultsService>().GetResultsForCategory(categoryEntity));
+                results.Add(await ServiceProvider.GetRequiredService<ResultsService>()
+                    .GetResultsForCategory(categoryEntity));
             }
 
             return View(results);
@@ -69,8 +70,15 @@ namespace InfoEducatie.Contest.Judging.Results
 
             foreach (var judge in judges)
             {
-                model.JudgingPageModels.Add(await JudgingService.BuildJudgingPageModel(judge, JudgingType.Project));
-                model.JudgingPageModels.Add(await JudgingService.BuildJudgingPageModel(judge, JudgingType.Open));
+                if (judge.AvailableFor.JudgesProject())
+                {
+                    model.JudgingPageModels.Add(await JudgingService.BuildJudgingPageModel(judge, JudgingType.Project));
+                }
+
+                if (judge.AvailableFor.JudgesOpen())
+                {
+                    model.JudgingPageModels.Add(await JudgingService.BuildJudgingPageModel(judge, JudgingType.Open));
+                }
             }
 
             return View(model);

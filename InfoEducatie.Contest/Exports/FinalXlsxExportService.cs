@@ -13,6 +13,7 @@ using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
 using InfoEducatie.Contest.Participants.Project;
 using MCMS.Base.Data;
 using MCMS.Base.Extensions;
+using MCMS.Base.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MoreLinq;
@@ -23,8 +24,8 @@ namespace InfoEducatie.Contest.Exports
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private bool EditionWithOpen => true;
-        private bool EditionHasVicePresidents => true;
+        private readonly bool _editionWithOpen = Env.GetBool("EDITION_WITH_OPEN");
+        private readonly bool _editionHasVicePresidents = Env.GetBool("EDITION_HAS_VPS");
 
         private IRepository<ProjectEntity> ProjectsRepo => _serviceProvider.GetRepo<ProjectEntity>();
         private IRepository<JudgeEntity> JudgesRepo => _serviceProvider.GetRepo<JudgeEntity>();
@@ -34,9 +35,6 @@ namespace InfoEducatie.Contest.Exports
 
         private IRepository<ProjectJudgingCriterionPointsEntity> GivenPointsRepo =>
             _serviceProvider.GetRepo<ProjectJudgingCriterionPointsEntity>();
-
-        private IMapper _mapper => _serviceProvider.GetService<IMapper>();
-
 
         public FinalXlsxExportService(IServiceProvider serviceProvider)
         {
@@ -76,18 +74,22 @@ namespace InfoEducatie.Contest.Exports
             BuildProjectsSheet(workbook.Worksheets.Add("Listă proiecte"), projects, category,
                 judges.FirstOrDefault(j => j.IsVicePresident));
 
-            #region BI
+            #region BI/BIO
 
             foreach (var judge in judges)
             {
-                var sheetTitle = "BI - " + judge.FullName;
-                sheetTitle = sheetTitle.Substring(0, Math.Min(sheetTitle.Length, 31));
-                BuildBorderouIndividual(workbook.Worksheets.Add(sheetTitle), judge, projects, projectCriteriaSections,
-                    projectGivenPoints.FindAll(p => p.Judge.Id == judge.Id));
-
-                if (EditionWithOpen)
+                if (judge.AvailableFor.JudgesProject())
                 {
-                    sheetTitle = "BIO - " + judge.FullName;
+                    var sheetTitle = "BI - " + judge.FullName;
+                    sheetTitle = sheetTitle.Substring(0, Math.Min(sheetTitle.Length, 31));
+                    BuildBorderouIndividual(workbook.Worksheets.Add(sheetTitle), judge, projects,
+                        projectCriteriaSections,
+                        projectGivenPoints.FindAll(p => p.Judge.Id == judge.Id));
+                }
+
+                if (_editionWithOpen && judge.AvailableFor.JudgesOpen())
+                {
+                    var sheetTitle = "BIO - " + judge.FullName;
                     sheetTitle = sheetTitle.Substring(0, Math.Min(sheetTitle.Length, 31));
                     BuildBorderouIndividual(workbook.Worksheets.Add(sheetTitle), judge, openProjects,
                         openCriteriaSections,
@@ -104,7 +106,7 @@ namespace InfoEducatie.Contest.Exports
             projects = projects.OrderByDescending(p => p.ScoreProject).ToList();
             BuildBorderouFinal(workbook.Worksheets.Add("Borderou final"), judges, projects, projectGivenPoints,
                 category);
-            if (EditionWithOpen)
+            if (_editionWithOpen)
             {
                 openProjects = openProjects.OrderByDescending(p => p.ScoreOpen).ToList();
                 BuildBorderouFinal(workbook.Worksheets.Add("Borderou final OPEN"), judges, openProjects,
@@ -116,7 +118,7 @@ namespace InfoEducatie.Contest.Exports
 
             #region RF
 
-            if (EditionWithOpen)
+            if (_editionWithOpen)
             {
                 projects = projects.OrderByDescending(p => p.ScoreProject).ToList();
                 BuildResultsSheet(workbook.Worksheets.Add("Rezultate înainte OPEN"), projects, category,
@@ -211,16 +213,18 @@ namespace InfoEducatie.Contest.Exports
         private void CalcPoints(List<ProjectEntity> projects, List<ProjectJudgingCriterionPointsEntity> points,
             List<JudgeEntity> judges, CategoryEntity cat)
         {
+            var projectJudgesCount = judges.Count(j => j.AvailableFor.JudgesProject());
+            var openJudgesCount = judges.Count(j => j.AvailableFor.JudgesOpen());
             foreach (var projectEntity in projects)
             {
                 projectEntity.ScoreProject =
                     1f * points.Where(p => p.Project == projectEntity && p.Criterion.Type == JudgingType.Project)
                         .Sum(p => p.Points)
-                    / judges.Count / (cat.ScoresX10 ? 10 : 1);
+                    / projectJudgesCount / (cat.ScoresX10 ? 10 : 1);
                 projectEntity.ScoreOpen =
                     1f * points.Where(p => p.Project == projectEntity && p.Criterion.Type == JudgingType.Open)
                         .Sum(p => p.Points)
-                    / judges.Count / (cat.ScoresX10 ? 10 : 1);
+                    / openJudgesCount / (cat.ScoresX10 ? 10 : 1);
             }
         }
 
@@ -302,14 +306,18 @@ namespace InfoEducatie.Contest.Exports
         {
             PutPageHeader(ws);
             var th = new List<string> {"Nr. Crt.", "Denumire proiect"};
+            var vp = judges.FirstOrDefault(j => j.IsVicePresident);
+            judges = judges.Where(j =>
+                    j.AvailableFor == JudgeType.Both || j.AvailableFor == (isOpen ? JudgeType.Open : JudgeType.Project))
+                .ToList();
             th.AddRange(judges.Select(j => "Punctaj\n" + j.FullName).Append("Media"));
             SetTitle(ws,
                 $"BORDEROU{(isOpen ? " OPEN" : "")} SECȚIUNEA {category.Name.ToUpper()}", 7, th.Count);
 
-            int crtRow = 9;
+            var crtRow = 9;
 
             var tableDataStartsAt = crtRow + 1;
-            var firstCol = 'A';
+            const char firstCol = 'A';
             var tableData = new List<List<string>> {th};
 
             foreach (var project in projects)
@@ -333,9 +341,9 @@ namespace InfoEducatie.Contest.Exports
             specialRange.Style.NumberFormat.Format = "#0.00";
 
             SetWhoSigns(ws, ref crtRow,
-                new Tuple<string, string>("VICEPREȘEDINTE", judges.FirstOrDefault(j => j.IsVicePresident)?.FullName),
-                new Tuple<string, List<string>>("MEMBRI EVALUATORI",
-                    judges.Where(j => !j.IsVicePresident).Select(j => j.FullName).ToList()), th.Count);
+                new Tuple<string, string>("VICEPREȘEDINTE", vp?.FullName),
+                new Tuple<string, List<string>>("MEMBRI EVALUATORI", judges.Select(j => j.FullName).ToList()),
+                th.Count);
         }
 
         private void BuildBorderouIndividual(IXLWorksheet ws, JudgeEntity judge, List<ProjectEntity> projects,
@@ -389,7 +397,7 @@ namespace InfoEducatie.Contest.Exports
             int crtRow = 9;
 
             SetTableContent(ws, ref crtRow, tableData, true, true);
-            if (EditionHasVicePresidents)
+            if (_editionHasVicePresidents)
             {
                 SetWhoSignsIndividual(ws, ref crtRow, "VICEPREȘEDINTE", vicePresident?.FullName.ToUpper(), 1);
             }
@@ -531,7 +539,7 @@ namespace InfoEducatie.Contest.Exports
         private void SetWhoSigns(IXLWorksheet ws, ref int crtRow, Tuple<string, string> boss,
             Tuple<string, List<string>> plebs, int colCount)
         {
-            if (!EditionHasVicePresidents)
+            if (!_editionHasVicePresidents)
             {
                 boss = new Tuple<string, string>("", "");
             }
