@@ -135,7 +135,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         public IActionResult ListDiplomasDirectory([FromQuery] bool prizes = false)
         {
             var list = new List<LinkFileModel>();
-            var path = Path.Combine(MFiles.PublicPath, "diplomas", prizes ? "prizes" : "participare");
+            var path = Path.Combine(MFiles.PublicPath, "diplomas", prizes ? "prizes" : "participation");
             foreach (var file in Directory.GetFiles(path).OrderBy(f => f))
             {
                 list.Add(new LinkFileModel
