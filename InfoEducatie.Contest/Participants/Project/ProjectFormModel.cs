@@ -24,5 +24,6 @@ namespace InfoEducatie.Contest.Participants.Project
 
         public float ScoreProject { get; set; }
         public float ScoreOpen { get; set; }
+        public string FinalPrize { get; set; }
     }
 }

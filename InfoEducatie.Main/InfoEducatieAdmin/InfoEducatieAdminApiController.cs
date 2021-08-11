@@ -145,28 +145,28 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         [HttpPost]
         public async Task<IActionResult> MakeParticipationDiplomas()
         {
-            await ServiceProvider.GetRequiredService<DiplomasService>().MakeParticipationDiplomas();
+            await ServiceProvider.GetRequiredService<PdfDiplomasService>().MakeParticipationDiplomas();
             return Ok();
         }
 
         [HttpPost]
         public async Task<IActionResult> MakePrizesDiploma()
         {
-            await ServiceProvider.GetRequiredService<DiplomasService>().MakePrizesDiplomas();
+            await ServiceProvider.GetRequiredService<PdfDiplomasService>().MakePrizesDiplomas();
             return Ok();
         }
 
         [HttpPost]
         public async Task<IActionResult> SendParticipationDiplomasMails()
         {
-            var c = await ServiceProvider.GetRequiredService<DiplomasService>().SendParticipationDiplomaMails();
+            var c = await ServiceProvider.GetRequiredService<PdfDiplomasService>().SendParticipationDiplomaMails();
             return Ok(c);
         }
 
         [HttpPost]
         public async Task<IActionResult> SendPrizesDiplomaMails()
         {
-            var c = await ServiceProvider.GetRequiredService<DiplomasService>().SendPrizesDiplomaMails();
+            var c = await ServiceProvider.GetRequiredService<PdfDiplomasService>().SendPrizesDiplomaMails();
             return Ok(c);
         }
 

@@ -1,4 +1,5 @@
 using System.Drawing;
+using PdfSharpCore.Drawing;
 
 namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
 {
@@ -19,5 +20,6 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
         public float X { get; set; }
         public float Y { get; set; }
         public Font Font { get; set; }
+        public XFont XFont { get; set; }
     }
 }

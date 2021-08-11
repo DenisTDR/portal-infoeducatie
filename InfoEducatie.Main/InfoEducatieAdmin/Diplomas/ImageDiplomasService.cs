@@ -25,21 +25,21 @@ using SendGrid.Helpers.Mail;
 
 namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
 {
-    public class DiplomasService
+    public class ImageDiplomasService
     {
         private readonly IRepository<ParticipantEntity> _participantsRepo;
         private readonly IRepository<ProjectEntity> _projectsRepo;
         private readonly IRepository<CategoryEntity> _categoriesRepo;
         private readonly ResultsService _resultsService;
-        private readonly ILogger<DiplomasService> _logger;
+        private readonly ILogger<ImageDiplomasService> _logger;
         private readonly MSendgridClientOptions sendgridConfig;
 
-        public DiplomasService(
+        public ImageDiplomasService(
             IRepository<ParticipantEntity> participantsRepo,
             IRepository<CategoryEntity> categoriesRepo,
             IRepository<ProjectEntity> projectsRepo,
             ResultsService resultsService,
-            ILogger<DiplomasService> logger,
+            ILogger<ImageDiplomasService> logger,
             IOptions<MSendgridClientOptions> clientOptions)
         {
             _participantsRepo = participantsRepo;
@@ -177,7 +177,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             document.AddPage(pdfPage);
             var gfx = XGraphics.FromPdfPage(pdfPage);
             gfx.DrawImage(img, 0, 0);
-
+            
             document.Save(pdfPath);
             gfx.Dispose();
             img.Dispose();

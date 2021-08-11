@@ -80,26 +80,41 @@ namespace InfoEducatie.Contest.Judging.Results
         public async Task SaveCalculatedResults()
         {
             var catsRepo = _serviceProvider.GetRepo<CategoryEntity>();
-            var resultsService = _serviceProvider.GetRequiredService<ResultsService>();
 
             var cats = await catsRepo.Queryable.ToListAsync();
 
             var projects = await ProjectsRepo.GetAll();
 
-            foreach (var categoryEntity in cats)
+            foreach (var cat in cats)
             {
-                var results = await GetResultsForCategory(categoryEntity);
+                var results = await GetResultsForCategory(cat);
                 foreach (var projectResultsModel in results.Projects)
                 {
                     var targetProject = projects.FirstOrDefault(p => p.Id == projectResultsModel.ProjectId);
                     if (targetProject == null) continue;
                     targetProject.ScoreProject =
-                        1.0f * projectResultsModel.TotalProjectPoints / results.ProjectJudgeCount;
+                        1.0f * projectResultsModel.TotalProjectPoints / results.ProjectJudgeCount /
+                        (cat.ScoresX10 ? 10 : 1);
                     if (targetProject.IsInOpen)
                     {
                         targetProject.ScoreOpen =
-                            1.0f * projectResultsModel.TotalOpenPoints / results.OpenJudgeCount;
+                            1.0f * projectResultsModel.TotalOpenPoints / results.OpenJudgeCount /
+                            (cat.ScoresX10 ? 10 : 1);
                     }
+                    else
+                    {
+                        targetProject.ScoreOpen = 0;
+                    }
+                }
+
+                var ordered = results.Projects.OrderByDescending(p => p.TotalPoints).Take(6).ToList();
+                for (var i = 0; i < ordered.Count; i++)
+                {
+                    var project = ordered[i];
+                    var targetProject = projects.FirstOrDefault(p => p.Id == project.ProjectId);
+                    if (targetProject == null) continue;
+
+                    targetProject.FinalPrize = i < 3 ? new string('I', i + 1) : "M";
                 }
             }
 
