@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using MCMS.Files;
 using PdfSharpCore.Fonts;
 
 namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
@@ -24,11 +25,12 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             {
                 return isBold switch
                 {
-                    true when isItalic => new FontResolverInfo(FontsPath + "OpenSans-BoldItalic.ttf"),
-                    true => new FontResolverInfo(FontsPath + "OpenSans-Bold.ttf"),
+                    true when isItalic => new FontResolverInfo(Path.Combine(MFiles.PublicPath, "fonts",
+                        "OpenSans-BoldItalic.ttf")),
+                    true => new FontResolverInfo(Path.Combine(MFiles.PublicPath, "fonts", "OpenSans-Bold.ttf")),
                     _ => isItalic
-                        ? new FontResolverInfo(FontsPath + "OpenSans-Italic.ttf")
-                        : new FontResolverInfo(FontsPath + "OpenSans-Regular.ttf")
+                        ? new FontResolverInfo(Path.Combine(MFiles.PublicPath, "fonts", "OpenSans-Italic.ttf"))
+                        : new FontResolverInfo(Path.Combine(MFiles.PublicPath, "fonts", "OpenSans-Regular.ttf"))
                 };
             }
 
