@@ -16,8 +16,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             return ms.ToArray();
         }
 
-        public string DefaultFontName { get; } = "OpenSans";
-        private readonly string FontsPath = "./wwwroot/fonts/";
+        public string DefaultFontName => "OpenSans";
 
         public FontResolverInfo ResolveTypeface(string familyName, bool isBold, bool isItalic)
         {

@@ -168,11 +168,12 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             var texts = new List<ImageTextModel>
             {
                 new(prize, 498, 200) {XFont = new XFont("OpenSans", 16, XFontStyle.Bold)},
-                new(participant.User.FullName, 435, 235),
-                new(participant.School, 258, 263),
-                new(participant.SchoolCity, 390, 290),
-                new(category, 440, 343),
-                new(participant.MentoringTeacher, 425, 371) {XFont = new XFont("OpenSans", 11, XFontStyle.Regular)},
+                new(participant.User.FullName.ToUpper(), 435, 235),
+                new(participant.School.ToUpper(), 258, 263),
+                new(participant.SchoolCity.ToUpper(), 390, 290),
+                new(category.ToUpper(), 440, 343),
+                new(participant.MentoringTeacher.ToUpper(), 425, 371)
+                    {XFont = new XFont("OpenSans", 11, XFontStyle.Regular)},
             };
 
             foreach (var text in texts)
@@ -205,10 +206,11 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
 
             var texts = new List<ImageTextModel>
             {
-                new(participant.User.FullName, 354, 253),
-                new(participant.School, 275, 285),
-                new(participant.SchoolCity, 375, 310),
-                new(participant.MentoringTeacher, 425, 366) {XFont = new XFont("OpenSans", 11, XFontStyle.Regular)},
+                new(participant.User.FullName.ToUpper(), 354, 253),
+                new(participant.School.ToUpper(), 275, 285),
+                new(participant.SchoolCity.ToUpper(), 375, 310),
+                new(participant.MentoringTeacher.ToUpper(), 425, 366)
+                    {XFont = new XFont("OpenSans", 11, XFontStyle.Regular)},
             };
 
             foreach (var text in texts)
@@ -244,9 +246,16 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             var subject = "InfoEducație - Diplomă participare";
             var message =
                 "Salut {{NAME}}, <br/><br/> Atașat găsești un pdf cu diploma ta de participare. <br/><br/>Mulțumim, <br/> Echipa InfoEducație";
-            int c = 0;
+            var c = 0;
             foreach (var participant in participants)
             {
+                if ((participant.SentMails & SentMailsState.ParticipationDiplomaEmailSend) != 0)
+                {
+                    _logger.LogWarning("Participation diploma already sent: '{Subject}' to '{Email}'", subject,
+                        participant.User.Email);
+                    continue;
+                }
+
                 _logger.LogWarning("Sending email with SendGrid: '{Subject}' to '{Email}'", subject,
                     participant.User.Email);
                 var client = new SendGridClient(_sendgridConfig.Key);
@@ -279,8 +288,13 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                 msg.AddAttachment(attach);
 
                 msg.SetClickTracking(true, true);
-                await client.SendEmailAsync(msg);
-                c++;
+                var response = await client.SendEmailAsync(msg);
+                if (response.IsSuccessStatusCode)
+                {
+                    participant.SentMails |= SentMailsState.ParticipationDiplomaEmailSend;
+                    await _participantsRepo.SaveChanges();
+                    c++;
+                }
             }
 
             return c;
@@ -303,7 +317,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             var subject = "InfoEducație - Diplomă premiu";
             var message =
                 "Salut {{NAME}}, <br/><br/> Atașat găsești diploma cu premiul în format pdf. <br/>Pentru orice nelămurire/problemă poți scrie pe Discord pe channelul #general<br/><br/>Mulțumim, <br/> Echipa InfoEducație";
-            int c = 0;
+            var c = 0;
 
             var cats = await _categoriesRepo.GetAll();
             var mailClient = new SendGridClient(_sendgridConfig.Key);
@@ -316,11 +330,6 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                     var project = projects[i];
                     foreach (var participant in project.Participants)
                     {
-                        // if ((participant.SentMails & SentMailsState.PrizeDiplomaEmailSent) != 0)
-                        // {
-                        // _logger.LogWarning($"mail diploma already send: '{subject}' to '{participant.User.Email}'");
-                        // continue;
-                        // }
                         _logger.LogWarning("Sending email with SendGrid: '{Subject}' to '{Email}'", subject,
                             participant.User.Email);
 
@@ -347,10 +356,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                         });
                         msg.SetClickTracking(true, true);
                         var response = await mailClient.SendEmailAsync(msg);
-                        if (response.StatusCode == HttpStatusCode.OK)
+                        if (response.IsSuccessStatusCode)
                         {
-                            participant.SentMails |= SentMailsState.PrizeDiplomaEmailSent;
-                            await _participantsRepo.SaveChanges();
                             c++;
                         }
                     }
