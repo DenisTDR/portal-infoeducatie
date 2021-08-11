@@ -233,7 +233,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
 
         public async Task<int> SendParticipationDiplomaMails()
         {
-            var diplomasPath = Path.Combine(MFiles.PublicPath, "diplomas/participare");
+            var diplomasPath = Path.Combine(MFiles.PublicPath, "diplomas/participation");
             _participantsRepo.ChainQueryable(q => q
                 .Include(p => p.User)
                 // .Include(p => p.ProjectParticipants).ThenInclude(pp => pp.Project)
