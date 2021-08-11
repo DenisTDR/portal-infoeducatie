@@ -163,7 +163,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
 
             var page = newPdf.Pages[0];
             var gfx = XGraphics.FromPdfPage(page);
-            var defaultFont = new XFont("OpenSans", 14, XFontStyle.Regular);
+            var defaultFont = new XFont("OpenSans", 12, XFontStyle.Regular);
 
             var texts = new List<ImageTextModel>
             {
@@ -173,7 +173,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                 new(participant.SchoolCity.ToUpper(), 390, 290),
                 new(category.ToUpper(), 440, 343),
                 new(participant.MentoringTeacher.ToUpper(), 425, 371)
-                    {XFont = new XFont("OpenSans", 11, XFontStyle.Regular)},
+                    {XFont = new XFont("OpenSans", 10, XFontStyle.Regular)},
             };
 
             foreach (var text in texts)
@@ -202,7 +202,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
 
             var page = newPdf.Pages[0];
             var gfx = XGraphics.FromPdfPage(page);
-            var defaultFont = new XFont("OpenSans", 14, XFontStyle.Regular);
+            var defaultFont = new XFont("OpenSans", 12, XFontStyle.Regular);
 
             var texts = new List<ImageTextModel>
             {
@@ -210,7 +210,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                 new(participant.School.ToUpper(), 275, 285),
                 new(participant.SchoolCity.ToUpper(), 375, 310),
                 new(participant.MentoringTeacher.ToUpper(), 425, 366)
-                    {XFont = new XFont("OpenSans", 11, XFontStyle.Regular)},
+                    {XFont = new XFont("OpenSans", 10, XFontStyle.Regular)},
             };
 
             foreach (var text in texts)
