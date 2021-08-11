@@ -23,11 +23,11 @@ namespace InfoEducatie.Contest.Participants.Participant
         [TableColumn] public string City { get; set; }
         [TableColumn] public string County { get; set; }
         public string Country { get; set; }
-        public string School { get; set; }
-        public string SchoolCity { get; set; }
-        public string SchoolCounty { get; set; }
-        public string SchoolCountry { get; set; }
-        public string MentoringTeacher { get; set; }
+        [TableColumn(Invisible = true)] public string School { get; set; }
+        [TableColumn(Invisible = true)] public string SchoolCity { get; set; }
+        [TableColumn(Invisible = true)] public string SchoolCounty { get; set; }
+        [TableColumn(Invisible = true)] public string SchoolCountry { get; set; }
+        [TableColumn(Invisible = true)] public string MentoringTeacher { get; set; }
         public string Cnp { get; set; }
         public string IdCardSeries { get; set; }
         public string IdCardNumber { get; set; }
