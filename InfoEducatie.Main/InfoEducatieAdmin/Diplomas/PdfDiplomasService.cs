@@ -8,6 +8,7 @@ using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Participants.Participant;
 using InfoEducatie.Contest.Participants.Project;
 using MCMS.Base.Data;
+using MCMS.Base.Helpers;
 using MCMS.Emailing.Clients.SendGrid;
 using MCMS.Files;
 using Microsoft.EntityFrameworkCore;
@@ -225,6 +226,11 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             return newPdf;
         }
 
+        private string GetRecipientEmail(string src)
+        {
+            return Env.GetBool("TEST_DIPLOMAS_MAILS") ? Env.Get("TEST_DIPLOMAS_RECIPIENT") : src;
+        }
+
         public async Task<int> SendParticipationDiplomaMails()
         {
             var diplomasPath = Path.Combine(MFiles.PublicPath, "diplomas/participare");
@@ -252,7 +258,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                     PlainTextContent = msgText,
                     HtmlContent = msgText,
                 };
-                msg.AddTo(new EmailAddress(participant.User.Email));
+                msg.AddTo(new EmailAddress(GetRecipientEmail(participant.User.Email)));
                 // msg.AddTo(new EmailAddress("test@tdrs.ro"));
 
                 var diplomaPath = Path.Combine(diplomasPath, "pd-" + participant.Id + ".pdf");
@@ -331,7 +337,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                             PlainTextContent = msgText,
                             HtmlContent = msgText,
                         };
-                        msg.AddTo(new EmailAddress(participant.User.Email, participant.User.FullName));
+                        msg.AddTo(
+                            new EmailAddress(GetRecipientEmail(participant.User.Email), participant.User.FullName));
 
                         msg.AddAttachment(new Attachment
                         {
