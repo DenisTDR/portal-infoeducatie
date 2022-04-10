@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -25,6 +26,7 @@ using SendGrid.Helpers.Mail;
 
 namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
 {
+    [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
     public class ImageDiplomasService
     {
         private readonly IRepository<ParticipantEntity> _participantsRepo;
@@ -32,7 +34,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
         private readonly IRepository<CategoryEntity> _categoriesRepo;
         private readonly ResultsService _resultsService;
         private readonly ILogger<ImageDiplomasService> _logger;
-        private readonly MSendgridClientOptions sendgridConfig;
+        private readonly MSendgridClientOptions _sendgridConfig;
 
         public ImageDiplomasService(
             IRepository<ParticipantEntity> participantsRepo,
@@ -47,7 +49,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             _categoriesRepo = categoriesRepo;
             _resultsService = resultsService;
             _logger = logger;
-            sendgridConfig = clientOptions.Value;
+            _sendgridConfig = clientOptions.Value;
         }
 
 
@@ -283,11 +285,11 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             foreach (var participant in participants)
             {
                 _logger.LogWarning($"Sending email with SendGrid: '{subject}' to '{participant.User.Email}'");
-                var client = new SendGridClient(sendgridConfig.Key);
+                var client = new SendGridClient(_sendgridConfig.Key);
                 var msgText = message.Replace("{{NAME}}", participant.FirstName);
                 var msg = new SendGridMessage
                 {
-                    From = new EmailAddress(sendgridConfig.DefaultSenderAddress, sendgridConfig.DefaultSenderName),
+                    From = new EmailAddress(_sendgridConfig.DefaultSenderAddress, _sendgridConfig.DefaultSenderName),
                     Subject = subject,
                     PlainTextContent = msgText,
                     HtmlContent = msgText,
@@ -340,7 +342,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             int c = 0;
 
             var cats = await _categoriesRepo.GetAll();
-            var mailClient = new SendGridClient(sendgridConfig.Key);
+            var mailClient = new SendGridClient(_sendgridConfig.Key);
             foreach (var cat in cats)
             {
                 var projects = await _projectsRepo.Queryable.Where(p => p.Category == cat)
@@ -364,8 +366,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                         var msgText = message.Replace("{{NAME}}", participant.FirstName);
                         var msg = new SendGridMessage
                         {
-                            From = new EmailAddress(sendgridConfig.DefaultSenderAddress,
-                                sendgridConfig.DefaultSenderName),
+                            From = new EmailAddress(_sendgridConfig.DefaultSenderAddress,
+                                _sendgridConfig.DefaultSenderName),
                             Subject = subject,
                             PlainTextContent = msgText,
                             HtmlContent = msgText,

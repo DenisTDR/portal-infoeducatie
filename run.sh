@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-dotnet watch --project InfoEducatie.Main run
+dotnet watch --no-hot-reload --project InfoEducatie.Main run
