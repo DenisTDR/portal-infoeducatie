@@ -3,3 +3,4 @@
 .idea
 .git
 Dockerfile
+.gitlab-ci.yml
