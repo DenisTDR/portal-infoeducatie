@@ -26,7 +26,7 @@ namespace InfoEducatie.Main
             services.AddOptions<SiteConfig>().Configure(c =>
             {
                 c.SiteName = "Portal InfoEducație";
-                c.SiteCopyright = "Copyright &copy; TDR 2021";
+                c.SiteCopyright = "Copyright &copy; TDR 2022";
                 c.FaviconPath = "~/favicon.ico";
             });
 
@@ -70,8 +70,8 @@ namespace InfoEducatie.Main
                                         nameof(PagesAdminController.Index))
                                 }
                             }.WithIconClasses("fas fa-file-contract").RequiresRoles("Moderator"),
-                            new MenuLink("Utilizatori", typeof(AdminUsersController),
-                                    nameof(AdminUsersController.Index)).WithIconClasses("fas fa-users")
+                            new MenuLink("Utilizatori", typeof(AdminUsersUiController),
+                                    nameof(AdminUsersUiController.Index)).WithIconClasses("fas fa-users")
                                 .RequiresRoles("Moderator", "Admin"),
                             new MenuLink("Texte / Traduceri", typeof(TranslationsController),
                                     nameof(TranslationsController.Index)).WithIconClasses("fas fa-globe")
