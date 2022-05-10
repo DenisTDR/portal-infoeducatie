@@ -5,8 +5,8 @@ stages:
 build:
   stage: build
   variables:
-    IMAGE_TAG: ${CI_REGISTRY_IMAGE}:${PROJECT_END}-${CI_COMMIT_SHA}
-    IMAGE_LATEST: ${CI_REGISTRY_IMAGE}:${PROJECT_END}-latest
+    IMAGE_TAG: ${CI_REGISTRY_IMAGE}-${CI_COMMIT_SHA}
+    IMAGE_LATEST: ${CI_REGISTRY_IMAGE}-latest
     GIT_STRATEGY: fetch
     GIT_DEPTH: "1"
   script:
@@ -20,9 +20,11 @@ deploy:
   needs:
     - build
   variables:
-    IMAGE_TAG: ${CI_REGISTRY_IMAGE}:${PROJECT_END}-${CI_COMMIT_SHA}
-    IMAGE_LATEST: ${CI_REGISTRY_IMAGE}:${PROJECT_END}-latest
+    IMAGE_TAG: ${CI_REGISTRY_IMAGE}-${CI_COMMIT_SHA}
+    IMAGE_LATEST: ${CI_REGISTRY_IMAGE}-latest
     GIT_STRATEGY: none
   script:
     - chmod 400 "${SSH_PROD_PRIVATE_KEY}"
     - ssh -i "${SSH_PROD_PRIVATE_KEY}" -o StrictHostKeyChecking=no now@174.138.13.102 "docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY} && /opt/docker/websites/portal.infoeducatie.ro/deploy.sh ${IMAGE_TAG} && docker logout ${CI_REGISTRY}"
+  only: 
+    - deploy
