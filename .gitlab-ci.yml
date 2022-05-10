@@ -22,8 +22,8 @@ deploy:
   needs:
     - build
   variables:
-    IMAGE_TAG: ${CI_REGISTRY_IMAGE}-${CI_COMMIT_SHA}
-    IMAGE_LATEST: ${CI_REGISTRY_IMAGE}-latest
+    IMAGE_TAG: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
+    IMAGE_LATEST: ${CI_REGISTRY_IMAGE}:latest
     GIT_STRATEGY: none
   script:
     - chmod 400 "${SSH_PROD_PRIVATE_KEY}"
