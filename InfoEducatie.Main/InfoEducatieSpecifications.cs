@@ -84,7 +84,7 @@ namespace InfoEducatie.Main
             });
             // config.Add(new MenuLink("Seminarii", typeof(SeminarsController),
                 // nameof(SeminarsController.Index)));
-            // config.Add(new MenuLink("Program", "/Pages/program") {Index = 20});
+            config.Add(new MenuLink("Program", "/Pages/program") {Index = 20});
         }
     }
 }
