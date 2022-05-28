@@ -53,6 +53,7 @@ namespace InfoEducatie.Contest.Participants.Participant
         [TableColumn(DbColumn = "Projects",
             DbFuncFormat = "{0}.Any(p=> <condition>)<sel>p.Category.Name", Orderable = ServerClient.None)]
         [DisplayName("Categories")]
+        
         public string ProjectCategories => Projects?.Count is { } nr && nr > 0
             ? string.Join(", ", Projects.Select(p => p.Category.Name))
             : "--";
