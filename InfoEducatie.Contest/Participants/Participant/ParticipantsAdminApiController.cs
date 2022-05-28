@@ -17,6 +17,7 @@ namespace InfoEducatie.Contest.Participants.Participant
             Repo.ChainQueryable(q => q
                 .Include(p => p.User)
                 .Include(p => p.Projects)
+                .ThenInclude(p => p.Category)
             );
         }
 
@@ -25,7 +26,7 @@ namespace InfoEducatie.Contest.Participants.Participant
             Repo.ChainQueryable(q => q
                 .Include(p => p.User)
                 .Select(e => new ParticipantEntity
-                    {Id = e.Id, User = e.User}));
+                    { Id = e.Id, User = e.User }));
             var all = await Repo.GetAll();
             var allVm = Mapper.Map<List<ParticipantViewModel>>(all);
             return Ok(allVm);
