@@ -23,6 +23,7 @@ namespace InfoEducatie.Contest.Exports
 {
     public class FinalXlsxExportServiceWithCeilings
     {
+        public readonly bool AdjustColumnWidth = false;
         private readonly IServiceProvider _serviceProvider;
 
         private readonly bool _editionWithOpen = Env.GetBool("EDITION_WITH_OPEN");
@@ -182,7 +183,7 @@ namespace InfoEducatie.Contest.Exports
                 $"{(char) (firstCol + 11)}{tableDataStartsAt}:{(char) (firstCol + 11)}{tableDataStartsAt + tableData.Count - 2}";
             ws.Range(rangeName).Style.NumberFormat.Format = "@";
 
-            SetTableContent(ws, ref crtRow, tableData, false, true, firstCol);
+            SetTableContent(ws, ref crtRow, tableData, false, AdjustColumnWidth, firstCol);
             rangeName =
                 $"{(char) (firstCol + 3)}{tableDataStartsAt}:{(char) (firstCol + 3)}{tableDataStartsAt + tableData.Count - 2}";
             ws.Range(rangeName).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
@@ -296,7 +297,7 @@ namespace InfoEducatie.Contest.Exports
                 }
             }
 
-            SetTableContent(ws, ref crtRow, tableData, false, true, firstCol);
+            SetTableContent(ws, ref crtRow, tableData, false, AdjustColumnWidth, firstCol);
 
             var specialRangeName =
                 $"{(char) (firstCol + 4)}{tableDataStartsAt}:{(char) (firstCol + (withOpen ? 9 : 7))}{tableDataStartsAt + tableData.Count - 2}";
@@ -354,7 +355,7 @@ namespace InfoEducatie.Contest.Exports
                 tableData.Add(row);
             }
 
-            SetTableContent(ws, ref crtRow, tableData, false, true, firstCol);
+            SetTableContent(ws, ref crtRow, tableData, false, AdjustColumnWidth, firstCol);
 
             var specialRangeName =
                 $"{(char) (firstCol + 2)}{tableDataStartsAt}:{(char) (firstCol + th.Count - 1)}{tableDataStartsAt + tableData.Count - 2}";
@@ -406,7 +407,7 @@ namespace InfoEducatie.Contest.Exports
                 tableData.Add(row);
             }
 
-            SetTableContent(ws, ref crtRow, tableData, true, true, firstCol);
+            SetTableContent(ws, ref crtRow, tableData, true, AdjustColumnWidth, firstCol);
 
             SetWhoSignsIndividual(ws, ref crtRow, "MEMBRU EVALUATOR", judge.FullName.ToUpper(), th.Count - 1);
         }
@@ -424,7 +425,7 @@ namespace InfoEducatie.Contest.Exports
 
             int crtRow = 9;
 
-            SetTableContent(ws, ref crtRow, tableData, true, true);
+            SetTableContent(ws, ref crtRow, tableData, true, AdjustColumnWidth);
 
             if (_editionHasVicePresidents)
             {
@@ -470,7 +471,7 @@ namespace InfoEducatie.Contest.Exports
                 }
             }
 
-            SetTableContent(ws, ref startRow, tableData, true);
+            SetTableContent(ws, ref startRow, tableData, AdjustColumnWidth);
             ws.Style.Alignment.WrapText = true;
             ws.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
             ws.Column("B").Width = 33;
