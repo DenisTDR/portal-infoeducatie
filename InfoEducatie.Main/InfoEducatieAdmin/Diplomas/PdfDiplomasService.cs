@@ -80,7 +80,9 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                 _logger.LogWarning("Generating prizes diplomas for '{Cat}'", cat.Name);
                 var projects = await _projectsRepo.Queryable.Where(p => p.Category == cat)
                     .OrderByDescending(p => p.ScoreProject + p.ScoreOpen)
-                    .Where(p => p.FinalPrize != null).Take(6).ToListAsync();
+                    .Where(p => p.FinalPrize != null)
+                    // .Take(6)
+                    .ToListAsync();
                 foreach (var project in projects)
                 {
                     foreach (var participant in project.Participants)
@@ -326,7 +328,9 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             {
                 var projects = await _projectsRepo.Queryable.Where(p => p.Category == cat)
                     .OrderByDescending(p => p.ScoreProject + p.ScoreOpen)
-                    .Where(p => p.FinalPrize != null).Take(6).ToListAsync();
+                    .Where(p => p.FinalPrize != null)
+                    // .Take(6)
+                    .ToListAsync();
                 for (var i = 0; i < projects.Count; i++)
                 {
                     var project = projects[i];

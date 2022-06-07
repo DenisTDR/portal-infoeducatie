@@ -10,6 +10,7 @@ using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
 using InfoEducatie.Contest.Participants.Project;
 using MCMS.Base.Data;
 using MCMS.Base.Extensions;
+using MCMS.Base.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -40,7 +41,7 @@ namespace InfoEducatie.Contest.Judging.Results
                         p.Criterion.Type == type) on project equals
                     points.Project into pointsProjects
                 from pointsProject in pointsProjects.DefaultIfEmpty()
-                group pointsProject by new {project.Id, project.Title}
+                group pointsProject by new { project.Id, project.Title }
                 into grouped
                 select new ProjectResultsModel
                 {
@@ -107,14 +108,17 @@ namespace InfoEducatie.Contest.Judging.Results
                     }
                 }
 
-                var ordered = results.Projects.OrderByDescending(p => p.TotalPoints).Take(6).ToList();
-                for (var i = 0; i < ordered.Count; i++)
+                if (!Env.GetBool("DISABLE_AUTO_PRIZER"))
                 {
-                    var project = ordered[i];
-                    var targetProject = projects.FirstOrDefault(p => p.Id == project.ProjectId);
-                    if (targetProject == null) continue;
+                    var ordered = results.Projects.OrderByDescending(p => p.TotalPoints).Take(6).ToList();
+                    for (var i = 0; i < ordered.Count; i++)
+                    {
+                        var project = ordered[i];
+                        var targetProject = projects.FirstOrDefault(p => p.Id == project.ProjectId);
+                        if (targetProject == null) continue;
 
-                    targetProject.FinalPrize = i < 3 ? new string('I', i + 1) : "M";
+                        targetProject.FinalPrize = i < 3 ? new string('I', i + 1) : "M";
+                    }
                 }
             }
 

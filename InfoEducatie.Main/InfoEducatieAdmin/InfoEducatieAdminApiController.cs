@@ -9,6 +9,7 @@ using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
 using InfoEducatie.Contest.Judging.Results;
 using InfoEducatie.Contest.Participants.Participant;
+using InfoEducatie.Contest.Participants.Project;
 using InfoEducatie.Main.InfoEducatieAdmin.Diplomas;
 using MCMS.Auth;
 using MCMS.Base.Attributes;
@@ -68,7 +69,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             await Task.Delay(1000);
             if (!model.SendIt)
             {
-                return Ok(new {debug = true, request = model, emails});
+                return Ok(new { debug = true, request = model, emails });
             }
 
             var emailSender = ServiceProvider.GetRequiredService<IMEmailSender>();
@@ -80,7 +81,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             }
 
 
-            return Ok(new {message = "Sent " + emails.Count + " emails!"});
+            return Ok(new { message = "Sent " + emails.Count + " emails!" });
         }
 
         [HttpPost]
@@ -132,7 +133,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 addedCriteria += section.Criteria.Count;
             }
 
-            return Ok(new {addedSections, addedCriteria, removedSections, removedCriteria});
+            return Ok(new { addedSections, addedCriteria, removedSections, removedCriteria });
         }
 
         [HttpPost]
@@ -169,6 +170,16 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             var c = await ServiceProvider.GetRequiredService<PdfDiplomasService>().SendPrizesDiplomaMails();
             return Ok(c);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> PutParticipationPrize()
+        {
+            var updated = await ServiceProvider.Repo<ProjectEntity>().Queryable
+                .Where(p => p.ScoreProject > 0 && p.FinalPrize == null)
+                .UpdateFromQueryAsync(p => new ProjectEntity { FinalPrize = "PARTICIPARE" });
+            return Ok(updated);
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> SendActivationMails()
