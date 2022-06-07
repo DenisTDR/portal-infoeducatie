@@ -30,8 +30,9 @@ namespace InfoEducatie.Contest.Participants.Project
         public string OldPlatformId { get; set; }
         public string DiscourseUrl { get; set; }
         [TableColumn] public bool IsInOpen { get; set; }
-        public float ScoreProject { get; set; }
-        public float ScoreOpen { get; set; }
+        [TableColumn(Invisible = true)] public float ScoreProject { get; set; }
+        [TableColumn(Invisible = true)] public float ScoreOpen { get; set; }
+        [TableColumn(Invisible = true)] public float TotalScore => ScoreProject + ScoreOpen;
         [TableColumn(Invisible = true)] public string FinalPrize { get; set; }
 
         [DetailsField(Hidden = true)]
