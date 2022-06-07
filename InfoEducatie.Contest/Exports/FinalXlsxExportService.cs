@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using ClosedXML.Excel;
 using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Judging.Judges;
@@ -15,7 +14,6 @@ using MCMS.Base.Data;
 using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using MoreLinq;
 
 namespace InfoEducatie.Contest.Exports

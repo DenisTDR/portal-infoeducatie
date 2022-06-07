@@ -31,7 +31,7 @@ namespace InfoEducatie.Main
             });
 
             services.AddScoped<ImportService>();
-            services.AddScoped<ImageDiplomasService>();
+            // services.AddScoped<ImageDiplomasService>();
             services.AddScoped<PdfDiplomasService>();
 
             services.AddOptions<LayoutIncludesOptions>().Configure(c => { c.AddForPages("InfoeducatieIncludes"); });

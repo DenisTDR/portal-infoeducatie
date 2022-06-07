@@ -65,7 +65,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                 Directory.CreateDirectory(outputPath);
             }
 
-            var srcPdf = PdfReader.Open(Path.Combine(MFiles.PublicPath, "diplomas/diploma-premii-2021.pdf"),
+            var srcPdf = PdfReader.Open(Path.Combine(MFiles.PrivatePath, "diplomas/diploma-infoedu-2022.pdf"),
                 PdfDocumentOpenMode.Import);
 
             if (GlobalFontSettings.FontResolver?.DefaultFontName == "Arial")
@@ -79,7 +79,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             {
                 _logger.LogWarning("Generating prizes diplomas for '{Cat}'", cat.Name);
                 var projects = await _projectsRepo.Queryable.Where(p => p.Category == cat)
-                    .OrderByDescending(p => p.ScoreProject + p.ScoreOpen).Take(6).ToListAsync();
+                    .OrderByDescending(p => p.ScoreProject + p.ScoreOpen)
+                    .Where(p => p.FinalPrize != null).Take(6).ToListAsync();
                 foreach (var project in projects)
                 {
                     foreach (var participant in project.Participants)
@@ -167,13 +168,13 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
 
             var texts = new List<ImageTextModel>
             {
-                new(prize, 498, 200) {XFont = new XFont("OpenSans", 16, XFontStyle.Bold)},
-                new(participant.User.FullName.ToUpper(), 435, 235),
-                new(participant.School.ToUpper(), 258, 263),
-                new(participant.SchoolCity.ToUpper(), 390, 290),
-                new(category.ToUpper(), 440, 343),
-                new(participant.MentoringTeacher.ToUpper(), 425, 371)
-                    {XFont = new XFont("OpenSans", 10, XFontStyle.Regular)},
+                new(prize, 498, 350) { XFont = new XFont("OpenSans", 16, XFontStyle.Bold) },
+                new(participant.User.FullName.ToUpper(), 345, 233),
+                new(participant.School.ToUpper(), 265, 263),
+                new(participant.SchoolCity.ToUpper(), 370, 290),
+                // new(category.ToUpper(), 440, 343),
+                new(participant.MentoringTeacher.ToUpper(), 415, 385)
+                    { XFont = new XFont("OpenSans", 10, XFontStyle.Regular) },
             };
 
             foreach (var text in texts)
@@ -210,7 +211,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
                 new(participant.School.ToUpper(), 275, 285),
                 new(participant.SchoolCity.ToUpper(), 375, 310),
                 new(participant.MentoringTeacher.ToUpper(), 425, 366)
-                    {XFont = new XFont("OpenSans", 10, XFontStyle.Regular)},
+                    { XFont = new XFont("OpenSans", 10, XFontStyle.Regular) },
             };
 
             foreach (var text in texts)
