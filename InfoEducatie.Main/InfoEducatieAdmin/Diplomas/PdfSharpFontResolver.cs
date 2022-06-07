@@ -20,16 +20,18 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
 
         public FontResolverInfo ResolveTypeface(string familyName, bool isBold, bool isItalic)
         {
+            // var fontsDir = Path.Combine(MFiles.PublicPath, "fonts");
+            var fontsDir = "./wwwroot/fonts/";
             if (familyName.Equals("OpenSans", StringComparison.CurrentCultureIgnoreCase))
             {
                 return isBold switch
                 {
-                    true when isItalic => new FontResolverInfo(Path.Combine(MFiles.PublicPath, "fonts",
+                    true when isItalic => new FontResolverInfo(Path.Combine(fontsDir,
                         "OpenSans-BoldItalic.ttf")),
-                    true => new FontResolverInfo(Path.Combine(MFiles.PublicPath, "fonts", "OpenSans-Bold.ttf")),
+                    true => new FontResolverInfo(Path.Combine(fontsDir, "OpenSans-Bold.ttf")),
                     _ => isItalic
-                        ? new FontResolverInfo(Path.Combine(MFiles.PublicPath, "fonts", "OpenSans-Italic.ttf"))
-                        : new FontResolverInfo(Path.Combine(MFiles.PublicPath, "fonts", "OpenSans-Regular.ttf"))
+                        ? new FontResolverInfo(Path.Combine(fontsDir, "OpenSans-Italic.ttf"))
+                        : new FontResolverInfo(Path.Combine(fontsDir, "OpenSans-Regular.ttf"))
                 };
             }
 
