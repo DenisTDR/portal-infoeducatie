@@ -8,11 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\InfoEducatie.Base\InfoEducatie.Base.csproj"/>
+        <ProjectReference Include="..\InfoEducatie.Base\InfoEducatie.Base.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="ClosedXML" Version="0.95.4"/>
+        <PackageReference Include="ClosedXML" Version="0.95.4" />
         <PackageReference Include="ClosedXML.Report" Version="0.2.1" />
     </ItemGroup>
 

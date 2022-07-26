@@ -23,7 +23,7 @@ namespace InfoEducatie.Contest.Exports
 {
     public class FinalXlsxExportServiceWithCeilings
     {
-        public readonly bool AdjustColumnWidth = false;
+        public readonly bool AdjustColumnWidth = true;
         private readonly IServiceProvider _serviceProvider;
 
         private readonly bool _editionWithOpen = Env.GetBool("EDITION_WITH_OPEN");
@@ -149,7 +149,7 @@ namespace InfoEducatie.Contest.Exports
         private void BuildPrizesSheet(IXLWorksheet ws, List<ProjectEntity> projects, CategoryEntity category,
             List<JudgeEntity> judges)
         {
-            PutPageHeader(ws);
+            ExportHelper.PutPageHeader(ws);
             var th = new List<string>
             {
                 "Nr. Crt.", "Județul", "Nume și prenume elev", "Clasa", "Unitate de învățământ", "Localitate",
@@ -248,7 +248,7 @@ namespace InfoEducatie.Contest.Exports
         private void BuildResultsSheet(IXLWorksheet ws, List<ProjectEntity> projects, CategoryEntity category,
             List<JudgeEntity> judges, bool withOpen = false)
         {
-            PutPageHeader(ws);
+            ExportHelper.PutPageHeader(ws);
             var th = new List<string>
             {
                 "Nr. Crt.", "Denumire proiect", "Nume și prenume elev", "Unitate de învățământ", "Localitate", "Județ",
@@ -320,7 +320,7 @@ namespace InfoEducatie.Contest.Exports
         private void BuildFinalTallySheet(IXLWorksheet ws, List<JudgeEntity> judges, List<ProjectEntity> projects,
             List<ProjectJudgingCriterionPointsEntity> points, CategoryEntity category, bool isOpen = false)
         {
-            PutPageHeader(ws);
+            ExportHelper.PutPageHeader(ws);
             var vp = judges.FirstOrDefault(j => j.IsVicePresident);
             judges = judges.Where(j =>
                     j.AvailableFor == JudgeType.Both || j.AvailableFor == (isOpen ? JudgeType.Open : JudgeType.Project))
@@ -373,7 +373,7 @@ namespace InfoEducatie.Contest.Exports
             bool isOpen = false)
         {
             var cat = judge.Category;
-            PutPageHeader(ws);
+            ExportHelper.PutPageHeader(ws);
 
             var th = new List<string> {"Nr. Crt.", "Denumire proiect"};
             th.AddRange(sections.Select((s, i) =>
@@ -415,7 +415,7 @@ namespace InfoEducatie.Contest.Exports
         private void BuildProjectsSheet(IXLWorksheet ws, List<ProjectEntity> projects,
             CategoryEntity category, JudgeEntity vicePresident)
         {
-            PutPageHeader(ws);
+            ExportHelper.PutPageHeader(ws);
 
             var tableData = new List<List<string>> {new List<string> {"Nr. Crt.", "Denumire proiect"}};
 
@@ -616,14 +616,6 @@ namespace InfoEducatie.Contest.Exports
         {
             range.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
             range.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
-        }
-
-        private void PutPageHeader(IXLWorksheet worksheet)
-        {
-            worksheet.Cell("A2").Value = "InfoEducație - Olimpiada de inovare și creație digitală";
-            worksheet.Cell("A3").Value = "Ediția 2022, Etapa Națională";
-            worksheet.Cell("A4").Value = "25 Iulie 2022 - 30 Iulie 2022";
-            worksheet.Range("A2:A4").Style.Font.Bold = true;
         }
 
         private void TableHeaderStyle(IXLRange range, IXLRow row)
