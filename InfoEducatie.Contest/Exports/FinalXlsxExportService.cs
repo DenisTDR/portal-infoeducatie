@@ -588,8 +588,8 @@ namespace InfoEducatie.Contest.Exports
         private void PutPageHeader(IXLWorksheet worksheet)
         {
             worksheet.Cell("A2").Value = "InfoEducație - Olimpiada de inovare și creație digitală";
-            worksheet.Cell("A3").Value = "Ediția 2021 Online";
-            worksheet.Cell("A4").Value = "22 Mai 2021";
+            worksheet.Cell("A3").Value = "Ediția 2022, Etapa Națională";
+            worksheet.Cell("A4").Value = "25 Iulie 2022 - 30 Iulie 2022";
             worksheet.Range("A2:A4").Style.Font.Bold = true;
         }
 
