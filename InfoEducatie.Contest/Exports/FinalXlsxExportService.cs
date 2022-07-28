@@ -234,7 +234,7 @@ namespace InfoEducatie.Contest.Exports
             var th = new List<string>
             {
                 "Nr. Crt.", "Denumire proiect", "Nume și prenume elev", "Unitate de învățământ", "Localitate", "Județ",
-                // "MEN", 
+                "MEN", 
             };
 
             if (!withOpen)
