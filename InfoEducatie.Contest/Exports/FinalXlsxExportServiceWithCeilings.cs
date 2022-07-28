@@ -284,6 +284,7 @@ namespace InfoEducatie.Contest.Exports
                         participant.School,
                         participant.City,
                         participant.County,
+                        "",
                         project.ScoreProject.ToString(CultureInfo.InvariantCulture)
                     };
                     if (withOpen)
