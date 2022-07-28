@@ -150,14 +150,15 @@ namespace InfoEducatie.Contest.Exports
             var th = new List<string>
             {
                 "Nr. Crt.", "Județul", "Nume și prenume elev", "Clasa", "Unitate de învățământ", "Localitate",
-                "Profesorul/Profesorii\nÎndrumător/Îndrumători", "Denumire proiect", "Secțiunea", "Cnp", "Serie CI",
-                "Număr CI", "Punctaj total", "Premiu", "Suma", "Semnătura"
+                /* aici a fost prof */"Denumire proiect", "Secțiunea", "Cnp", "Serie CI",
+                "Număr CI", "Profesorul/Profesorii\nÎndrumător/Îndrumători", "Punctaj total", "Premiu", "Suma",
+                "Semnătura"
             };
 
             SetTitle(ws, $"PREMII SECȚIUNEA {category.Name.ToUpper()}", 7, th.Count);
             var crtRow = 9;
             var firstCol = 'A';
-            var tableData = new List<List<string>> {th};
+            var tableData = new List<List<string>> { th };
             var tableDataStartsAt = crtRow + 1;
 
             foreach (var project in projects)
@@ -168,8 +169,9 @@ namespace InfoEducatie.Contest.Exports
                     {
                         participant.County, $"{participant.LastName} {participant.FirstName}",
                         $"a {ToRomanNumber(participant.Grade)}-a", participant.School, participant.City,
-                        participant.MentoringTeacher, project.Title, category.Name, participant.Cnp,
+                        project.Title, category.Name, participant.Cnp,
                         $"=UPPER(\"{participant.IdCardSeries}\")", participant.IdCardNumber,
+                        participant.MentoringTeacher,
                         (project.ScoreProject + project.ScoreOpen).ToString(), "", "", ""
                     };
                     tableData.Add(row);
@@ -177,17 +179,17 @@ namespace InfoEducatie.Contest.Exports
             }
 
             var rangeName =
-                $"{(char) (firstCol + 11)}{tableDataStartsAt}:{(char) (firstCol + 11)}{tableDataStartsAt + tableData.Count - 2}";
+                $"{(char)(firstCol + 11)}{tableDataStartsAt}:{(char)(firstCol + 11)}{tableDataStartsAt + tableData.Count - 2}";
             ws.Range(rangeName).Style.NumberFormat.Format = "@";
 
 
             SetTableContent(ws, ref crtRow, tableData, false, AdjustColumnWidth, firstCol);
             rangeName =
-                $"{(char) (firstCol + 3)}{tableDataStartsAt}:{(char) (firstCol + 3)}{tableDataStartsAt + tableData.Count - 2}";
+                $"{(char)(firstCol + 3)}{tableDataStartsAt}:{(char)(firstCol + 3)}{tableDataStartsAt + tableData.Count - 2}";
             ws.Range(rangeName).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
             rangeName =
-                $"{(char) (firstCol + 8)}{tableDataStartsAt}:{(char) (firstCol + 14)}{tableDataStartsAt + tableData.Count - 2}";
+                $"{(char)(firstCol + 8)}{tableDataStartsAt}:{(char)(firstCol + 14)}{tableDataStartsAt + tableData.Count - 2}";
             var range = ws.Range(rangeName);
             range.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -199,7 +201,7 @@ namespace InfoEducatie.Contest.Exports
             });
 
             rangeName =
-                $"{(char) (firstCol + 12)}{tableDataStartsAt}:{(char) (firstCol + 12)}{tableDataStartsAt + tableData.Count - 2}";
+                $"{(char)(firstCol + 12)}{tableDataStartsAt}:{(char)(firstCol + 12)}{tableDataStartsAt + tableData.Count - 2}";
             ws.Range(rangeName).Style.NumberFormat.Format = "#0.00";
 
 
@@ -234,7 +236,7 @@ namespace InfoEducatie.Contest.Exports
             var th = new List<string>
             {
                 "Nr. Crt.", "Denumire proiect", "Nume și prenume elev", "Unitate de învățământ", "Localitate", "Județ",
-                // "MEN", 
+                "MEN",
             };
 
             if (!withOpen)
@@ -252,7 +254,7 @@ namespace InfoEducatie.Contest.Exports
                 7, th.Count);
             var crtRow = 9;
             var firstCol = 'A';
-            var tableData = new List<List<string>> {th};
+            var tableData = new List<List<string>> { th };
             var tableDataStartsAt = crtRow + 1;
 
             foreach (var project in projects)
@@ -273,7 +275,7 @@ namespace InfoEducatie.Contest.Exports
                         row.Add(project.ScoreProject.ToString());
                         row.Add(project.ScoreOpen == 0 ? "" : project.ScoreOpen.ToString());
                         row.Add(
-                            $"={(char) (firstCol + row.Count - 1)}<crtRow>+{(char) (firstCol + row.Count)}<crtRow>");
+                            $"={(char)(firstCol + row.Count - 1)}<crtRow>+{(char)(firstCol + row.Count)}<crtRow>");
                     }
 
                     tableData.Add(row);
@@ -283,7 +285,7 @@ namespace InfoEducatie.Contest.Exports
             SetTableContent(ws, ref crtRow, tableData, false, AdjustColumnWidth, firstCol);
 
             var specialRangeName =
-                $"{(char) (firstCol + 4)}{tableDataStartsAt}:{(char) (firstCol + (withOpen ? 9 : 7))}{tableDataStartsAt + tableData.Count - 2}";
+                $"{(char)(firstCol + 4)}{tableDataStartsAt}:{(char)(firstCol + (withOpen ? 9 : 7))}{tableDataStartsAt + tableData.Count - 2}";
             var specialRange = ws.Range(specialRangeName);
             specialRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             specialRange.Style.NumberFormat.Format = "#0.00";
@@ -304,7 +306,7 @@ namespace InfoEducatie.Contest.Exports
             List<ProjectJudgingCriterionPointsEntity> points, CategoryEntity category, bool isOpen = false)
         {
             ExportHelper.PutPageHeader(ws);
-            var th = new List<string> {"Nr. Crt.", "Denumire proiect"};
+            var th = new List<string> { "Nr. Crt.", "Denumire proiect" };
             var vp = judges.FirstOrDefault(j => j.IsVicePresident);
             judges = judges.Where(j =>
                     j.AvailableFor == JudgeType.Both || j.AvailableFor == (isOpen ? JudgeType.Open : JudgeType.Project))
@@ -317,24 +319,24 @@ namespace InfoEducatie.Contest.Exports
 
             var tableDataStartsAt = crtRow + 1;
             const char firstCol = 'A';
-            var tableData = new List<List<string>> {th};
+            var tableData = new List<List<string>> { th };
 
             foreach (var project in projects)
             {
-                var row = new List<string> {project.Title};
+                var row = new List<string> { project.Title };
                 row.AddRange(judges.Select(j =>
                 {
                     var sum = points.Where(p => p.Judge == j && p.Project == project).Sum(p => p.Points);
                     return (sum / (category.ScoresX10 ? 10f : 1)).ToString();
                 }));
-                row.Add($"=AVERAGE({(char) (firstCol + 2)}<crtRow>:{(char) (firstCol + row.Count)}<crtRow>)");
+                row.Add($"=AVERAGE({(char)(firstCol + 2)}<crtRow>:{(char)(firstCol + row.Count)}<crtRow>)");
                 tableData.Add(row);
             }
 
             SetTableContent(ws, ref crtRow, tableData, false, AdjustColumnWidth, firstCol);
 
             var specialRangeName =
-                $"{(char) (firstCol + 2)}{tableDataStartsAt}:{(char) (firstCol + th.Count - 1)}{tableDataStartsAt + tableData.Count - 2}";
+                $"{(char)(firstCol + 2)}{tableDataStartsAt}:{(char)(firstCol + th.Count - 1)}{tableDataStartsAt + tableData.Count - 2}";
             var specialRange = ws.Range(specialRangeName);
             specialRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             specialRange.Style.NumberFormat.Format = "#0.00";
@@ -352,7 +354,7 @@ namespace InfoEducatie.Contest.Exports
             var cat = judge.Category;
             ExportHelper.PutPageHeader(ws);
 
-            var th = new List<string> {"Nr. Crt.", "Denumire proiect"};
+            var th = new List<string> { "Nr. Crt.", "Denumire proiect" };
             th.AddRange(sections.Select((s, i) =>
                 "Criteriu " + (i + 1) + "\n" + s.MaxPoints / (cat.ScoresX10 ? 10f : 1) + "p"));
             th.Add("TOTAL\n" + (isOpen ? "OPEN" : "PROIECT"));
@@ -361,7 +363,7 @@ namespace InfoEducatie.Contest.Exports
                 "BORDEROU INDIVIDUAL" + (isOpen ? " OPEN" : "") + " SECȚIUNEA " + judge.Category.Name.ToUpper(), 7,
                 th.Count);
 
-            var tableData = new List<List<string>> {th};
+            var tableData = new List<List<string>> { th };
             int crtRow = 9;
 
             var firstCol = 'A';
@@ -373,7 +375,7 @@ namespace InfoEducatie.Contest.Exports
                     .Select(s => s.ToString()).ToList();
 
                 row.Insert(0, project.Title);
-                row.Add($"=SUM({(char) (firstCol + 2)}<crtRow>:{(char) (firstCol + row.Count)}<crtRow>)");
+                row.Add($"=SUM({(char)(firstCol + 2)}<crtRow>:{(char)(firstCol + row.Count)}<crtRow>)");
                 tableData.Add(row);
             }
 
@@ -387,9 +389,9 @@ namespace InfoEducatie.Contest.Exports
         {
             ExportHelper.PutPageHeader(ws);
 
-            var tableData = new List<List<string>> {new List<string> {"Nr. Crt.", "Denumire proiect"}};
+            var tableData = new List<List<string>> { new List<string> { "Nr. Crt.", "Denumire proiect" } };
 
-            tableData.AddRange(projects.Select(p => new List<string> {p.Title}));
+            tableData.AddRange(projects.Select(p => new List<string> { p.Title }));
 
             SetTitle(ws, "LISTA PROIECTELOR ÎNSCRISE LA SECȚIUNEA " + category.Name.ToUpper(), 7, 5);
 
@@ -411,22 +413,22 @@ namespace InfoEducatie.Contest.Exports
             th.Insert(0, "Criteria");
             th.Insert(0, "#");
 
-            var tableData = new List<List<string>> {th};
+            var tableData = new List<List<string>> { th };
             crtRow++;
             foreach (var section in pageModel.JudgingSections)
             {
-                var row = new List<string> {section.Name};
+                var row = new List<string> { section.Name };
                 row.AddRange(pageModel.Projects.Select(p => ""));
                 tableData.Add(row);
                 var sectionRow = ws.Row(crtRow);
-                sectionRow.Cells($"A{crtRow}:{(char) ('A' + th.Count - 1)}{crtRow}").Style.Fill.BackgroundColor =
+                sectionRow.Cells($"A{crtRow}:{(char)('A' + th.Count - 1)}{crtRow}").Style.Fill.BackgroundColor =
                     XLColor.FromArgb(0xDFDFDF);
                 sectionRow.Height = 33;
                 sectionRow.Style.Font.Bold = true;
                 crtRow++;
                 foreach (var criterion in section.Criteria)
                 {
-                    row = new List<string> {criterion.Name};
+                    row = new List<string> { criterion.Name };
                     row.AddRange(pageModel.Projects.Select(p =>
                     {
                         var sum = allPoints.Where(points =>
@@ -449,14 +451,14 @@ namespace InfoEducatie.Contest.Exports
 
         private void SetTitle(IXLWorksheet ws, string title, int crtRow, int colCount)
         {
-            ws.Range($"A{crtRow}:{(char) ('A' + colCount)}{crtRow}").Merge();
+            ws.Range($"A{crtRow}:{(char)('A' + colCount)}{crtRow}").Merge();
             ws.Cell($"A{crtRow}").Value = title;
             ws.Cell($"A{crtRow}").Style.Font.Bold = true;
             ws.Cell($"A{crtRow}").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
         }
 
         private void SetTableContent(IXLWorksheet ws, ref int crtRow, List<List<string>> tableData, bool
-            alignTableContentCenter = false, bool adjustColumnsWidth = false, char firstCol = (char) 0)
+            alignTableContentCenter = false, bool adjustColumnsWidth = false, char firstCol = (char)0)
         {
             var firstTableRow = crtRow;
             // var firstCol = 'A';
@@ -472,7 +474,7 @@ namespace InfoEducatie.Contest.Exports
                 lastCol++;
             }
 
-            var tableHeaderRange = $"{firstCol}{crtRow}:{(char) (lastCol - 1)}{crtRow}";
+            var tableHeaderRange = $"{firstCol}{crtRow}:{(char)(lastCol - 1)}{crtRow}";
             TableHeaderStyle(ws.Range(tableHeaderRange), ws.Row(crtRow));
 
             crtRow++;
@@ -503,18 +505,18 @@ namespace InfoEducatie.Contest.Exports
                 crtRow++;
             }
 
-            SetTableBorders(ws.Range($"{firstCol}{firstTableRow}:{(char) (lastCol - 1)}{crtRow - 1}"));
+            SetTableBorders(ws.Range($"{firstCol}{firstTableRow}:{(char)(lastCol - 1)}{crtRow - 1}"));
 
             if (adjustColumnsWidth)
             {
-                ws.Columns($"{(char) (firstCol + 1)}:{lastCol}").AdjustToContents();
+                ws.Columns($"{(char)(firstCol + 1)}:{lastCol}").AdjustToContents();
             }
 
             ws.Range($"{firstCol}{firstTableIndexRow}:{firstCol}{crtRow - 1}").Style.Alignment.Horizontal =
                 XLAlignmentHorizontalValues.Center;
             if (alignTableContentCenter)
             {
-                ws.Range($"{(char) (firstCol + 2)}{firstTableIndexRow}:{(char) (lastCol - 1)}{crtRow - 1}").Style
+                ws.Range($"{(char)(firstCol + 2)}{firstTableIndexRow}:{(char)(lastCol - 1)}{crtRow - 1}").Style
                     .Alignment
                     .Horizontal = XLAlignmentHorizontalValues.Center;
             }
@@ -525,12 +527,12 @@ namespace InfoEducatie.Contest.Exports
             var firstCol = 'A';
             crtRow += 2;
 
-            ws.Range($"{firstCol}{crtRow}:{(char) (firstCol + colCount)}{crtRow}").Merge().Style.Alignment.Horizontal =
+            ws.Range($"{firstCol}{crtRow}:{(char)(firstCol + colCount)}{crtRow}").Merge().Style.Alignment.Horizontal =
                 XLAlignmentHorizontalValues.Center;
             ws.Cell($"{firstCol}{crtRow}").Value = $"{function},";
             ws.Cell($"{firstCol}{crtRow}").Style.Font.Bold = true;
             crtRow++;
-            ws.Range($"{firstCol}{crtRow}:{(char) (firstCol + colCount)}{crtRow}").Merge().Style.Alignment.Horizontal =
+            ws.Range($"{firstCol}{crtRow}:{(char)(firstCol + colCount)}{crtRow}").Merge().Style.Alignment.Horizontal =
                 XLAlignmentHorizontalValues.Center;
             ws.Cell($"{firstCol}{crtRow}").Value = name;
         }
@@ -543,11 +545,11 @@ namespace InfoEducatie.Contest.Exports
                 boss = new Tuple<string, string>("", "");
             }
 
-            var bossCol = (char) ('A' + colCount / 3 - 1);
-            var plebsCol = (char) ('A' + colCount / 3 * 2 - 1);
+            var bossCol = (char)('A' + colCount / 3 - 1);
+            var plebsCol = (char)('A' + colCount / 3 * 2 - 1);
             if (bossCol == plebsCol)
             {
-                plebsCol = (char) (bossCol + 1);
+                plebsCol = (char)(bossCol + 1);
             }
 
             crtRow += 2;
@@ -584,7 +586,7 @@ namespace InfoEducatie.Contest.Exports
             range.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
             range.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
         }
-        
+
         private void TableHeaderStyle(IXLRange range, IXLRow row)
         {
             range.Style.Font.Bold = true;
@@ -596,8 +598,8 @@ namespace InfoEducatie.Contest.Exports
 
         private string ToRomanNumber(int nr)
         {
-            var listOfNum = new[] {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
-            var listOfRoman = new[] {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+            var listOfNum = new[] { 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 };
+            var listOfRoman = new[] { "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I" };
 
             var numToRoman = "";
             for (var i = 0; i < listOfNum.Count(); i++)
