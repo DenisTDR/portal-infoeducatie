@@ -30,7 +30,7 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
         public override string ToString()
         {
             return (Section != null ? Section.Type + ":" + Section.Name : "") +
-                   (Category != null ? $" ({Category})" : "");
+                   Name + (Category != null ? $" ({Category})" : "");
         }
     }
 }
