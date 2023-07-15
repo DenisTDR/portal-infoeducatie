@@ -2,31 +2,45 @@ stages:
   - build
   - deploy
 
-build:
+.image_name: &image_name
+  IMAGE_TAG: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
+  IMAGE_LATEST: ${CI_REGISTRY_IMAGE}:latest
+
+build-push:
   stage: build
   variables:
-    IMAGE_TAG: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
-    IMAGE_LATEST: ${CI_REGISTRY_IMAGE}:latest
+    GIT_SUBMODULE_STRATEGY: none
     GIT_STRATEGY: fetch
     GIT_DEPTH: "1"
+    <<: *image_name
   script:
+    - docker build -t "${IMAGE_TAG}" -t "${IMAGE_LATEST}" .
     - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
-    - docker build --build-arg BUILD_CONFIGURATION -t "${IMAGE_TAG}" -t "${IMAGE_LATEST}" .
     - docker push "${IMAGE_TAG}"
     - docker push "${IMAGE_LATEST}"
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
 
-deploy:
+.deploy base: &deploy_base
   stage: deploy
-  needs:
-    - build
-  variables:
-    IMAGE_TAG: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
-    IMAGE_LATEST: ${CI_REGISTRY_IMAGE}:latest
-    GIT_STRATEGY: none
+  before_script:
+    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - cat "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
   script:
-    - chmod 400 "${SSH_PROD_PRIVATE_KEY}"
-    - ssh -i "${SSH_PROD_PRIVATE_KEY}" -o StrictHostKeyChecking=no infoeducatie@d.tdrs.ro "docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY} && /opt/docker/websites/portal.infoeducatie.ro/deploy.sh ${IMAGE_TAG} && docker logout ${CI_REGISTRY}"
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
+    - ssh -o StrictHostKeyChecking=no ${DEPLOY_USER}@${DEPLOY_HOST} "sudo /opt/docker/scripts/docker-login.sh $CI_REGISTRY_USER $CI_REGISTRY_PASSWORD $CI_REGISTRY && sudo /opt/docker/scripts/deploy.sh ${IMAGE_TAG} ${DEPLOY_ENV} ${DEPLOY_BASE_PATH} ${DEPLOY_SERVICE_NAME} && sudo /opt/docker/scripts/docker-logout.sh $CI_REGISTRY"
+
+.deploy prod: &deploy_prod_base
+  stage: deploy
+  variables:
+    DEPLOY_HOST: e.tdrs.ro
+    DEPLOY_USER: ie
+    DEPLOY_SERVICE_NAME: portal-infoeducatie
+    DEPLOY_BASE_PATH: /opt/docker/websites/portal.infoeducatie.ro
+    DEPLOY_ENV: prod
+    GIT_STRATEGY: none
+    <<: *image_name
+  <<: *deploy_base
+
+deploy prod:
+  <<: *deploy_prod_base
+  only:
+    - main

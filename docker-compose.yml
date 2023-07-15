@@ -1,7 +1,7 @@
 # local use only; server deployment uses a docker-compose file that is not in git
 # you will find that file in /home/docker/${project}/...
 
-version: '3.7'
+version: '3.5'
 services:
   infoeducatie:
     image: infoeducatie:latest
@@ -9,10 +9,10 @@ services:
     #    restart: always
     environment:
       - TZ=Europe/Bucharest
-      - VIRTUAL_HOST=infoeducatie.tdrs.ro
-      - LETSENCRYPT_HOST=infoeducatie.tdrs.ro
+      - VIRTUAL_HOST=ie.docker.tdr
+#      - LETSENCRYPT_HOST=infoeducatie.tdrs.ro
     env_file:
-      - .vars.env
+      - .docker.env
     networks:
       postgres-net:
       web-net:
@@ -22,8 +22,8 @@ services:
 
 networks:
   postgres-net:
-    external:
-      name: postgres-net
+    external: true
+    name: postgres-net
   web-net:
-    external:
-      name: web-net
+    external: true
+    name: web-net
