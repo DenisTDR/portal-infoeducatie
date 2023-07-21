@@ -14,7 +14,6 @@ using MCMS.Base.Auth;
 using MCMS.Base.Data;
 using MCMS.Base.Exceptions;
 using MCMS.Base.JsonPatch;
-using MCMS.Data;
 using MCMS.Files.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
@@ -29,20 +28,22 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         private readonly IRepository<ParticipantEntity> _participantsRepo;
         private readonly IRepository<CategoryEntity> _catsRepo;
         private readonly UserManager<User> _userManager;
-        private readonly BaseDbContext _dbContext;
         private List<ProjectEntity> _projectsCache;
         private List<ParticipantEntity> _participantsCache;
+        private readonly HashSet<string> _seenProjectsIds = new();
 
         public ImportService(IRepository<ProjectEntity> projectsRepo, IRepository<ParticipantEntity> participantsRepo,
-            UserManager<User> userManager, BaseDbContext dbContext, IRepository<CategoryEntity> catsRepo)
+            UserManager<User> userManager, IRepository<CategoryEntity> catsRepo)
         {
             _projectsRepo = projectsRepo;
             _participantsRepo = participantsRepo;
             _userManager = userManager;
-            _dbContext = dbContext;
             _catsRepo = catsRepo;
             _projectsRepo.ChainQueryable(q => q.Include(p => p.Category));
-            _participantsRepo.ChainQueryable(q => q.Include(p => p.User));
+            _participantsRepo.ChainQueryable(q => q
+                .Include(p => p.User)
+                .Include(p => p.Projects)
+            );
         }
 
         private async Task PrepareCache()
@@ -113,7 +114,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 if (existingProject == null)
                 {
                     if (!debug)
-                        project = await AddProject(project);
+                        await AddProject(project);
                     else
                         _projectsCache.Add(project);
 
@@ -122,6 +123,9 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 else
                 {
                     project.IsInOpen = existingProject.IsInOpen;
+                    if (existingProject.Disabled)
+                        existingProject.Disabled = false;
+
                     var patchDiff = JsonPatchUtils.CreatePatch(existingProject, project);
                     SanitizePatchDocument(patchDiff);
                     if (!patchDiff.IsEmpty())
@@ -138,6 +142,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                 var contestantsIds = recordDict["Id [Contestants]"];
                 participantsIdsToFind.AddRange(contestantsIds.Split(",", StringSplitOptions.RemoveEmptyEntries)
                     .Select(id => id.Trim()));
+                _seenProjectsIds.Add(project.OldPlatformId);
             }
 
             participantsIdsToFind = participantsIdsToFind.Distinct().ToList();
@@ -197,14 +202,26 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
                         }
                         else
                         {
+                            participantsResult.ProjectLinkAdded++;
                             participant.Projects.Add(project);
                         }
                     }
                 }
             }
 
+            var projectsNotSeen = _projectsCache.Select(p => p.OldPlatformId).Except(_seenProjectsIds).ToList();
+            if (projectsNotSeen.Any())
+            {
+                projectsResult.Errors.AddRange(projectsNotSeen.Select(pid =>
+                    $"Existing project not seen: {pid}. Set disabled = true for it."));
+                foreach (var pid in projectsNotSeen)
+                {
+                    var project = GetProjectCaching(pid);
+                    project.Disabled = true;
+                }
+            }
 
-            return new {projectsResult, participantsResult};
+            return new { projectsResult, participantsResult };
         }
 
         public async Task<List<OldPlatformApiResponseModel>> GetOldPlatformApiResponse()
@@ -333,13 +350,13 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             }
         }
 
-        private static readonly string[] RequiredProjectsFields = new[]
+        private static readonly string[] RequiredProjectsFields =
         {
             "Title", "Description", "Technical description", "System requirements", "Source url", "Homepage",
             "Finished", "Open source", "Closed source reason", "Score", "Total score", "Id [Contestants]", "Id [Users]"
         };
 
-        private static readonly string[] RequiredContestantsFields = new[]
+        private static readonly string[] RequiredContestantsFields =
         {
             "Address", "City", "County", "Country", "Zip code", "Sex", "Phone number", "School name", "Grade",
             "School county", "School city", "School country", "Mentoring teacher first name",

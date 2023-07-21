@@ -36,7 +36,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
             var contestantsFile = await filesRepo.GetOneOrThrow(model.ContestantsFile.Id);
             var projectsFile = await filesRepo.GetOneOrThrow(model.ProjectsFile.Id);
 
-            var result = await ServiceProvider.GetRequiredService<ImportService>()
+            var result = await Service<ImportService>()
                 .Import(projectsFile, contestantsFile, model.JustProcessAndDebug);
 
             if (!model.JustProcessAndDebug)

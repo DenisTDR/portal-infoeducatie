@@ -52,11 +52,12 @@ namespace InfoEducatie.Contest.Judging.Judging
             SectionsRepo.ChainQueryable(q => q
                 .Include(s => s.Criteria)
                 .OrderBy(s => s.Name));
+            ProjectsRepo.ChainQueryable(q => q.Where(p => !p.Disabled));
         }
 
         public async Task<JudgingPageModel> BuildJudgingPageModel(JudgeEntity judge, JudgingType type)
         {
-            var model = new JudgingPageModel {Judge = judge, Type = type};
+            var model = new JudgingPageModel { Judge = judge, Type = type };
 
             var projectsE = await ProjectsRepo.GetAll(p =>
                 p.Category == judge.Category && (type == JudgingType.Project || p.IsInOpen));
@@ -114,7 +115,7 @@ namespace InfoEducatie.Contest.Judging.Judging
             var sectionsPoints = await PointsRepo.DbSet
                 .Where(p => p.Criterion.Type == judgingType && p.Judge == judge && p.Project.Id == projectId)
                 .GroupBy(p => p.Criterion.Section.Id)
-                .Select(g => new {Id = g.Key, Points = g.Sum(p => p.Points)}).ToListAsync();
+                .Select(g => new { Id = g.Key, Points = g.Sum(p => p.Points) }).ToListAsync();
 
             var dict = new Dictionary<string, object>
             {

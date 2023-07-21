@@ -3,6 +3,7 @@ using System;
 using InfoEducatie.Main.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InfoEducatie.Main.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230721112548_projects_participants_deletable")]
+    partial class projects_participants_deletable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -304,9 +306,6 @@ namespace InfoEducatie.Main.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<bool>("Disabled")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("DiscourseUrl")
                         .HasColumnType("text");
 
@@ -348,8 +347,6 @@ namespace InfoEducatie.Main.Data.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("Deleted");
-
-                    b.HasIndex("Disabled");
 
                     b.ToTable("Projects", (string)null);
                 });

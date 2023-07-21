@@ -7,7 +7,7 @@ using MCMS.Base.Data.Entities;
 namespace InfoEducatie.Contest.Participants.Participant
 {
     [Table("Participants")]
-    public class ParticipantEntity : Entity
+    public class ParticipantEntity : Entity, ICanBeDeleted
     {
         public User User { get; set; }
 
@@ -63,5 +63,7 @@ namespace InfoEducatie.Contest.Participants.Participant
         {
             return User?.ToString() ?? PhoneNumber;
         }
+
+        public bool Deleted { get; set; }
     }
 }

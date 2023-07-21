@@ -7,7 +7,7 @@ using MCMS.Base.Data.Entities;
 namespace InfoEducatie.Contest.Participants.Project
 {
     [Table("Projects")]
-    public class ProjectEntity : Entity
+    public class ProjectEntity : Entity, ICanBeDeleted
     {
         public CategoryEntity Category { get; set; }
         public string Title { get; set; }
@@ -24,11 +24,14 @@ namespace InfoEducatie.Contest.Participants.Project
         public float ScoreOpen { get; set; }
         public string FinalPrize { get; set; }
 
+        public bool Disabled { get; set; }
         public List<ParticipantEntity> Participants { get; set; }
 
         public override string ToString()
         {
             return Title;
         }
+
+        public bool Deleted { get; set; }
     }
 }

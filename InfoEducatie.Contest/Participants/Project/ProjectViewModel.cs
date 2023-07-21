@@ -35,8 +35,15 @@ namespace InfoEducatie.Contest.Participants.Project
         public string SourceUrl { get; set; }
 
         [DetailsField] public string Homepage { get; set; }
-        [DetailsField] public string OldPlatformId { get; set; }
-        [DetailsField] public string DiscourseUrl { get; set; }
+
+        [DetailsField]
+        [TableColumn(Invisible = true)]
+        public string OldPlatformId { get; set; }
+
+        [DetailsField]
+        [TableColumn(Invisible = true)]
+        public string DiscourseUrl { get; set; }
+
         [DetailsField] [TableColumn] public bool IsInOpen { get; set; }
 
         [TableColumn(Invisible = true)]
@@ -64,10 +71,13 @@ namespace InfoEducatie.Contest.Participants.Project
             Orderable = ServerClient.None)]
         [DisplayName("Participants")]
         [DetailsField]
-
-        public string ProjectsNames => Participants?.Count is { } nr && nr > 0
+        public string ParticipantsNames => Participants?.Count is > 0
             ? string.Join(", ", Participants.Select(p => p.FullName))
             : "--";
+
+        [TableColumn(Invisible = true)]
+        [DetailsField]
+        public bool Disabled { get; set; }
 
         public override string ToString()
         {
