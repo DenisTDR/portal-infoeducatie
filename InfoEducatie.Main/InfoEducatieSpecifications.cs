@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using InfoEducatie.Main.Dashboard;
 using InfoEducatie.Main.Data;
@@ -26,7 +27,7 @@ namespace InfoEducatie.Main
             services.AddOptions<SiteConfig>().Configure(c =>
             {
                 c.SiteName = "Portal InfoEducație";
-                c.SiteCopyright = "Copyright &copy; TDR 2022";
+                c.SiteCopyright = $"Copyright &copy; TDR {DateTime.Now.Year}";
                 c.FaviconPath = "~/favicon.ico";
             });
 
@@ -83,8 +84,8 @@ namespace InfoEducatie.Main
                 }
             });
             // config.Add(new MenuLink("Seminarii", typeof(SeminarsController),
-                // nameof(SeminarsController.Index)));
-            config.Add(new MenuLink("Program", "/Pages/program") {Index = 20});
+            // nameof(SeminarsController.Index)));
+            config.Add(new MenuLink("Program", "/Pages/program") { Index = 20 });
         }
     }
 }
