@@ -12,6 +12,8 @@ namespace InfoEducatie.Contest.Judging.Judges
     [DisplayName("Judge")]
     public class JudgeViewModel : ViewModel
     {
+        [TableColumn(Invisible = true)] public override string Id { get; set; }
+
         [TableColumn(DbColumn = "User.FirstName", DbFuncFormat = "MDbFunctions.Concat({0}, ' ', x.User.LastName)")]
         public string FullName { get; set; }
 

@@ -203,7 +203,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
         public async Task<IActionResult> BuildFinalShitsForAllCategories()
         {
             var origService = ServiceProvider.GetRequiredService<FinalXlsxExportService>();
-            var serviceWithCeilings = ServiceProvider.GetRequiredService<FinalXlsxExportServiceWithCeilings>();
+            // var serviceWithCeilings = ServiceProvider.GetRequiredService<FinalXlsxExportServiceWithCeilings>();
 
             var catsService = ServiceProvider.GetRepo<CategoryEntity>();
             var cats = await catsService.GetAll();

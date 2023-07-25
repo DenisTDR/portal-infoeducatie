@@ -12,7 +12,7 @@
     <div class="row">
         <div class="col-12">
             <div class="mt-2"></div>
-            <span class="judging-top-stat">Judge name: <b>@Model.Judge.FullName</b></span>
+            <span class="judging-top-stat">Judge: <b>@Model.Judge.FullName</b></span>
             <span class="judging-top-stat">Category: <b>@Model.Category.Name</b></span>
             <span class="judging-top-stat">Projects: <b>@Model.Projects.Count</b></span>
             <span class="judging-top-stat">Judging criteria: <b>@Model.JudgingSections.Sum(s => s.Criteria.Count)</b></span>
@@ -135,7 +135,8 @@
 }
 @using (Html.BeginMStyles())
 {
-    <link rel="stylesheet" href="~/_content/InfoEducatie.Contest/judging/assets/judging.css" asp-append-version="true"/>}
+    <link rel="stylesheet" href="~/_content/InfoEducatie.Contest/judging/assets/judging.css" asp-append-version="true"/>
+}
 
 @using (Html.BeginMPageScripts())
 {

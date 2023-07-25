@@ -52,6 +52,9 @@ namespace InfoEducatie.Contest
                     new MenuLink("Detailed results", typeof(ResultsController),
                             nameof(ResultsController.DetailedResults))
                         .WithIconClasses("fas fa-search").RequiresRoles("Jury", "Moderator"),
+                    new MenuLink("Xlsx download", typeof(XlsxController),
+                            nameof(XlsxController.Download)).WithTarget("_blank")
+                        .WithIconClasses("fa fa-file-excel").RequiresRoles("Jury", "Moderator"),
                 }
             }.RequiresRoles("Moderator", "Jury"));
             config.Add(new MenuSection
