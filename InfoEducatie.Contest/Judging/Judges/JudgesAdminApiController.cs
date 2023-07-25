@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Categories;
+using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
 using MCMS.Auth;
 using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
 using MCMS.Base.Extensions;
 using MCMS.Controllers.Api;
 using MCMS.Models;
+using MCMS.Models.Dt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -100,6 +102,35 @@ namespace InfoEducatie.Contest.Judging.Judges
             e = await Repo.Add(e);
             var vm = MapF(e);
             return OkModel(vm);
+        }
+
+        public override async Task<ActionResult<DtResult<JudgeViewModel>>> DtQuery(DtParameters model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await QueryService.Query(Repo, model);
+
+
+            var judgesIds = result.Data.Select(j => j.Id).ToList();
+            var pointsRepo = Repo<ProjectJudgingCriterionPointsEntity>();
+            var pointsList = await pointsRepo.Query
+                .Where(p => judgesIds.Contains(p.Judge.Id))
+                .GroupBy(p => p.Judge.Id)
+                .Select(g => new
+                {
+                    judgeId = g.Key,
+                    points = g.Count()
+                })
+                .ToListAsync();
+            foreach (var judge in result.Data)
+            {
+                judge.PointsAdded = pointsList.FirstOrDefault(p => p.judgeId == judge.Id)?.points ?? 0;
+            }
+
+            return result;
         }
     }
 }

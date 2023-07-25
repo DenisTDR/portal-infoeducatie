@@ -31,6 +31,8 @@ namespace InfoEducatie.Contest.Judging.Judges
 
         [TableColumn] public JudgeType AvailableFor { get; set; }
 
+        [TableColumn(Invisible = true)] public int PointsAdded { get; set; }
+
         public override string ToString()
         {
             return FullName;
