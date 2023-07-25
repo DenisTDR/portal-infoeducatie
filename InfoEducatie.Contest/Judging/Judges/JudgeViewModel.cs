@@ -3,6 +3,7 @@ using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Judging.JudgingCriteria;
 using MCMS.Base.Attributes.JsonConverters;
 using MCMS.Base.Data.ViewModels;
+using MCMS.Base.Display.ModelDisplay;
 using MCMS.Base.Display.ModelDisplay.Attributes;
 using Newtonsoft.Json;
 
@@ -31,7 +32,8 @@ namespace InfoEducatie.Contest.Judging.Judges
 
         [TableColumn] public JudgeType AvailableFor { get; set; }
 
-        [TableColumn(Invisible = true)] public int PointsAdded { get; set; }
+        [TableColumn(Invisible = true, Searchable = ServerClient.None, Orderable = ServerClient.None)]
+        public int PointsAdded { get; set; }
 
         public override string ToString()
         {
