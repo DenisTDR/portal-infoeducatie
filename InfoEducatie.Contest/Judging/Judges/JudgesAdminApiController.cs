@@ -46,7 +46,8 @@ namespace InfoEducatie.Contest.Judging.Judges
         public override async Task<ActionResult<List<JudgeViewModel>>> IndexLight()
         {
             var all = await Repo.GetAll();
-            var allVm = all.Select(e => new JudgeViewModel {FullName = e.FullName, Id = e.Id}).OrderBy(j => j.FullName);
+            var allVm = all.Select(e => new JudgeViewModel { FullName = e.FullName, Id = e.Id })
+                .OrderBy(j => j.FullName);
             return Ok(allVm);
         }
 
@@ -66,7 +67,7 @@ namespace InfoEducatie.Contest.Judging.Judges
                 .GetOne(u => u.NormalizedEmail == fm.Email.ToUpper());
             if (user == null)
             {
-                user = new User {UserName = fm.Email, Email = fm.Email};
+                user = new User { UserName = fm.Email, Email = fm.Email };
                 var result = await userManager.CreateAsync(user);
                 if (!result.Succeeded)
                 {
@@ -75,6 +76,9 @@ namespace InfoEducatie.Contest.Judging.Judges
 
                 await ServiceProvider.GetRequiredService<AuthService>().SendActivationEmail(user, Url, Request.Scheme);
             }
+
+            user.LastName = fm.LastName;
+            user.FirstName = fm.FirstName;
 
             if (await Repo.Any(j => j.User == user))
             {
@@ -89,7 +93,7 @@ namespace InfoEducatie.Contest.Judging.Judges
             var e = new JudgeEntity
             {
                 Category = ServiceProvider.GetRepo<CategoryEntity>()
-                    .Attach(new CategoryEntity {Id = fm.Category.Id}),
+                    .Attach(new CategoryEntity { Id = fm.Category.Id }),
                 AvailableFor = fm.AvailableFor,
                 User = user
             };
