@@ -36,9 +36,18 @@ namespace InfoEducatie.Contest
                 Items = new List<IMenuItemBase>
                 {
                     new MenuLink("Judging Projects", typeof(JudgingController), nameof(JudgingController.Judging))
-                        .WithIconClasses("fas fa-gavel").RequiresRoles("Jury").WithValues(new {type = "project"}),
+                        .WithIconClasses("fas fa-gavel").RequiresRoles("Jury").WithValues(new { type = "project" }),
                     new MenuLink("Judging Open", typeof(JudgingController), nameof(JudgingController.Judging))
-                        .WithIconClasses("fas fa-gavel").RequiresRoles("Jury").WithValues(new {type = "open"}),
+                        .WithIconClasses("fas fa-gavel").RequiresRoles("Jury").WithValues(new { type = "open" }),
+                }
+            }.RequiresRoles("Jury"));
+
+            config.Add(new MenuSection
+            {
+                Name = "Judging Config",
+                IsCollapsable = true,
+                Items = new List<IMenuItemBase>
+                {
                     new MenuLink("Judges", typeof(JudgesAdminController),
                         nameof(JudgesAdminController.Index)).RequiresRoles("Moderator"),
                     new MenuLink("Judging criteria", typeof(JudgingCriteriaAdminController),
@@ -47,16 +56,26 @@ namespace InfoEducatie.Contest
                         nameof(JudgingCriteriaSectionsAdminController.Index)).RequiresRoles("Moderator"),
                     new MenuLink("Judging criteria points", typeof(ProjectJudgingCriterionPointsAdminController),
                         nameof(ProjectJudgingCriterionPointsAdminController.Index)).RequiresRoles("God"),
+                }
+            }.RequiresRoles("Moderator"));
+
+            config.Add(new MenuSection
+            {
+                Name = "Results",
+                IsCollapsable = true,
+                Items = new List<IMenuItemBase>
+                {
                     new MenuLink("Results", typeof(ResultsController), nameof(ResultsController.Index))
                         .WithIconClasses("fas fa-list-ol").RequiresRoles("Jury", "Moderator"),
                     new MenuLink("Detailed results", typeof(ResultsController),
                             nameof(ResultsController.DetailedResults))
                         .WithIconClasses("fas fa-search").RequiresRoles("Jury", "Moderator"),
-                    new MenuLink("Xlsx download", typeof(XlsxController),
+                    new MenuLink("Download xlsx", typeof(XlsxController),
                             nameof(XlsxController.Download)).WithTarget("_blank")
                         .WithIconClasses("fa fa-file-excel").RequiresRoles("Jury", "Moderator"),
                 }
             }.RequiresRoles("Moderator", "Jury"));
+
             config.Add(new MenuSection
             {
                 Name = "Contest",
