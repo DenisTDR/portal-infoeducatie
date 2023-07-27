@@ -20,19 +20,11 @@ public class XlsxController : AdminApiController
 {
     private JudgeProfileProviderService JudgeProfileProviderService => Service<JudgeProfileProviderService>();
 
-    public override void OnActionExecuting(ActionExecutingContext context)
-    {
-        base.OnActionExecuting(context);
-        JudgesRepo.ChainQueryable(q => q.Include(j => j.Category));
-    }
-
-    protected IRepository<JudgeEntity> JudgesRepo => ServiceProvider.GetRepo<JudgeEntity>();
-
     [HttpGet]
     public async Task<ActionResult> Download()
     {
-        var judge = await JudgeProfileProviderService.GetProfile();
-        
+        var judge = await JudgeProfileProviderService.GetProfile(true);
+
         if (!judge.IsVicePresident)
         {
             if (!UserFromClaims.HasRole("Admin"))
@@ -41,8 +33,13 @@ public class XlsxController : AdminApiController
             }
         }
 
+
         var dir = Env.GetOrThrow("RESULTS_PATH");
         var filePath = Path.Combine(dir, $"{judge.Category.Slug}.xlsx");
+
+        var exportService = Service<FinalXlsxExportService>();
+        var wb = await exportService.BuildWorkbookForCategory(judge.Category);
+        wb.SaveAs(filePath);
 
         var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 
