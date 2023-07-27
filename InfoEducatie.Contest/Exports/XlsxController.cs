@@ -1,16 +1,11 @@
 using System.IO;
 using System.Threading.Tasks;
-using InfoEducatie.Contest.Judging.Judges;
 using InfoEducatie.Contest.Judging.Judging;
-using MCMS.Base.Data;
 using MCMS.Base.Exceptions;
-using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
 using MCMS.Controllers.Api;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore;
 
 namespace InfoEducatie.Contest.Exports;
 
