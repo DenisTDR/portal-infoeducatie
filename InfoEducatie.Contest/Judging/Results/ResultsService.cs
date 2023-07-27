@@ -36,7 +36,7 @@ namespace InfoEducatie.Contest.Judging.Results
             JudgingType type)
         {
             return await (
-                from project in ProjectsRepo.DbSet.Where(p => p.Category.Id == categoryId)
+                from project in ProjectsRepo.DbSet.Where(p => p.Category.Id == categoryId && !p.Disabled)
                 join points in PointsRepo.DbSet.Where(p =>
                         p.Criterion.Type == type) on project equals
                     points.Project into pointsProjects

@@ -59,7 +59,7 @@ namespace InfoEducatie.Contest.Exports
             var workbook = new XLWorkbook();
             workbook.Style.Font.FontName = "Times new roman";
 
-            var projects = await ProjectsRepo.GetAll(p => p.Category == category);
+            var projects = await ProjectsRepo.GetAll(p => p.Category == category && !p.Disabled);
             var judges = await JudgesRepo.GetAll(j => j.Category == category);
             var allCriteriaSections = await SectionsRepo.GetAll(s => s.Category == category);
             var allPoints = await GivenPointsRepo.GetAll(p => p.Criterion.Category == category);
