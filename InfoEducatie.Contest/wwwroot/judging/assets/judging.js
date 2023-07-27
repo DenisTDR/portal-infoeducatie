@@ -131,14 +131,19 @@ function setPointsFor(cell, criterionId, projectId, points, successCallback) {
             cell.removeClass('bad').addClass('good');
             successCallback();
         },
-        error: function (errMsg) {
+        error: function (err) {
             hideLoadingSpinner(cell);
             addErrorIcon(cell);
             cell.removeClass('good').addClass('bad');
-            console.log(errMsg);
+            console.error(err);
             var criterionName = $("[data-e-type=criterion][data-e-id=" + criterionId + "]").html();
             var projectName = $("[data-e-type=project][data-e-id=" + projectId + "]").html();
+
             var msg = "A apărut o eroare la salvarea punctajului pentru proiectul '" + projectName + "', criteriul '" + criterionName + "'. Vezi câmpul roșu și încearcă din nou.";
+
+            if (err.responseJSON && err.responseJSON.error) {
+                msg = err.responseJSON.error;
+            }
             alert(msg);
         }
     });

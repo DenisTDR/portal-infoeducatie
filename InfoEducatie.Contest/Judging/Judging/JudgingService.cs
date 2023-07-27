@@ -9,7 +9,9 @@ using InfoEducatie.Contest.Judging.JudgingCriteria.JudgingCriteriaSection;
 using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
 using InfoEducatie.Contest.Participants.Project;
 using MCMS.Base.Data;
+using MCMS.Base.Exceptions;
 using MCMS.Base.Extensions;
+using MCMS.Base.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -84,6 +86,14 @@ namespace InfoEducatie.Contest.Judging.Judging
         public async Task<Dictionary<string, object>> SetPoints(JudgeEntity judge, string criterionId, string projectId,
             int points)
         {
+            var criterionType = await JudgingCriteriaRepo.Query.Where(jc => jc.Id == criterionId).Select(jc => jc.Type)
+                .FirstOrDefaultAsync();
+            if (criterionType == JudgingType.Project && Env.GetBool("FREEZE_PROJECTS_POINTS")
+                || criterionType == JudgingType.Open && Env.GetBool("FREEZE_OPEN_POINTS"))
+            {
+                throw new KnownException("Nu mai poți edita punctajele. Introducerea punctajelor a fost blocată.");
+            }
+
             var existing = await PointsRepo.GetOne(p =>
                 p.Judge == judge && p.Criterion.Id == criterionId && p.Project.Id == projectId);
             if (existing != null)

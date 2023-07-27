@@ -1,6 +1,7 @@
 @using InfoEducatie.Contest.Judging.Judging
 @using InfoEducatie.Contest.Judging.JudgingCriteria
 @using MCMS.Base.Extensions
+@using MCMS.Base.Helpers
 @model InfoEducatie.Contest.Judging.Judging.JudgingPageModel
 
 @{
@@ -141,7 +142,7 @@
 @using (Html.BeginMPageScripts())
 {
     <script>
-        var setPointsUrl = '@Html.Raw(Url.ActionLink(nameof(JudgingController.SetPoints)))';
+        var setPointsUrl = '@Html.Raw(Url.ActionLink(nameof(JudgingApiController.SetPoints), TypeHelpers.GetControllerName(typeof(JudgingApiController))))';
     </script>
     <script src="~/_content/InfoEducatie.Contest/judging/assets/judging.js" asp-append-version="true"></script>
     <script>
