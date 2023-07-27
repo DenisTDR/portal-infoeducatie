@@ -103,12 +103,12 @@ namespace InfoEducatie.Contest.Exports
             #region BFs
 
             projects = projects.OrderByDescending(p => p.ScoreProject).ToList();
-            BuildBorderouFinal(workbook.Worksheets.Add("Borderou final"), judges, projects, projectGivenPoints,
+            BuildBorderouFinal(workbook.Worksheets.Add("Borderou comisie"), judges, projects, projectGivenPoints,
                 category);
             if (_editionWithOpen)
             {
                 openProjects = openProjects.OrderByDescending(p => p.ScoreOpen).ToList();
-                BuildBorderouFinal(workbook.Worksheets.Add("Borderou final OPEN"), judges, openProjects,
+                BuildBorderouFinal(workbook.Worksheets.Add("Borderou OPEN"), judges, openProjects,
                     openGivenPoints, category, true);
             }
 
@@ -234,7 +234,7 @@ namespace InfoEducatie.Contest.Exports
             var th = new List<string>
             {
                 "Nr. Crt.", "Denumire proiect", "Nume și prenume elev", "Unitate de învățământ", "Localitate", "Județ",
-                "MEN",
+                // "MEN",
             };
 
             if (!withOpen)
@@ -262,7 +262,8 @@ namespace InfoEducatie.Contest.Exports
                     var row = new List<string>
                     {
                         project.Title, $"{participant.LastName} {participant.FirstName}", participant.School,
-                        participant.City, participant.County, ""
+                        participant.City, participant.County, 
+                        // ""
                     };
                     if (!withOpen)
                     {
