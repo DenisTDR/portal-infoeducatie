@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Categories;
+using InfoEducatie.Contest.Judging.JudgingCriteria;
 using InfoEducatie.Contest.Judging.ProjectJudgingCriterionPoints;
 using MCMS.Auth;
 using MCMS.Base.Attributes;
@@ -122,12 +123,14 @@ namespace InfoEducatie.Contest.Judging.Judges
                 .Select(g => new
                 {
                     judgeId = g.Key,
-                    points = g.Count()
+                    pointsProject = g.Count(x => x.Criterion.Type == JudgingType.Project),
+                    pointsOpen = g.Count(x => x.Criterion.Type == JudgingType.Open),
                 })
                 .ToListAsync();
             foreach (var judge in result.Data)
             {
-                judge.PointsAdded = pointsList.FirstOrDefault(p => p.judgeId == judge.Id)?.points ?? 0;
+                judge.PointsAddedProject = pointsList.FirstOrDefault(p => p.judgeId == judge.Id)?.pointsProject ?? 0;
+                judge.PointsAddedOpen = pointsList.FirstOrDefault(p => p.judgeId == judge.Id)?.pointsOpen ?? 0;
             }
 
             return result;

@@ -35,7 +35,9 @@ namespace InfoEducatie.Contest.Judging.Judges
         [TableColumn] public JudgeType AvailableFor { get; set; }
 
         [TableColumn(Invisible = true, Searchable = ServerClient.None, Orderable = ServerClient.None)]
-        public int PointsAdded { get; set; }
+        public int PointsAddedProject { get; set; }
+        [TableColumn(Invisible = true, Searchable = ServerClient.None, Orderable = ServerClient.None)]
+        public int PointsAddedOpen { get; set; }
 
         public override string ToString()
         {
