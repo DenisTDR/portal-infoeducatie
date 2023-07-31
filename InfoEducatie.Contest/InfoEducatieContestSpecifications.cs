@@ -38,7 +38,7 @@ namespace InfoEducatie.Contest
                     new MenuLink("Judging Projects", typeof(JudgingController), nameof(JudgingController.Judging))
                         .WithIconClasses("fas fa-gavel").RequiresRoles("Jury").WithValues(new { type = "project" }),
                     new MenuLink("Judging Open", typeof(JudgingController), nameof(JudgingController.Judging))
-                        .WithIconClasses("fas fa-gavel").RequiresRoles("Jury").WithValues(new { type = "open" }),
+                        .WithIconClasses("fas fa-door-open").RequiresRoles("Jury").WithValues(new { type = "open" }),
                 }
             }.RequiresRoles("Jury"));
 

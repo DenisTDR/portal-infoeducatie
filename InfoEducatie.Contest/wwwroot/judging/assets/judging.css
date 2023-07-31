@@ -81,9 +81,16 @@
 .input-cell.good input {
     background-color: #ecffef;
 }
+.input-cell.good input[readonly] {
+    background-color: rgba(236, 255, 239, 0.5);
+}
 
 .input-cell.bad input {
     background-color: #fcf2f2;
+}
+
+.input-cell.bad input[readonly] {
+    background-color: rgba(252, 242, 242, 0.5);
 }
 
 .input-cell input[type=number]:not(:focus):not(:hover)::-webkit-outer-spin-button,
