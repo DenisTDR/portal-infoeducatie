@@ -31,7 +31,7 @@ build-push:
 .deploy prod: &deploy_prod_base
   stage: deploy
   variables:
-    DEPLOY_HOST: ie.tdrs.ro
+    DEPLOY_HOST: e.tdrs.ro
     DEPLOY_USER: ie
     DEPLOY_SERVICE_NAME: portal-infoeducatie
     DEPLOY_BASE_PATH: /opt/docker/websites/portal.infoeducatie.ro
