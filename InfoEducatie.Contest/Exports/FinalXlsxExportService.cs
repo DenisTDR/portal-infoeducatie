@@ -206,7 +206,8 @@ namespace InfoEducatie.Contest.Exports
             SetWhoSigns(ws, ref crtRow,
                 new Tuple<string, string>("VICEPREȘEDINTE", judges.FirstOrDefault(j => j.IsVicePresident)?.FullName),
                 new Tuple<string, List<string>>("MEMBRI EVALUATORI",
-                    judges.Where(j => !j.IsVicePresident).Select(j => j.FullName).ToList()), th.Count);
+                    judges.Where(j => !j.IsVicePresident).OrderBy(j => j.User.LastName).Select(j => j.FullName)
+                        .ToList()), th.Count);
         }
 
         private void CalcPoints(List<ProjectEntity> projects, List<ProjectJudgingCriterionPointsEntity> points,
@@ -262,7 +263,7 @@ namespace InfoEducatie.Contest.Exports
                     var row = new List<string>
                     {
                         project.Title, $"{participant.LastName} {participant.FirstName}", participant.School,
-                        participant.City, participant.County, 
+                        participant.City, participant.County,
                         // ""
                     };
                     if (!withOpen)
@@ -298,7 +299,8 @@ namespace InfoEducatie.Contest.Exports
             SetWhoSigns(ws, ref crtRow,
                 new Tuple<string, string>("VICEPREȘEDINTE", judges.FirstOrDefault(j => j.IsVicePresident)?.FullName),
                 new Tuple<string, List<string>>("MEMBRI EVALUATORI",
-                    judges.Where(j => !j.IsVicePresident).Select(j => j.FullName).ToList()), th.Count);
+                    judges.Where(j => !j.IsVicePresident).OrderBy(j => j.User.LastName).Select(j => j.FullName)
+                        .ToList()), th.Count);
         }
 
         private void BuildBorderouFinal(IXLWorksheet ws, List<JudgeEntity> judges, List<ProjectEntity> projects,
@@ -342,7 +344,8 @@ namespace InfoEducatie.Contest.Exports
 
             SetWhoSigns(ws, ref crtRow,
                 new Tuple<string, string>("VICEPREȘEDINTE", vp?.FullName),
-                new Tuple<string, List<string>>("MEMBRI EVALUATORI", judges.Select(j => j.FullName).ToList()),
+                new Tuple<string, List<string>>("MEMBRI EVALUATORI",
+                    judges.OrderBy(j => j.User.LastName).Select(j => j.FullName).ToList()),
                 th.Count);
         }
 

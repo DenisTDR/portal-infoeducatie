@@ -208,7 +208,8 @@ namespace InfoEducatie.Contest.Exports
             SetWhoSigns(ws, ref crtRow,
                 new Tuple<string, string>("VICEPREȘEDINTE", judges.FirstOrDefault(j => j.IsVicePresident)?.FullName),
                 new Tuple<string, List<string>>("MEMBRI EVALUATORI",
-                    judges.Where(j => !j.IsVicePresident).Select(j => j.FullName).ToList()), th.Count);
+                    judges.Where(j => !j.IsVicePresident).OrderBy(j => j.User.LastName).Select(j => j.FullName)
+                        .ToList()), th.Count);
         }
 
         private void CalcTotalScore(List<ProjectEntity> projects, List<ProjectJudgingCriterionPointsEntity> points,
@@ -315,7 +316,8 @@ namespace InfoEducatie.Contest.Exports
             SetWhoSigns(ws, ref crtRow,
                 new Tuple<string, string>("VICEPREȘEDINTE", judges.FirstOrDefault(j => j.IsVicePresident)?.FullName),
                 new Tuple<string, List<string>>("MEMBRI EVALUATORI",
-                    judges.Where(j => !j.IsVicePresident).Select(j => j.FullName).ToList()), th.Count);
+                    judges.Where(j => !j.IsVicePresident).OrderBy(j => j.User.LastName).Select(j => j.FullName)
+                        .ToList()), th.Count);
         }
 
         private void BuildFinalTallySheet(IXLWorksheet ws, List<JudgeEntity> judges, List<ProjectEntity> projects,
@@ -366,7 +368,7 @@ namespace InfoEducatie.Contest.Exports
             SetWhoSigns(ws, ref crtRow,
                 new Tuple<string, string>("VICEPREȘEDINTE", vp?.FullName),
                 new Tuple<string, List<string>>("MEMBRI EVALUATORI",
-                    judges.Select(j => j.FullName).ToList()), th.Count);
+                    judges.OrderBy(j => j.User.LastName).Select(j => j.FullName).ToList()), th.Count);
         }
 
         private void BuildIndividualTallySheet(IXLWorksheet ws, JudgeEntity judge, List<ProjectEntity> projects,
