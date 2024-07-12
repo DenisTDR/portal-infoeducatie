@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup Condition="$(ENV_TYPE) != 'CI_BUILD'">
@@ -14,5 +14,10 @@
         <PackageReference Include="MCMS.Common" Version="0.0.616" />
         <PackageReference Include="MCMS.Emailing" Version="0.0.616" />
         <PackageReference Include="MCMS.Files" Version="0.0.616" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="ClosedXML" Version="0.102.2" />
+        <PackageReference Include="ClosedXML.Report" Version="0.2.10" />
     </ItemGroup>
 </Project>
