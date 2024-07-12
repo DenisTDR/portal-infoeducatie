@@ -34,7 +34,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
         private readonly IRepository<CategoryEntity> _categoriesRepo;
         private readonly ResultsService _resultsService;
         private readonly ILogger<ImageDiplomasService> _logger;
-        private readonly MSendgridClientOptions _sendgridConfig;
+        private readonly MSendGridClientOptions _sendgridConfig;
 
         public ImageDiplomasService(
             IRepository<ParticipantEntity> participantsRepo,
@@ -42,7 +42,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
             IRepository<ProjectEntity> projectsRepo,
             ResultsService resultsService,
             ILogger<ImageDiplomasService> logger,
-            IOptions<MSendgridClientOptions> clientOptions)
+            IOptions<MSendGridClientOptions> clientOptions)
         {
             _participantsRepo = participantsRepo;
             _projectsRepo = projectsRepo;

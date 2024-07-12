@@ -29,14 +29,14 @@ namespace InfoEducatie.Main.InfoEducatieAdmin.Diplomas
         private readonly IRepository<ProjectEntity> _projectsRepo;
         private readonly IRepository<CategoryEntity> _categoriesRepo;
         private readonly ILogger<PdfDiplomasService> _logger;
-        private readonly MSendgridClientOptions _sendgridConfig;
+        private readonly MSendGridClientOptions _sendgridConfig;
 
         public PdfDiplomasService(
             IRepository<ParticipantEntity> participantsRepo,
             IRepository<CategoryEntity> categoriesRepo,
             IRepository<ProjectEntity> projectsRepo,
             ILogger<PdfDiplomasService> logger,
-            IOptions<MSendgridClientOptions> clientOptions)
+            IOptions<MSendGridClientOptions> clientOptions)
         {
             _participantsRepo = participantsRepo;
             _projectsRepo = projectsRepo;
