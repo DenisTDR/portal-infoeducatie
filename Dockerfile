@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 as build-env
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 
 COPY ./InfoEducatie.Base/InfoEducatie.Base.csproj /app/src/InfoEducatie.Base/InfoEducatie.Base.csproj
 COPY ./InfoEducatie.Main/InfoEducatie.Main.csproj /app/src/InfoEducatie.Main/InfoEducatie.Main.csproj
@@ -15,7 +15,7 @@ COPY ./ /app/src
 RUN dotnet publish --output "/app/bin" --configuration release 
 
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 as runtime-env
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime-env
 RUN apt-get update && apt-get install -y \
     sudo \
     curl \
@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app/bin
 EXPOSE 80
-ENV NETCORE_USER_UID 1000
+ENV NETCORE_USER_UID=1000
 
 COPY docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
 RUN chmod +x /usr/bin/docker-entrypoint.sh

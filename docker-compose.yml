@@ -1,7 +1,6 @@
 # local use only; server deployment uses a docker-compose file that is not in git
 # you will find that file in /home/docker/${project}/...
 
-version: '3.5'
 services:
   infoeducatie:
     image: infoeducatie:latest
