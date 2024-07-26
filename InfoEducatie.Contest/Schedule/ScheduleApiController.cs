@@ -23,6 +23,13 @@ public class ScheduleApiController : AdminApiController
         return Ok();
     }
 
+    [HttpGet]
+    public async Task<ActionResult<ScheduleConfigModel>> GetScheduleConfig()
+    {
+        var config = await ScheduleService.GetConfig();
+        return Ok(config);
+    }
+
     [HttpPost]
     [ModelValidation]
     public async Task<ActionResult<ScheduleDto>> GenerateSchedule()
