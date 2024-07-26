@@ -28,8 +28,8 @@ function initializeJudgingTable() {
         boundary: 'window',
         template: '<div class="popover judging-cell-popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>'
     });
-    var height = $(".judging-table-wrapper").height() - 120 + "px";
-    $(".judging-table-wrapper .dataTables_scrollBody").css({height: height, 'max-height': height})
+    var height = $(".judging-table-wrapper").height() - 124 + "px";
+    $(".judging-table-wrapper .dt-scroll-body").css({height: height, 'max-height': height})
     judgingTable.api().draw();
 
     initializeJudgingInputFields();

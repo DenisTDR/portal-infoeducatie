@@ -38,7 +38,7 @@
     opacity: 1;
 }
 
-.judging-table-wrapper div.dataTables_scrollBody {
+.judging-table-wrapper div.dt-scroll-body {
     background-color: transparent !important;
 }
 
