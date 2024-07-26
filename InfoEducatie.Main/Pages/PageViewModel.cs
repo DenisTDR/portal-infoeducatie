@@ -13,6 +13,7 @@ namespace InfoEducatie.Main.Pages
         [TableColumn] public string Title { get; set; }
 
         [TableColumn] public string ShortDescription { get; set; }
+        public bool IsPlainHtml { get; set; }
         public string Body { get; set; }
 
         [DetailsField(Hidden = true)]

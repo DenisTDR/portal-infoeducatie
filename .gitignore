@@ -358,3 +358,4 @@ fabric.properties
 app.db
 
 .local.env
+persisted

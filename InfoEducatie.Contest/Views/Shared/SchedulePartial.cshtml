@@ -1,0 +1,35 @@
+@model InfoEducatie.Contest.Schedule.Models.ScheduleDto
+
+<h2>Program Jurizare - 2024 - Etapa Națională</h2>
+<p>Toate categoriile prezintă <b>@Model.Config.FirstDayTitle</b>.</p>
+<p>Repartizarea pentru fiecare categorie este următoarea:</p>
+
+<div class="container-fluid">
+    <div class="row">
+        @foreach (var cat in Model.Categories)
+        {
+            <div class="col-12 col-md-6 col-xl-4 mb-4">
+                <h3>@cat.CategoryName</h3>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Proiect</th>
+                        <th>Ora</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var slot in cat.Slots)
+                    {
+                        <tr>
+                            <td>@slot.Hashtag</td>
+                            <td>@slot.Title</td>
+                            <td class="text-nowrap">@slot.StartTime.ToString("HH:mm") - @slot.EndTime.ToString("HH:mm")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

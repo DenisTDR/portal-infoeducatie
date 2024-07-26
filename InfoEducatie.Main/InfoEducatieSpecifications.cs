@@ -20,6 +20,12 @@ namespace InfoEducatie.Main
 {
     public class InfoEducatieSpecifications : MSpecifications
     {
+        public InfoEducatieSpecifications()
+        {
+            HasRazorViews = true;
+            PrePublishRootPath = "..";
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<BaseDbContext, ApplicationDbContext>();

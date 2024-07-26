@@ -12,5 +12,6 @@ namespace InfoEducatie.Contest.Categories
 
         [FormlyField(DefaultValue = true)] public bool Published { get; set; }
         public bool ScoresX10 { get; set; }
+        public int PresentationSlotDuration { get; set; }
     }
 }

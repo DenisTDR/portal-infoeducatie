@@ -18,6 +18,11 @@ namespace InfoEducatie.Contest
 {
     public class InfoEducatieContestSpecifications : MSpecifications
     {
+        public InfoEducatieContestSpecifications()
+        {
+            HasRazorViews = true;
+            PrePublishRootPath = "..";
+        }
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions<MenuConfig>().Configure(ConfigureMenu);

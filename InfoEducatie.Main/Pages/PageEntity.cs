@@ -9,6 +9,7 @@ namespace InfoEducatie.Main.Pages
         public string Slug { get; set; }
         public string Title { get; set; }
         public string ShortDescription { get; set; }
+        public bool IsPlainHtml { get; set; }
         public string Body { get; set; }
         public int Order { get; set; }
 
