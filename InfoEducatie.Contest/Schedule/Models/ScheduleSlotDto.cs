@@ -14,6 +14,6 @@ public class ScheduleSlotDto
     [JsonConverter(typeof(TimeOnlyConverter))]
     public TimeOnly EndTime { get; set; }
 
-    public bool IsPause { get; set; }
+    public bool IsBreak { get; set; }
     public string Hashtag { get; set; }
 }

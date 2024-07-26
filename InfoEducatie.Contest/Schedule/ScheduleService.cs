@@ -41,38 +41,57 @@ public class ScheduleService(IRepository<CategoryEntity> catsRepo, IRepository<P
         var dto = new ScheduleCategoryDto
         {
             CategoryName = category.Name,
-            Slots = []
+            Days = []
         };
         var projects = await projectsRepo
             .GetAll(p => p.Category == category);
         projects = OrderBy(projects, config.OrderBy);
 
-        var startTime = config.StartTime;
+
+        var crtDay = config.Days.First();
+        var crtDayBag = crtDay.ToBag();
+        dto.Days.Add(crtDayBag);
+
+        var crtStartTime = crtDay.StartTime;
         var cnt = 1;
 
         foreach (var project in projects)
         {
-            if (startTime >= config.PauseStartTime &&
-                startTime < config.PauseStartTime.AddMinutes(config.PauseDuration))
+            // should take a break?
+            if (crtStartTime.AddMinutes(category.PresentationSlotDuration) > crtDay.PauseStartTime &&
+                crtStartTime < crtDay.PauseStartTime.AddMinutes(crtDay.PauseDuration))
             {
-                dto.Slots.Add(new ScheduleSlotDto
+                crtDayBag.Slots.Add(new ScheduleSlotDto
                 {
-                    StartTime = config.PauseStartTime,
-                    EndTime = config.PauseStartTime.AddMinutes(config.PauseDuration),
+                    StartTime = crtDay.PauseStartTime,
+                    EndTime = crtDay.PauseStartTime.AddMinutes(crtDay.PauseDuration),
                     Title = "Pauză",
-                    IsPause = true
+                    IsBreak = true
                 });
-                startTime = config.PauseStartTime.AddMinutes(config.PauseDuration);
+                crtStartTime = crtDay.PauseStartTime.AddMinutes(crtDay.PauseDuration);
             }
 
-            dto.Slots.Add(new ScheduleSlotDto
+            // should continue next day?
+            if (crtStartTime.AddMinutes(category.PresentationSlotDuration) > crtDay.EndTime)
             {
-                Title = project.Title, StartTime = startTime,
-                EndTime = startTime.AddMinutes(category.PresentationSlotDuration),
+                if (config.Days.Count > 1)
+                {
+                    crtDay = config.Days[1];
+                    crtDayBag = crtDay.ToBag();
+                    dto.Days.Add(crtDayBag);
+                    crtStartTime = crtDay.StartTime;
+                }
+            }
+
+            crtDayBag.Slots.Add(new ScheduleSlotDto
+            {
+                Title = project.Title,
+                StartTime = crtStartTime,
+                EndTime = crtStartTime.AddMinutes(category.PresentationSlotDuration),
                 Hashtag = cnt.ToString()
             });
 
-            startTime = startTime.AddMinutes(category.PresentationSlotDuration);
+            crtStartTime = crtStartTime.AddMinutes(category.PresentationSlotDuration);
             cnt++;
         }
 

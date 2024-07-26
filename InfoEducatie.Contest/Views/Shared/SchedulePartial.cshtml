@@ -1,34 +1,52 @@
 @model InfoEducatie.Contest.Schedule.Models.ScheduleDto
 
-<h2>Program Jurizare - 2024 - Etapa Națională</h2>
-<p>Toate categoriile prezintă <b>@Model.Config.FirstDayTitle</b>.</p>
-<p>Repartizarea pentru fiecare categorie este următoarea:</p>
-
-<div class="container-fluid">
+<h2 class="text-center">Program Jurizare - 2024 - Etapa Națională</h2>
+@* <p>Toate categoriile prezintă <b>@Model.Config.FirstDayTitle</b>.</p> *@
+<div class="container-fluid mt-5 pt-3">
     <div class="row">
         @foreach (var cat in Model.Categories)
         {
             <div class="col-12 col-md-6 col-xl-4 mb-4">
-                <h3>@cat.CategoryName</h3>
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Proiect</th>
-                        <th>Ora</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var slot in cat.Slots)
-                    {
+                <h3 class="text-center">@cat.CategoryName</h3>
+
+                @foreach (var dayBag in cat.Days)
+                {
+                    <div class="text-center font-weight-bold mt-4">@dayBag.Title</div>
+                    <table class="table table-striped">
+                        <thead>
                         <tr>
-                            <td>@slot.Hashtag</td>
-                            <td>@slot.Title</td>
-                            <td class="text-nowrap">@slot.StartTime.ToString("HH:mm") - @slot.EndTime.ToString("HH:mm")</td>
+                            <th>#</th>
+                            <th>Proiect</th>
+                            <th>Ora</th>
                         </tr>
-                    }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+
+                        @foreach (var slot in dayBag.Slots)
+                        {
+                            if (!slot.IsBreak)
+                            {
+                                <tr>
+                                    <td>@slot.Hashtag</td>
+                                    <td>@slot.Title</td>
+                                    <td class="text-nowrap">@slot.StartTime.ToString("HH:mm") - @slot.EndTime.ToString("HH:mm")</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="2">
+                                        <div class="text-center my-2">
+                                            <b>@slot.Title</b>
+                                        </div>
+                                    </td>
+                                    <td class="text-nowrap">@slot.StartTime.ToString("HH:mm") - @slot.EndTime.ToString("HH:mm")</td>
+                                </tr>
+                            }
+                        }
+                        </tbody>
+                    </table>
+                }
             </div>
         }
     </div>
