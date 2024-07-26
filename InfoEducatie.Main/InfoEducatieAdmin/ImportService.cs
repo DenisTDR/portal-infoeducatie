@@ -101,8 +101,8 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
             while (await projectsCsvReader.ReadAsync())
             {
-                ExpandoObject recordEo = projectsCsvReader.GetRecord<dynamic>();
-                var recordDict = recordEo.ToDictionary(kvp => kvp.Key, kvp => kvp.Value?.ToString());
+                var recordDn = projectsCsvReader.GetRecord<dynamic>() as IDictionary<string, object>;
+                var recordDict = recordDn.ToDictionary(kvp => kvp.Key, kvp => kvp.Value?.ToString());
                 var opApiObj = opResponse.FirstOrDefault(p => p.Id == recordDict["Id"]);
                 if (opApiObj == null)
                 {
@@ -149,7 +149,7 @@ namespace InfoEducatie.Main.InfoEducatieAdmin
 
             while (await contestantsCsvReader.ReadAsync())
             {
-                ExpandoObject recordEo = contestantsCsvReader.GetRecord<dynamic>();
+                var recordEo = contestantsCsvReader.GetRecord<dynamic>() as IDictionary<string, object>;
                 var recordDict = recordEo.ToDictionary(kvp => kvp.Key, kvp => kvp.Value?.ToString());
                 var opId = recordDict["Id"];
                 if (!participantsIdsToFind.Contains(opId))
