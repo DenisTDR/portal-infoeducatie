@@ -103,6 +103,9 @@ public class ScheduleService(IRepository<CategoryEntity> catsRepo, IRepository<P
     {
         switch (orderBy)
         {
+            case Models.OrderBy.FixedRandom:
+                projects = projects.OrderBy(p => p.Id).ToList();
+                break;
             case Models.OrderBy.Random:
                 projects = projects.Shuffle().ToList();
                 break;

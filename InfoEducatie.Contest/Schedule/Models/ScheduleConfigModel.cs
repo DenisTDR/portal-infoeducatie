@@ -38,6 +38,7 @@ public class ScheduleDayConfigModel
 
 public enum OrderBy
 {
+    FixedRandom,
     Random,
     OldPlatformId,
     Name,
