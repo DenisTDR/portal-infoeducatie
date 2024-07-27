@@ -21,7 +21,10 @@ public class ScheduleService(IRepository<CategoryEntity> catsRepo, IRepository<P
     public async Task<ScheduleDto> Generate(ScheduleConfigModel config)
     {
         projectsRepo.ChainQueryable(q => q.Where(p => !p.Disabled).Include(p => p.Participants));
-        var categories = await catsRepo.Query.OrderBy(c => c.Name).ToListAsync();
+        var categories = await catsRepo.Query
+            .Where(c => c.PresentationSlotDuration > 0)
+            .OrderBy(c => c.Name)
+            .ToListAsync();
         var dto = new ScheduleDto
         {
             Categories = [],
