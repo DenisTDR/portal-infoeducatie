@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Schedule.Models;
 using MCMS.Base.Attributes;
@@ -56,5 +57,19 @@ public class ScheduleApiController : AdminApiController
         var dto = await ScheduleService.Generate(config);
         var html = await RazorTemplateEngine.RenderPartialAsync("SchedulePartial", dto);
         return Content(html, "text/html");
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<ScheduleConfigModel>> GetScheduleXlsx()
+    {
+        var config = await Service<ScheduleService>().GetFromDb();
+
+        var workbook = Service<ScheduleXlsxService>().BuildXlsx(config);
+        var ms = new MemoryStream();
+        workbook.SaveAs(ms);
+        ms.Position = 0;
+
+        return File(ms, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "program-infoeducatie-2024.xlsx");
     }
 }

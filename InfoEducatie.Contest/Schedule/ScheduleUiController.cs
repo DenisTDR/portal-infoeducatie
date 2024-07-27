@@ -19,20 +19,7 @@ public class ScheduleUiController : AdminUiController
     [AllowAnonymous]
     public override async Task<IActionResult> Index()
     {
-        var config = new ScheduleDto { Categories = [] };
-        var currentEdition = await Repo.Query.OrderByDescending(cs => cs.Edition).Select(cs => cs.Edition)
-            .FirstOrDefaultAsync();
-        var configs = await Repo.Query
-            .Include(cs => cs.Category)
-            .Where(cs => cs.Edition == currentEdition)
-            .OrderBy(cs => cs.Category.Name)
-            .ToListAsync();
-
-        foreach (var catEntity in configs)
-        {
-            config.Categories.Add(JsonConvert.DeserializeObject<ScheduleCategoryDto>(catEntity.JsonData));
-        }
-
+        var config = await Service<ScheduleService>().GetFromDb();
 
         return View(config);
     }

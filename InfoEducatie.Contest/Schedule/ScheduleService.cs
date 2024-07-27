@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using InfoEducatie.Contest.Categories;
+using InfoEducatie.Contest.CategorySchedules;
 using InfoEducatie.Contest.Participants.Project;
 using InfoEducatie.Contest.Schedule.Models;
 using MCMS.Base.Attributes;
@@ -16,7 +17,7 @@ using Newtonsoft.Json;
 namespace InfoEducatie.Contest.Schedule;
 
 [Service]
-public class ScheduleService(IRepository<CategoryEntity> catsRepo, IRepository<ProjectEntity> projectsRepo)
+public class ScheduleService(IRepository<CategoryEntity> catsRepo, IRepository<ProjectEntity> projectsRepo, IRepository<CategoryScheduleEntity> schedRepo)
 {
     public async Task<ScheduleDto> Generate(ScheduleConfigModel config)
     {
@@ -135,6 +136,25 @@ public class ScheduleService(IRepository<CategoryEntity> catsRepo, IRepository<P
         return projects;
     }
 
+    public async Task<ScheduleDto> GetFromDb()
+    {
+        var config = new ScheduleDto { Categories = [] };
+        var currentEdition = await schedRepo.Query.OrderByDescending(cs => cs.Edition).Select(cs => cs.Edition)
+            .FirstOrDefaultAsync();
+        var configs = await schedRepo.Query
+            .Include(cs => cs.Category)
+            .Where(cs => cs.Edition == currentEdition)
+            .OrderBy(cs => cs.Category.Name)
+            .ToListAsync();
+
+        foreach (var catEntity in configs)
+        {
+            config.Categories.Add(JsonConvert.DeserializeObject<ScheduleCategoryDto>(catEntity.JsonData));
+        }
+
+        return config;
+    }
+    
     private static string Path => System.IO.Path.Join(Env.Get("CONTENT_PATH"), "schedule-config.json");
 
     public static async Task PersistConfig(ScheduleConfigModel config)
