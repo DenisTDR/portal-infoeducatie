@@ -5,6 +5,7 @@ using InfoEducatie.Contest.CategorySchedules;
 using InfoEducatie.Contest.Schedule.Models;
 using MCMS.Base.Data;
 using MCMS.Controllers.Ui;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -15,6 +16,7 @@ public class ScheduleUiController : AdminUiController
 {
     private IRepository<CategoryScheduleEntity> Repo => Repo<CategoryScheduleEntity>();
 
+    [AllowAnonymous]
     public override async Task<IActionResult> Index()
     {
         var config = new ScheduleDto { Categories = [] };

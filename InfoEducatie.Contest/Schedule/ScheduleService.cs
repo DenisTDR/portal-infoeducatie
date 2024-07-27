@@ -49,8 +49,8 @@ public class ScheduleService(IRepository<CategoryEntity> catsRepo, IRepository<P
         };
         var projects = await projectsRepo
             .GetAll(p => p.Category == category);
-        Console.WriteLine("cat: " + category.Name);
-        Console.WriteLine("nr proj: " + projects.Count);
+        // Console.WriteLine("cat: " + category.Name);
+        // Console.WriteLine("nr proj: " + projects.Count);
         projects = OrderBy(projects, config.OrderBy);
 
 
