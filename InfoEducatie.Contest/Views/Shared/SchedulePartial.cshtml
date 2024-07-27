@@ -40,7 +40,9 @@
                                             <b>@slot.Title</b>
                                         </div>
                                     </td>
-                                    <td class="text-nowrap my-2">@slot.StartTime.ToString("HH:mm") - @slot.EndTime.ToString("HH:mm")</td>
+                                    <td class="text-nowrap">
+                                        <div class="my-2">@slot.StartTime.ToString("HH:mm") - @slot.EndTime.ToString("HH:mm")</div>
+                                    </td>
                                 </tr>
                             }
                         }
