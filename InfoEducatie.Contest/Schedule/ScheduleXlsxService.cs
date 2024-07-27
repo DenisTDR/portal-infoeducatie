@@ -42,6 +42,8 @@ public class ScheduleXlsxService
                     {
                         ws.Cell("A" + crtRow).Value = scheduleSlotDto.Title;
                         ws.Range("A" + crtRow + ":B" + crtRow).Merge();
+                        ws.Row(crtRow).Height = 25;
+                        ws.Row(crtRow).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
                     }
 
                     ws.Cell("C" + crtRow).Value = scheduleSlotDto.StartTime.ToString("HH:mm") + " - " +
