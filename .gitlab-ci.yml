@@ -28,13 +28,25 @@ build-push:
   script:
     - ssh -o StrictHostKeyChecking=no ${DEPLOY_USER}@${DEPLOY_HOST} "sudo /opt/docker/scripts/docker-login.sh $CI_REGISTRY_USER $CI_REGISTRY_PASSWORD $CI_REGISTRY && sudo /opt/docker/scripts/deploy.sh ${IMAGE_TAG} ${DEPLOY_ENV} ${DEPLOY_BASE_PATH} ${DEPLOY_SERVICE_NAME} && sudo /opt/docker/scripts/docker-logout.sh $CI_REGISTRY"
 
-.deploy prod: &deploy_prod_base
+.deploy tdrs: &deploy_tdrs_base
   stage: deploy
   variables:
     DEPLOY_HOST: e.tdrs.ro
     DEPLOY_USER: ie
     DEPLOY_SERVICE_NAME: portal-infoeducatie
     DEPLOY_BASE_PATH: /opt/docker/websites/portal.infoeducatie.ro
+    DEPLOY_ENV: prod
+    GIT_STRATEGY: none
+    <<: *image_name
+  <<: *deploy_base
+  
+.deploy prod: &deploy_prod_base
+  stage: deploy
+  variables:
+    DEPLOY_HOST: ie.tdrs.ro
+    DEPLOY_USER: deployer
+    DEPLOY_SERVICE_NAME: portal-infoeducatie
+    DEPLOY_BASE_PATH: /opt/docker/portal
     DEPLOY_ENV: prod
     GIT_STRATEGY: none
     <<: *image_name
