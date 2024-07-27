@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using InfoEducatie.Contest.CategorySchedules;
 using InfoEducatie.Main.Dashboard;
 using InfoEducatie.Main.Data;
 using InfoEducatie.Main.InfoEducatieAdmin;
@@ -67,14 +68,16 @@ namespace InfoEducatie.Main
                                 .RequiresRoles("Admin"),
                             new MenuSection
                             {
-                                Name = "Conținut",
+                                Name = "Content",
                                 IsCollapsable = true,
                                 Items = new List<IMenuItemBase>
                                 {
                                     new MenuLink("Seminarii", typeof(SeminarsAdminController),
                                         nameof(SeminarsAdminController.Index)),
                                     new MenuLink("Pagini", typeof(PagesAdminController),
-                                        nameof(PagesAdminController.Index))
+                                        nameof(PagesAdminController.Index)),
+                                    new MenuLink("Json Program", typeof(CategorySchedulesUiController),
+                                        nameof(CategorySchedulesUiController.Index))
                                 }
                             }.WithIconClasses("fas fa-file-contract").RequiresRoles("Moderator"),
                             new MenuLink("Utilizatori", typeof(AdminUsersUiController),

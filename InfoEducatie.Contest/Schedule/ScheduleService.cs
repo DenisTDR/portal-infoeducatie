@@ -20,7 +20,8 @@ public class ScheduleService(IRepository<CategoryEntity> catsRepo, IRepository<P
 {
     public async Task<ScheduleDto> Generate(ScheduleConfigModel config)
     {
-        projectsRepo.ChainQueryable(q => q.Where(p => !p.Disabled).Include(p => p.Participants));
+        projectsRepo.ChainQueryable(q => q.Where(p => !p.Disabled)
+            .Include(p => p.Participants));
         var categories = await catsRepo.Query
             .Where(c => c.PresentationSlotDuration > 0)
             .OrderBy(c => c.Name)
@@ -48,6 +49,8 @@ public class ScheduleService(IRepository<CategoryEntity> catsRepo, IRepository<P
         };
         var projects = await projectsRepo
             .GetAll(p => p.Category == category);
+        Console.WriteLine("cat: " + category.Name);
+        Console.WriteLine("nr proj: " + projects.Count);
         projects = OrderBy(projects, config.OrderBy);
 
 
