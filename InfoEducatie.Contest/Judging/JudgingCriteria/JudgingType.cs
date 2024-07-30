@@ -25,5 +25,10 @@ namespace InfoEducatie.Contest.Judging.JudgingCriteria
         {
             return type is JudgeType.Both or JudgeType.Open;
         }
+
+        public static bool JudgesAny(this JudgeType type)
+        {
+            return type is JudgeType.Both or JudgeType.Open or JudgeType.Project;
+        }
     }
 }

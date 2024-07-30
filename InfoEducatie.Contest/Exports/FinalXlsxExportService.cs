@@ -35,6 +35,7 @@ namespace InfoEducatie.Contest.Exports
         private IRepository<ProjectJudgingCriterionPointsEntity> GivenPointsRepo =>
             _serviceProvider.GetRepo<ProjectJudgingCriterionPointsEntity>();
 
+
         public FinalXlsxExportService(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
@@ -57,10 +58,15 @@ namespace InfoEducatie.Contest.Exports
         public async Task<XLWorkbook> BuildWorkbookForCategory(CategoryEntity category)
         {
             var workbook = new XLWorkbook();
-            workbook.Style.Font.FontName = "Times new roman";
 
             var projects = await ProjectsRepo.GetAll(p => p.Category == category && !p.Disabled);
-            var judges = await JudgesRepo.GetAll(j => j.Category == category);
+            var judges = await JudgesRepo.Query.Where(j => j.Category == category).OrderBy(j => j.User.LastName)
+                .ToListAsync();
+            var vp = judges.FirstOrDefault(j => j.IsVicePresident);
+            var judgesProject = judges.Where(j => j.AvailableFor.JudgesProject()).ToList();
+            var judgesOpen = judges.Where(j => j.AvailableFor.JudgesOpen()).ToList();
+            var judgesAny = judges.Where(j => j.AvailableFor.JudgesAny()).ToList();
+
             var allCriteriaSections = await SectionsRepo.GetAll(s => s.Category == category);
             var allPoints = await GivenPointsRepo.GetAll(p => p.Criterion.Category == category);
 
@@ -70,8 +76,7 @@ namespace InfoEducatie.Contest.Exports
             var openGivenPoints = allPoints.FindAll(gp => gp.Criterion.Type == JudgingType.Open);
             var openProjects = projects.Where(p => p.IsInOpen).ToList();
 
-            BuildProjectsSheet(workbook.Worksheets.Add("Listă proiecte"), projects, category,
-                judges.FirstOrDefault(j => j.IsVicePresident));
+            BuildProjectsSheet(workbook.Worksheets.Add("Listă proiecte"), projects, category, vp);
 
             #region BI/BIO
 
@@ -103,12 +108,12 @@ namespace InfoEducatie.Contest.Exports
             #region BFs
 
             projects = projects.OrderByDescending(p => p.ScoreProject).ToList();
-            BuildBorderouFinal(workbook.Worksheets.Add("Borderou comisie"), judges, projects, projectGivenPoints,
-                category);
+            BuildBorderouFinal(workbook.Worksheets.Add("Borderou comisie"), judgesProject, vp, projects,
+                projectGivenPoints, category);
             if (_editionWithOpen)
             {
                 openProjects = openProjects.OrderByDescending(p => p.ScoreOpen).ToList();
-                BuildBorderouFinal(workbook.Worksheets.Add("Borderou OPEN"), judges, openProjects,
+                BuildBorderouFinal(workbook.Worksheets.Add("Borderou OPEN"), judgesOpen, vp, openProjects,
                     openGivenPoints, category, true);
             }
 
@@ -120,22 +125,22 @@ namespace InfoEducatie.Contest.Exports
             if (_editionWithOpen)
             {
                 projects = projects.OrderByDescending(p => p.ScoreProject).ToList();
-                BuildResultsSheet(workbook.Worksheets.Add("Rezultate înainte OPEN"), projects, category,
-                    judges);
+                BuildResultsSheet(workbook.Worksheets.Add("Rezultate înainte OPEN"), projects, category, judgesProject,
+                    vp);
                 projects = projects.OrderByDescending(p => p.ScoreProject + p.ScoreOpen).ToList();
-                BuildResultsSheet(workbook.Worksheets.Add("Rezultate finale"), projects, category, judges, true);
+                BuildResultsSheet(workbook.Worksheets.Add("Rezultate finale"), projects, category, judgesAny, vp, true);
             }
             else
             {
                 projects = projects.OrderByDescending(p => p.ScoreProject + p.ScoreOpen).ToList();
-                BuildResultsSheet(workbook.Worksheets.Add("Rezultate finale"), projects, category, judges);
+                BuildResultsSheet(workbook.Worksheets.Add("Rezultate finale"), projects, category, judgesProject, vp);
             }
 
             #endregion
 
             #region prizes maybe
 
-            BuildPrizesSheet(workbook.Worksheets.Add("Șablon premii"), projects, category, judges);
+            BuildPrizesSheet(workbook.Worksheets.Add("Șablon premii"), projects, category, judgesAny, vp);
 
             #endregion
 
@@ -144,7 +149,7 @@ namespace InfoEducatie.Contest.Exports
 
 
         private void BuildPrizesSheet(IXLWorksheet ws, List<ProjectEntity> projects, CategoryEntity category,
-            List<JudgeEntity> judges)
+            List<JudgeEntity> judges, JudgeEntity vp)
         {
             ExportHelper.PutPageHeader(ws);
             var th = new List<string>
@@ -154,7 +159,7 @@ namespace InfoEducatie.Contest.Exports
                 "Număr CI", "Punctaj total", "Premiu", "Suma", "Semnătura"
             };
 
-            SetTitle(ws, $"PREMII SECȚIUNEA {category.Name.ToUpper()}", 7, th.Count);
+            SetTitle(ws, $"PREMII SECȚIUNEA {category.Name.ToUpper()}", 7, th.Count - 1);
             var crtRow = 9;
             var firstCol = 'A';
             var tableData = new List<List<string>> { th };
@@ -180,7 +185,6 @@ namespace InfoEducatie.Contest.Exports
                 $"{(char)(firstCol + 11)}{tableDataStartsAt}:{(char)(firstCol + 11)}{tableDataStartsAt + tableData.Count - 2}";
             ws.Range(rangeName).Style.NumberFormat.Format = "@";
 
-
             SetTableContent(ws, ref crtRow, tableData, false, AdjustColumnWidth, firstCol);
             rangeName =
                 $"{(char)(firstCol + 3)}{tableDataStartsAt}:{(char)(firstCol + 3)}{tableDataStartsAt + tableData.Count - 2}";
@@ -204,10 +208,10 @@ namespace InfoEducatie.Contest.Exports
 
 
             SetWhoSigns(ws, ref crtRow,
-                new Tuple<string, string>("VICEPREȘEDINTE", judges.FirstOrDefault(j => j.IsVicePresident)?.FullName),
+                new Tuple<string, string>("VICEPREȘEDINTE", vp?.FullName),
                 new Tuple<string, List<string>>("MEMBRI EVALUATORI",
-                    judges.Where(j => !j.IsVicePresident).OrderBy(j => j.User.LastName).Select(j => j.FullName)
-                        .ToList()), th.Count);
+                    judges.Select(j => j.FullName)
+                        .ToList()), th.Count - 1);
         }
 
         private void CalcPoints(List<ProjectEntity> projects, List<ProjectJudgingCriterionPointsEntity> points,
@@ -229,7 +233,7 @@ namespace InfoEducatie.Contest.Exports
         }
 
         private void BuildResultsSheet(IXLWorksheet ws, List<ProjectEntity> projects, CategoryEntity category,
-            List<JudgeEntity> judges, bool withOpen = false)
+            List<JudgeEntity> judges, JudgeEntity vp, bool withOpen = false)
         {
             ExportHelper.PutPageHeader(ws);
             var th = new List<string>
@@ -250,7 +254,7 @@ namespace InfoEducatie.Contest.Exports
             }
 
             SetTitle(ws, $"REZULTATE {(withOpen ? "FINALE" : "ÎNAINTE DE OPEN")} SECȚIUNEA {category.Name.ToUpper()}",
-                7, th.Count);
+                7, th.Count - 1);
             var crtRow = 9;
             var firstCol = 'A';
             var tableData = new List<List<string>> { th };
@@ -264,7 +268,6 @@ namespace InfoEducatie.Contest.Exports
                     {
                         project.Title, $"{participant.LastName} {participant.FirstName}", participant.School,
                         participant.City, participant.County,
-                        // ""
                     };
                     if (!withOpen)
                     {
@@ -297,24 +300,24 @@ namespace InfoEducatie.Contest.Exports
             });
 
             SetWhoSigns(ws, ref crtRow,
-                new Tuple<string, string>("VICEPREȘEDINTE", judges.FirstOrDefault(j => j.IsVicePresident)?.FullName),
+                new Tuple<string, string>("VICEPREȘEDINTE", vp?.FullName),
                 new Tuple<string, List<string>>("MEMBRI EVALUATORI",
-                    judges.Where(j => !j.IsVicePresident).OrderBy(j => j.User.LastName).Select(j => j.FullName)
-                        .ToList()), th.Count);
+                    judges.Select(j => j.FullName)
+                        .ToList()), th.Count - 1);
         }
 
-        private void BuildBorderouFinal(IXLWorksheet ws, List<JudgeEntity> judges, List<ProjectEntity> projects,
+        private void BuildBorderouFinal(IXLWorksheet ws, List<JudgeEntity> judges, JudgeEntity vp,
+            List<ProjectEntity> projects,
             List<ProjectJudgingCriterionPointsEntity> points, CategoryEntity category, bool isOpen = false)
         {
             ExportHelper.PutPageHeader(ws);
             var th = new List<string> { "Nr. Crt.", "Denumire proiect" };
-            var vp = judges.FirstOrDefault(j => j.IsVicePresident);
             judges = judges.Where(j =>
                     j.AvailableFor == JudgeType.Both || j.AvailableFor == (isOpen ? JudgeType.Open : JudgeType.Project))
                 .ToList();
             th.AddRange(judges.Select(j => "Punctaj\n" + j.FullName).Append("Media"));
             SetTitle(ws,
-                $"BORDEROU{(isOpen ? " OPEN" : "")} SECȚIUNEA {category.Name.ToUpper()}", 7, th.Count);
+                $"BORDEROU{(isOpen ? " OPEN" : "")} SECȚIUNEA {category.Name.ToUpper()}", 7, th.Count - 1);
 
             var crtRow = 9;
 
@@ -344,9 +347,8 @@ namespace InfoEducatie.Contest.Exports
 
             SetWhoSigns(ws, ref crtRow,
                 new Tuple<string, string>("VICEPREȘEDINTE", vp?.FullName),
-                new Tuple<string, List<string>>("MEMBRI EVALUATORI",
-                    judges.OrderBy(j => j.User.LastName).Select(j => j.FullName).ToList()),
-                th.Count);
+                new Tuple<string, List<string>>("MEMBRI EVALUATORI", judges.Select(j => j.FullName).ToList()),
+                th.Count - 1);
         }
 
         private void BuildBorderouIndividual(IXLWorksheet ws, JudgeEntity judge, List<ProjectEntity> projects,
@@ -363,7 +365,7 @@ namespace InfoEducatie.Contest.Exports
 
             SetTitle(ws,
                 "BORDEROU INDIVIDUAL" + (isOpen ? " OPEN" : "") + " SECȚIUNEA " + judge.Category.Name.ToUpper(), 7,
-                th.Count);
+                th.Count - 1);
 
             var tableData = new List<List<string>> { th };
             int crtRow = 9;
@@ -383,11 +385,11 @@ namespace InfoEducatie.Contest.Exports
 
             SetTableContent(ws, ref crtRow, tableData, true, AdjustColumnWidth, firstCol);
 
-            SetWhoSignsIndividual(ws, ref crtRow, "MEMBRU EVALUATOR", judge.FullName.ToUpper(), th.Count - 1);
+            SetWhoSignsIndividual(ws, ref crtRow, "MEMBRU EVALUATOR", judge.FullName, th.Count - 1);
         }
 
         private void BuildProjectsSheet(IXLWorksheet ws, List<ProjectEntity> projects,
-            CategoryEntity category, JudgeEntity vicePresident)
+            CategoryEntity category, JudgeEntity vp)
         {
             ExportHelper.PutPageHeader(ws);
 
@@ -402,7 +404,7 @@ namespace InfoEducatie.Contest.Exports
             SetTableContent(ws, ref crtRow, tableData, true, AdjustColumnWidth);
             if (_editionHasVicePresidents)
             {
-                SetWhoSignsIndividual(ws, ref crtRow, "VICEPREȘEDINTE", vicePresident?.FullName.ToUpper(), 1);
+                SetWhoSignsIndividual(ws, ref crtRow, "VICEPREȘEDINTE", vp?.FullName, 1);
             }
         }
 
