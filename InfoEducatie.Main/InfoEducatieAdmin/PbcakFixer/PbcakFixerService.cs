@@ -42,9 +42,9 @@ public class PbcakFixerService(IRepository<ParticipantEntity> participantsRepo)
             sb.AppendLine(
                 $"[{eParticipant.Projects.FirstOrDefault()?.Category.Slug}] {correctParticipant.Cnp}");
             sb.AppendLine(
-                $"    xlsx: {correctParticipant.FirstName} {correctParticipant.LastName}  -- {correctParticipant.County} - {correctParticipant.School}");
+                $"    xlsx: {correctParticipant.FirstName} {correctParticipant.LastName}  --[{correctParticipant.Grade}]-- {correctParticipant.County} - {correctParticipant.School}");
             sb.AppendLine(
-                $"existing: {eParticipant.FirstName} {eParticipant.LastName}  -- {eParticipant.County} - {eParticipant.School}");
+                $"existing: {eParticipant.FirstName} {eParticipant.LastName}  --[{correctParticipant.Grade}]-- {eParticipant.County} - {eParticipant.School}");
             toFix++;
         }
 
