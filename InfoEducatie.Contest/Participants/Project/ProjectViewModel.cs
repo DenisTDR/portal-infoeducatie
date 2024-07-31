@@ -46,15 +46,15 @@ namespace InfoEducatie.Contest.Participants.Project
 
         [DetailsField] [TableColumn] public bool IsInOpen { get; set; }
 
-        [TableColumn(Invisible = true)]
+        [TableColumn(Invisible = true, Orderable = ServerClient.None, Searchable = ServerClient.None)]
         [DetailsField]
         public float ScoreProject { get; set; }
 
-        [TableColumn(Invisible = true)]
+        [TableColumn(Invisible = true, Orderable = ServerClient.None, Searchable = ServerClient.None)]
         [DetailsField]
         public float ScoreOpen { get; set; }
 
-        [TableColumn(Invisible = true)]
+        [TableColumn(Invisible = true, Orderable = ServerClient.None, Searchable = ServerClient.None)]
         [DetailsField]
         public float TotalScore => ScoreProject + ScoreOpen;
 
@@ -67,7 +67,8 @@ namespace InfoEducatie.Contest.Participants.Project
         public List<ParticipantViewModel> Participants { get; set; }
 
         [TableColumn(DbColumn = "Participants",
-            DbFuncFormat = "{0}.Any(p=> <condition>)<sel>MDbFunctions.Concat(p.User.FirstName, ' ', p.User.LastName)",
+            DbFuncFormat =
+                "{0}.Any(p=> <condition>)<sel>MDbFunctions.Concat(p.User.FirstName, ' ', p.User.LastName, ' ', p.Cnp)",
             Orderable = ServerClient.None)]
         [DisplayName("Participants")]
         [DetailsField]

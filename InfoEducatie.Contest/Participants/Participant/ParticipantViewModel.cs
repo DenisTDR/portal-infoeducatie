@@ -28,7 +28,7 @@ namespace InfoEducatie.Contest.Participants.Participant
         [TableColumn(Invisible = true)] public string SchoolCounty { get; set; }
         [TableColumn(Invisible = true)] public string SchoolCountry { get; set; }
         [TableColumn(Invisible = true)] public string MentoringTeacher { get; set; }
-        public string Cnp { get; set; }
+        [TableColumn(Invisible = true)] public string Cnp { get; set; }
         public string IdCardSeries { get; set; }
         public string IdCardNumber { get; set; }
         public string OldPlatformId { get; set; }
@@ -53,7 +53,7 @@ namespace InfoEducatie.Contest.Participants.Participant
         [TableColumn(DbColumn = "Projects",
             DbFuncFormat = "{0}.Any(p=> <condition>)<sel>p.Category.Name", Orderable = ServerClient.None)]
         [DisplayName("Categories")]
-        
+
         public string ProjectCategories => Projects?.Count is { } nr && nr > 0
             ? string.Join(", ", Projects.Select(p => p.Category.Name))
             : "--";
