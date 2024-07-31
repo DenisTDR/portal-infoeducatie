@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ClosedXML.Excel;
+using InfoEducatie.Base;
 using InfoEducatie.Contest.Categories;
 using InfoEducatie.Contest.Judging.Judges;
 using InfoEducatie.Contest.Judging.Judging;
@@ -331,7 +332,7 @@ namespace InfoEducatie.Contest.Exports
                 row.AddRange(judges.Select(j =>
                 {
                     var sum = points.Where(p => p.Judge == j && p.Project == project).Sum(p => p.Points);
-                    return (sum / (category.ScoresX10 ? 10f : 1)).ToString();
+                    return (sum / (category.ScoresX10 ? 10f : 1)).RoundTwoDecimals();
                 }));
                 row.Add($"=AVERAGE({(char)(firstCol + 2)}<crtRow>:{(char)(firstCol + row.Count)}<crtRow>)");
                 tableData.Add(row);
@@ -497,6 +498,10 @@ namespace InfoEducatie.Contest.Exports
                     {
                         ws.Cell($"{lastCol}{crtRow}").FormulaA1 = celVal.Replace("<crtRow>", crtRow.ToString());
                         ws.Cell($"{lastCol}{crtRow}").Style.NumberFormat.Format = "#0.00";
+                    }
+                    else if (celVal.Length > 0 && char.IsDigit(celVal[0]) && decimal.TryParse(celVal, out var parsed))
+                    {
+                        ws.Cell($"{lastCol}{crtRow}").Value = parsed;
                     }
                     else
                     {
