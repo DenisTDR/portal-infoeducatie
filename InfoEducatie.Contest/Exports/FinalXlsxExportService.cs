@@ -175,7 +175,7 @@ namespace InfoEducatie.Contest.Exports
                         $"a {ToRomanNumber(participant.Grade)}-a", participant.School, participant.City,
                         participant.MentoringTeacher, project.Title, category.Name, participant.Cnp,
                         $"=UPPER(\"{participant.IdCardSeries}\")", participant.IdCardNumber,
-                        (project.ScoreProject + project.ScoreOpen).ToString(), "", "", ""
+                        (project.ScoreProject + project.ScoreOpen).ToString("0.00"), "", "", ""
                     };
                     tableData.Add(row);
                 }
@@ -271,12 +271,12 @@ namespace InfoEducatie.Contest.Exports
                     };
                     if (!withOpen)
                     {
-                        row.Add(project.ScoreProject.ToString());
+                        row.Add(project.ScoreProject.ToString("0.00"));
                     }
                     else
                     {
-                        row.Add(project.ScoreProject.ToString());
-                        row.Add(project.ScoreOpen == 0 ? "" : project.ScoreOpen.ToString());
+                        row.Add(project.ScoreProject.ToString("0.00"));
+                        row.Add(project.ScoreOpen == 0 ? "" : project.ScoreOpen.ToString("0.00"));
                         row.Add(
                             $"={(char)(firstCol + row.Count - 1)}<crtRow>+{(char)(firstCol + row.Count)}<crtRow>");
                     }
