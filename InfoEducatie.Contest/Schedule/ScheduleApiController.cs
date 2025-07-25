@@ -70,6 +70,6 @@ public class ScheduleApiController : AdminApiController
         ms.Position = 0;
 
         return File(ms, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "program-infoeducatie-2024.xlsx");
+            "program-infoeducatie-2025.xlsx");
     }
 }
