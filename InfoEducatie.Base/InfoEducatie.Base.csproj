@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <OutputType>Library</OutputType>
         <RootNamespace>InfoEducatie.Base</RootNamespace>
         <Version>1.1.1</Version>
@@ -14,14 +14,14 @@
     </ItemGroup>
 
     <ItemGroup Condition="$(ENV_TYPE) == 'CI_BUILD'">
-        <PackageReference Include="MCMS.Common" Version="0.8.6" />
-        <PackageReference Include="MCMS.Emailing" Version="0.8.6" />
-        <PackageReference Include="MCMS.Files" Version="0.8.6" />
+        <PackageReference Include="MCMS.Common" Version="0.9.12" />
+        <PackageReference Include="MCMS.Emailing" Version="0.9.12" />
+        <PackageReference Include="MCMS.Files" Version="0.9.12" />
     </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="ClosedXML" Version="0.102.2" />
-        <PackageReference Include="ClosedXML.Report" Version="0.2.10" />
-        <PackageReference Include="Razor.Templating.Core" Version="2.0.0" />
+        <PackageReference Include="ClosedXML" Version="0.105.0" />
+        <PackageReference Include="morelinq" Version="4.4.0" />
+        <PackageReference Include="Razor.Templating.Core" Version="2.1.0" />
     </ItemGroup>
 </Project>
